@@ -38,3 +38,20 @@ export type tokens = {
 	creative: string
 	event: string
 }
+
+export type mc_rank_type = 'unverified' | 'verified' | 'member' | 'admin'
+
+export type db_player = {
+	user_id: string
+	uea_email: string
+	mc_username: string
+	mc_uuid: string
+	mc_rank: mc_rank_type
+	email_verifid: boolean
+	created_at: string
+}
+
+export type return_command = {
+	success: boolean
+	message: string
+}
