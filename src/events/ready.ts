@@ -22,7 +22,7 @@ export default async () => {
 		}
 	})
 
-	const job = new CronJob({ cronExpression: '* */12 * * *' }, task, { preventOverrun: true })
+	const job = new CronJob({ cronExpression: '0 */6 * * *' }, task, { preventOverrun: true })
 	scheduler.addCronJob(job)
 	logger.info('started cron job to fetch new tokens every 6th hour')
 }
