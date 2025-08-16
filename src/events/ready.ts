@@ -1,9 +1,12 @@
 import { ActivityType } from 'discord.js'
+import postgres from 'postgres'
 import { client, logger, setState } from 'robo.js'
 import { AsyncTask, CronJob, ToadScheduler } from 'toad-scheduler'
-import { token } from '~/utill/types'
+import { token } from '../utill/types'
 
 export default async () => {
+	logger.ready('Database Connected and ready')
+
 	client.user?.setActivity({
 		name: ':staruea: Verifying Players',
 		type: ActivityType.Custom,
@@ -24,8 +27,16 @@ export default async () => {
 
 	const job = new CronJob({ cronExpression: '0 */6 * * *' }, task, { preventOverrun: true })
 	scheduler.addCronJob(job)
-	logger.info('started cron job to fetch new tokens every 6th hour')
+	logger.ready('started cron job to fetch new tokens every 6th hour')
 }
+
+export const sql = postgres({
+	host: process.env.POSTGRES_HOST,
+	port: process.env.POSTGRES_PORT,
+	database: process.env.POSTGRES_DATABASE,
+	username: process.env.POSTGRES_USERNAME,
+	password: process.env.POSTGRES_PASSWORD
+})
 
 async function loadTokens() {
 	const user = process.env.MC_USER

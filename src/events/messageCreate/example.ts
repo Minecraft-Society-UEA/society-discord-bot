@@ -9,5 +9,6 @@ import type { Message } from 'discord.js'
  * https://robojs.dev/discord-bots/events
  */
 export default (message: Message) => {
-	logger.info(`${message.author} sent message: ${message.content}`)
+	console.log(message.content)
+	logger.info(`${message.author.username} sent message: ${message.content}`)
 }

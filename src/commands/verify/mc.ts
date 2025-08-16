@@ -28,7 +28,7 @@ export default async (
 	const h_port = process.env.HUB_PORT
 	const tokens = getTokens() as tokens
 	const username = options['mc-username']
-	const modal = new ModalBuilder().setCustomId('welcomemsg').setTitle('Welcome message content')
+	const modal = new ModalBuilder().setCustomId('verifiy-mc-code').setTitle('Minecraft Verification Code')
 	const embed = new EmbedBuilder()
 
 	let data_hub
@@ -57,13 +57,16 @@ export default async (
 
 	const code = generateCode()
 
+	await Flashcore.set(`verify_code-${interaction.user.id}`, code)
+	await Flashcore.set(`verify_code-mc_username-${interaction.user.id}`, player.name)
+	await Flashcore.set(`verify_code-mc_uuid-${interaction.user.id}`, player.uuid)
+
 	const body = {
-		command: `w ${player.name} Code: ${code}`
+		player: `${player.name}`,
+		message: `[MC-UEA VERIFY] Code: ${code}`
 	}
 
-	await Flashcore.set(`verify_code-${interaction.user.id}`, code)
-
-	const response = await fetch(`${host}:${h_port}/api/server/command`, {
+	const response = await fetch(`${host}:${h_port}/api/player/message`, {
 		method: 'post',
 		headers: {
 			Authorization: `Bearer ${tokens.hub}`
@@ -71,8 +74,8 @@ export default async (
 		body: JSON.stringify(body)
 	})
 
-	if (!response.ok) {
-		logger.error('Error getting hub players.')
+	if (response.status !== 200) {
+		logger.error('Error sending player the code.')
 	}
 
 	const one = new TextInputBuilder()
@@ -88,4 +91,5 @@ export default async (
 	modal.addComponents(firstActionRow)
 
 	await interaction.showModal(modal)
+	return
 }
