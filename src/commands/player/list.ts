@@ -1,114 +1,48 @@
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
-import { createCommandConfig, logger } from 'robo.js'
+import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { connected_players, tokens } from '../../utill/types'
-import { getTokens } from '../../utill/functions'
+import { all_player_list } from '../../utill/types'
+import { getPlayerListAllServers } from '../../utill/functions'
 
+// the command config pretty simple json there are more option avlible check robo.js docs
+// command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
 	description: 'Unlock the hidden prowess of someone',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
-	defaultMemberPermissions: PermissionFlagsBits.Administrator
-	// options: [],
-	// sage: {ephemeral: true}
+	defaultMemberPermissions: PermissionFlagsBits.SendMessages
 } as const)
 
 export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
-	const host = process.env.MC_HOST
-	const h_port = process.env.HUB_PORT
-	const s_port = process.env.SURVIVAL_PORT
-	const c_port = process.env.CREATIVE_PORT
-	const e_port = process.env.EVENT_PORT
-	const tokens = getTokens() as tokens
+	// declaring variables we need
 	const embed = new EmbedBuilder()
+	const list = (await getPlayerListAllServers()) as all_player_list
 
-	let data_hub
-	let data_survival
-	let data_creative
-	let data_event
-
-	const response_hub = await fetch(`${host}:${h_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.hub}`
-		}
-	})
-	if (!response_hub.ok) {
-		logger.error('Error getting hub players.')
-	} else {
-		data_hub = (await response_hub.json()) as connected_players
-	}
-
-	const response_survival = await fetch(`${host}:${s_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.survival}`
-		}
-	})
-	if (!response_survival.ok) {
-		logger.error('Error getting survival players.')
-	} else {
-		data_survival = (await response_survival.json()) as connected_players
-	}
-
-	const response_creative = await fetch(`${host}:${c_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.creative}`
-		}
-	})
-	if (!response_creative.ok) {
-		logger.error('Error getting creative players.')
-	} else {
-		data_creative = (await response_creative.json()) as connected_players
-	}
-
-	const response_event = await fetch(`${host}:${e_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.event}`
-		}
-	})
-	if (!response_event.ok) {
-		logger.error('Error getting event players.')
-	} else {
-		data_event = (await response_event.json()) as connected_players
-	}
-
-	if (!data_hub || !data_survival || !data_creative || !data_event) {
-		return `one or more servers are down`
-	}
-
-	const total_online =
-		data_hub?.online_players.length +
-		data_survival?.online_players.length +
-		data_creative.online_players.length +
-		data_event.online_players.length
-
+	// create embed with total player and what servers there on
 	embed
 		.setColor('DarkPurple')
 		.setTitle('online players across all servers')
-		.setDescription(`Online: ${total_online}/300`)
+		.setDescription(`Online: ${list.total_online}/300`)
 		.addFields(
 			{
-				name: `The Hub: ${data_hub.online_players.length} Player's`,
-				value: `${data_hub.online_players.map((player) => player.name).join(', ')}`
+				name: `The Hub: ${list.hub.online_players.length} Player's`,
+				value: `${list.hub.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Survival: ${data_survival.online_players.length} Player's`,
-				value: `${data_survival.online_players.map((player) => player.name).join(', ')}`
+				name: `Survival: ${list.survival.online_players.length} Player's`,
+				value: `${list.survival.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Creative: ${data_creative.online_players.length} Player's`,
-				value: `${data_creative.online_players.map((player) => player.name).join(', ')}`
+				name: `Creative: ${list.creative.online_players.length} Player's`,
+				value: `${list.creative.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Event: ${data_event.online_players.length} Player's`,
-				value: `${data_event.online_players.map((player) => player.name).join(', ')}`
+				name: `Event: ${list.event.online_players.length} Player's`,
+				value: `${list.event.online_players.map((player) => player.name).join(', ')}`
 			}
 		)
 		.setTimestamp()

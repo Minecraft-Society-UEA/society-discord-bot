@@ -5,13 +5,18 @@ import { db_player, tokens } from '../../utill/types'
 import { createPlayerProfile, updatePlayerProfile } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
+	// check if the interaction is a modal submit
 	if (!interaction.isModalSubmit()) return
 
-	if (interaction.customId === 'verifiy-mc-code') {
+	// check the modal being submitted matches the custom id set on the mc verifi one
+	if (interaction.customId === `verifiy-mc-code-${interaction.user.id}`) {
+		// get the original code and the one the player inputed
 		const code = interaction.fields.getTextInputValue('mc-code') as string
 		const user_code = (await Flashcore.get(`verify_code-${interaction.user.id}`)) as string
 
+		// compare if they match
 		if (code === user_code) {
+			// declaring variables we need
 			const host = process.env.MC_HOST
 			const h_port = process.env.HUB_PORT
 			const tokens = getTokens() as tokens
@@ -19,6 +24,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const embed = new EmbedBuilder()
 
+			// create bodys for adding the in game permition and messaging them success
 			const body_command = {
 				command: `lp user ${username} promote player`
 			}
@@ -28,6 +34,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				message: `[MC-UEA VERIFY] Successfully Verified`
 			}
 
+			// add the players permitions
 			const response = await fetch(`${host}:${h_port}/api/server/command`, {
 				method: 'post',
 				headers: {
@@ -36,19 +43,27 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				body: JSON.stringify(body_command)
 			})
 
+			// if adding permition failed dont proceed and send a message
+			if (response.status !== 200) {
+				logger.error('Error running command in hub.')
+				return interaction.reply({
+					embeds: [embed.setColor('Red').setTitle(`Failed to add user permitions on the servers`)]
+				})
+			}
+
+			// create a player profile in the database
 			const playerProfile = (await createPlayerProfile(interaction.user.id)) as db_player
 
+			// add the players data
 			playerProfile.mc_rank = `verified`
 			playerProfile.mc_username = username
 			playerProfile.mc_uuid = uuid
 			playerProfile.mc_verifid = true
 
+			// update the players profile with the new data
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
-			if (!response.ok) {
-				logger.error('Error running command in hub.')
-			}
-
+			// send the player a sucsess message
 			const response2 = await fetch(`${host}:${h_port}/api/player/message`, {
 				method: 'post',
 				headers: {
@@ -57,9 +72,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				body: JSON.stringify(body_message)
 			})
 
-			embed.setTitle(`Successfully Verified`).setColor('Green')
-
-			await interaction.reply({ embeds: [embed] })
+			await interaction.reply({ embeds: [embed.setTitle(`Successfully Verified`).setColor('Green')], ephemeral: true })
 			return
 		}
 	}

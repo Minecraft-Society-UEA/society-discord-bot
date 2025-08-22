@@ -4,12 +4,12 @@ import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
 import type { connected_players, tokens } from '../../utill/types'
 import { generateCode, getTokens } from '../../utill/functions'
-import { getProfileByDId } from '~/utill/database_functions'
+import { getProfileByDId, getProfileByMcUsername } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'verify and link your mc to the discord allowing you to join',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
@@ -35,13 +35,26 @@ export default async (
 	const h_port = process.env.HUB_PORT
 	const tokens = getTokens() as tokens
 	const username = options['mc-username']
-	const modal = new ModalBuilder().setCustomId('verifiy-mc-code').setTitle('Minecraft Verification Code')
+	const modal = new ModalBuilder()
+		.setCustomId(`verifiy-mc-code-${interaction.user.id}`)
+		.setTitle('Minecraft Verification Code')
 	const embed = new EmbedBuilder()
 	const already_verified = await getProfileByDId(interaction.user.id)
+	const username_inuse = await getProfileByMcUsername(username)
 	let data_hub
 
 	// checking if the user already has verifide
 	if (already_verified !== `error`) return { embeds: [embed.setTitle(`already verified on minecraft`)] }
+
+	//checking if username is already linked
+	if (username_inuse !== `error`)
+		return {
+			embeds: [
+				embed.setTitle(
+					`username is already verifide under a diffrent user if this is your account contact a member of the committee`
+				)
+			]
+		}
 
 	// pulls the player list from the Hub server
 	const response_hub = await fetch(`${host}:${h_port}/api/players`, {
@@ -95,11 +108,12 @@ export default async (
 	// checks the message was sent correctly
 	if (response.status !== 200) {
 		logger.error('Error sending player the code.')
-		return { embeds: [embed.setColor('Red').setTitle(``)] }
+		return { embeds: [embed.setColor('Red').setTitle(`Failed sending the code`)] }
 	}
 
+	//creating the modal to show the suer on discord
 	const one = new TextInputBuilder()
-		.setCustomId('mc-code')
+		.setCustomId(`mc-code`)
 		.setLabel('The code Verify Wispered to you')
 		.setMaxLength(5)
 		.setPlaceholder('Code eg: 12345')
@@ -110,6 +124,7 @@ export default async (
 
 	modal.addComponents(firstActionRow)
 
+	// showing the modal to the user
 	await interaction.showModal(modal)
 	return
 }

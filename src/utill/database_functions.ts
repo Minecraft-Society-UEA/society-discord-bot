@@ -2,6 +2,7 @@ import { logger } from 'robo.js'
 import { sql } from '../events/ready'
 import { db_player } from './types'
 
+//function to get and find a user based on diffrent things
 export async function getProfileByDId(userId: string) {
 	try {
 		const playerProfile = await sql<db_player[]>`
@@ -17,7 +18,7 @@ export async function getProfileByDId(userId: string) {
 		}
 	} catch (err) {
 		logger.error(`Error fetching user profile:\n\n ${err}`)
-		return `Error fetching user profile`
+		return `error`
 	}
 }
 
@@ -36,7 +37,7 @@ export async function getProfileByMcUuid(McUuid: string) {
 		}
 	} catch (err) {
 		logger.error(`Error fetching user profile:\n\n ${err}`)
-		return `Error fetching user profile`
+		return `error`
 	}
 }
 
@@ -55,7 +56,7 @@ export async function getProfileByMcUsername(McUsername: string) {
 		}
 	} catch (err) {
 		logger.error(`Error fetching user profile:\n\n ${err}`)
-		return `Error fetching user profile`
+		return `error`
 	}
 }
 
@@ -74,10 +75,11 @@ export async function getProfileByUeaEmail(Email: string) {
 		}
 	} catch (err) {
 		logger.error(`Error fetching user profile:\n\n ${err}`)
-		return `Error fetching user profile`
+		return `error`
 	}
 }
 
+// create a player profile for a discord user
 export async function createPlayerProfile(userId: string) {
 	const newUser = await sql<db_player[]>`
   INSERT INTO players (user_id) 
@@ -89,6 +91,7 @@ export async function createPlayerProfile(userId: string) {
 	return newUser[0]
 }
 
+// update a profiles details
 export async function updatePlayerProfile(did: string, new_playerP: db_player) {
 	try {
 		if (!new_playerP) return
@@ -110,6 +113,6 @@ export async function updatePlayerProfile(did: string, new_playerP: db_player) {
 		return updatedProfile[0]
 	} catch (err) {
 		logger.error(`Error updating player profile: ${err} `)
-		return
+		return `error`
 	}
 }

@@ -8,16 +8,18 @@ export default async () => {
 	logger.ready('Database Connected and ready')
 
 	client.user?.setActivity({
-		name: ':staruea: Verifying Players',
-		type: ActivityType.Custom,
+		name: `For Players`,
+		type: ActivityType.Watching,
 		url: 'https://uncommmon.dev'
 	})
 
+	// loads tokens on start up for making requests to the servers
 	await loadTokens()
 
+	// create a cron job to go off on every 12th hour t oreload the tokens with fresh ones
 	const scheduler = new ToadScheduler()
 
-	const task = new AsyncTask('fetch trivia question', async () => {
+	const task = new AsyncTask('fetch tokens', async () => {
 		try {
 			await loadTokens()
 		} catch (error) {
@@ -30,6 +32,7 @@ export default async () => {
 	logger.ready('started cron job to fetch new tokens every 12th hour')
 }
 
+// the sql database object
 export const sql = postgres({
 	host: process.env.POSTGRES_HOST,
 	port: process.env.POSTGRES_PORT,
