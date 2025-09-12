@@ -1,4 +1,4 @@
-import { ModalSubmitInteraction, Client, EmbedBuilder } from 'discord.js'
+import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
 import { getTokens } from '../../utill/functions'
 import { db_player, tokens } from '../../utill/types'
@@ -23,6 +23,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const username = (await Flashcore.get(`verify_code-mc_username-${interaction.user.id}`)) as string
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const embed = new EmbedBuilder()
+			const member = interaction.member as GuildMember
 
 			// create bodys for adding the in game permition and messaging them success
 			const body_command = {
@@ -71,6 +72,9 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				},
 				body: JSON.stringify(body_message)
 			})
+
+			// set player nickname in disocrds
+			await member.setNickname(`${member.displayName} ✧ ${username}`)
 
 			await interaction.reply({ embeds: [embed.setTitle(`Successfully Verified`).setColor('Green')], ephemeral: true })
 			return

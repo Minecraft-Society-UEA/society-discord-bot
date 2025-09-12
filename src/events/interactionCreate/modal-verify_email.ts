@@ -1,8 +1,7 @@
 import { ModalSubmitInteraction, Client, EmbedBuilder } from 'discord.js'
-import { Flashcore, logger } from 'robo.js'
-import { getTokens } from '../../utill/functions'
-import { db_player, tokens } from '../../utill/types'
-import { createPlayerProfile, getProfileByDId, updatePlayerProfile } from '../../utill/database_functions'
+import { Flashcore } from 'robo.js'
+import { db_player } from '../../utill/types'
+import { getProfileByDId, updatePlayerProfile } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
@@ -31,7 +30,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
 			await interaction.reply({
-				embeds: [embed.setTitle(`Successfully Verified Email`).setColor('Green')],
+				embeds: [embed.setTitle(`Successfully Verified UEA Email`).setColor('Green')],
 				ephemeral: true
 			})
 			return

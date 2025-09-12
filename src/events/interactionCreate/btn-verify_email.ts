@@ -19,9 +19,18 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short)
 
-		const firstActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(one)
+		const two = new TextInputBuilder()
+			.setCustomId(`name`)
+			.setLabel('Prefured Name')
+			.setMaxLength(5)
+			.setPlaceholder('Jerry...')
+			.setRequired(true)
+			.setStyle(TextInputStyle.Short)
 
-		modal.addComponents(firstActionRow)
+		const firstActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(one)
+		const secondActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(two)
+
+		modal.addComponents(firstActionRow, secondActionRow)
 
 		// showing the modal to the user
 		await interaction.showModal(modal)
