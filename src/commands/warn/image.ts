@@ -37,7 +37,7 @@ export const config = createCommandConfig({
 		}
 	],
 	sage: { ephemeral: true },
-	defaultMemberPermissions: PermissionFlagsBits.SendMessages
+	defaultMemberPermissions: PermissionFlagsBits.ManageRoles
 } as const)
 
 // the main code that executes when the command is used

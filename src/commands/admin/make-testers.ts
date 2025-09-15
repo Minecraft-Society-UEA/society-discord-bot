@@ -20,8 +20,7 @@ export const config = createCommandConfig({
 			required: true
 		}
 	],
-	defaultMemberPermissions: PermissionFlagsBits.ManageRoles,
-	sage: { ephemeral: true }
+	defaultMemberPermissions: PermissionFlagsBits.ManageRoles
 } as const)
 
 // the main code that executes when the command is used
@@ -31,6 +30,7 @@ export default async (
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
 	const user = options.user
+	if (!user) return { content: `user you selected is invalid` }
 	const profile = (await getProfileByDId(user.id)) as db_player
 	const embed = new EmbedBuilder()
 	if (!profile.mc_username) return

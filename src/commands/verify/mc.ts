@@ -44,10 +44,10 @@ export default async (
 	let data_hub
 
 	// checking if the user already has verifide
-	if (already_verified !== `error`) return { embeds: [embed.setTitle(`already verified on minecraft`)] }
+	if (!already_verified) return { embeds: [embed.setTitle(`already verified on minecraft`)] }
 
 	//checking if username is already linked
-	if (username_inuse !== `error`)
+	if (!username_inuse)
 		return {
 			embeds: [
 				embed.setTitle(

@@ -53,7 +53,7 @@ export default async (
 		return { embeds: [embed.setTitle(`already verified your email`).setColor('Green')], ephemeral: true }
 
 	//checking if username is already linked
-	if (email_inuse === `error`)
+	if (!email_inuse)
 		return {
 			embeds: [
 				embed.setTitle(

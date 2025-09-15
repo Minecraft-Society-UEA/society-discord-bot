@@ -36,6 +36,8 @@ export default async (
 	const embed = new EmbedBuilder()
 	const warn = {} as db_warns
 
+	if (!user) return { content: `user you selected is invalid` }
+
 	warn.user_id = user.id
 	warn.warn_effects_bans = true
 

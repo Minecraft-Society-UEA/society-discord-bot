@@ -31,7 +31,7 @@ export const config = createCommandConfig({
 		}
 	],
 	sage: { ephemeral: true },
-	defaultMemberPermissions: PermissionFlagsBits.SendMessages
+	defaultMemberPermissions: PermissionFlagsBits.ManageRoles
 } as const)
 
 // the main code that executes when the command is used
@@ -44,6 +44,7 @@ export default async (
 	// declaring variables we need
 	const embed = new EmbedBuilder()
 	const eff1 = options.effected1
+	if (!eff1) return { content: `a user you selected is invalid` }
 	const eff2 = options.effected2 ?? null
 	const eff3 = options.effected3 ?? null
 	const alr = (await getState<boolean>(`warn_session_inprog-${interaction.user.id}`)) ?? false

@@ -40,9 +40,11 @@ export default async (
 	const embed = new EmbedBuilder()
 	const target = options.user
 	const msg = options.message
+	if (!target) return { content: `user you selected is invalid` }
+
 	const profile = await getProfileByDId(target.user.id)
 
-	if (profile === `error` || !profile.mc_username)
+	if (!profile || !profile.mc_username)
 		return {
 			embeds: [
 				embed.setColor('Red').setTitle(`User ${target.displayName} is not linked and therefore cant be messaged`)

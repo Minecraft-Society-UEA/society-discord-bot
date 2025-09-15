@@ -12,15 +12,8 @@ import {
 } from 'discord.js'
 import { getState, setState } from 'robo.js'
 import { db_player, db_warns } from '../../utill/types'
-import {
-	createBan,
-	createWarning,
-	getProfileByDId,
-	getWarningsByEffectedUser,
-	getWarningsByUserId,
-	getWarningsEffectBansByUserId
-} from '../../utill/database_functions'
-import { BAN } from '~/utill/functions'
+import { createWarning, getProfileByDId, getWarningsEffectBansByUserId } from '../../utill/database_functions'
+import { BAN } from '../../utill/functions'
 
 export default async (interaction: ButtonInteraction, client: Client) => {
 	// check if the interaction is a modal submit
