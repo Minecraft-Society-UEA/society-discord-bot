@@ -22,7 +22,7 @@ export default async (
 	// declaring variables we need
 	const embed = new EmbedBuilder()
 
-	const mem = (await checkMember(interaction.user.id)) as check_member_return
-
-	return { embeds: [embed.setTitle(mem.message).setColor(mem.colour)] }
+	return {
+		embeds: [embed.setTitle(`sorry not finished/set up yetr there will be an anouncment when ready`).setColor(`Green`)]
+	}
 }

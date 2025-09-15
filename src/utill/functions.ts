@@ -1,6 +1,19 @@
 import { getState, logger, setState } from 'robo.js'
-import { all_player_list, check_member_return, connected_players, db_player, player, token, tokens } from './types'
-import { getProfileByDId } from './database_functions'
+import {
+	all_player_list,
+	check_member_return,
+	connected_players,
+	db_player,
+	db_warns,
+	player,
+	return_command,
+	server_details,
+	ServerKey,
+	token,
+	tokens
+} from './types'
+import { createBan, getProfileByDId, getWarningsEffectBansByUserId } from './database_functions'
+import { create } from 'domain'
 
 // a function to easily get all tokens for every server and return them as a object
 export function getTokens() {
@@ -21,7 +34,7 @@ export function getTokens() {
 
 // a function to generate a 5 digit long code for verification
 export function generateCode(length = 5) {
-	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+	const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz0123456789'
 	let code = ''
 	for (let i = 0; i < length; i++) {
 		code += chars.charAt(Math.floor(Math.random() * chars.length))
@@ -46,171 +59,188 @@ export async function loadTokens() {
 	const user = process.env.MC_USER
 	const pass = process.env.MC_PASS
 	const host = process.env.MC_HOST
-	const h_port = process.env.HUB_PORT
-	const s_port = process.env.SURVIVAL_PORT
-	const c_port = process.env.CREATIVE_PORT
-	const e_port = process.env.EVENT_PORT
-
-	// user and pass body for login
-	const body = {
-		username: user,
-		password: pass
-	}
-
-	// login and saving of the hub token
-	try {
-		const response = await fetch(`${host}:${h_port}/api/auth/login`, {
-			method: 'POST',
-			body: JSON.stringify(body)
-		})
-		if (!response.ok) {
-			logger.error('Error Logging in to hub.')
-		} else {
-			const data = (await response.json()) as token
-			await setState('hub_token', data.token)
-		}
-	} catch (err) {
-		logger.error('Error loading Token for hub:', err)
-	}
-
-	// login and saving of the survival token
-	try {
-		const response = await fetch(`${host}:${s_port}/api/auth/login`, {
-			method: 'POST',
-			body: JSON.stringify(body)
-		})
-		if (!response.ok) {
-			logger.error('Error Logging in to survival.')
-		} else {
-			const data = (await response.json()) as token
-			await setState('survival_token', data.token)
-		}
-	} catch (err) {
-		logger.error('Error loading Token for survival:', err)
-	}
-
-	// login and saving of the creative token
-	try {
-		const response = await fetch(`${host}:${c_port}/api/auth/login`, {
-			method: 'POST',
-			body: JSON.stringify(body)
-		})
-		if (!response.ok) {
-			logger.error('Error Logging in to creative.')
-		} else {
-			const data = (await response.json()) as token
-			await setState('creative_token', data.token)
-		}
-	} catch (err) {
-		logger.error('Error loading Token for creative:', err)
-	}
-
-	// login and saving of the event token
-	try {
-		const response = await fetch(`${host}:${e_port}/api/auth/login`, {
-			method: 'POST',
-			body: JSON.stringify(body)
-		})
-		if (!response.ok) {
-			logger.error('Error Logging in to event.')
-		} else {
-			const data = (await response.json()) as token
-			await setState('event_token', data.token)
-		}
-	} catch (err) {
-		logger.error('Error loading Token for event:', err)
-	}
-	logger.info(`logged in to all servers and stored tokens`)
-}
-
-// a function to get all online players across all servers
-export async function getPlayerListAllServers() {
-	const host = process.env.MC_HOST
-	const h_port = process.env.HUB_PORT
-	const s_port = process.env.SURVIVAL_PORT
-	const c_port = process.env.CREATIVE_PORT
-	const e_port = process.env.EVENT_PORT
-	const tokens = getTokens() as tokens
-
-	let data_hub
-	let data_survival
-	let data_creative
-	let data_event
-
-	// fetch player list for each server
-	const response_hub = await fetch(`${host}:${h_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.hub}`
-		}
-	})
-	if (!response_hub.ok) {
-		logger.error('Error getting hub players.')
-	} else {
-		data_hub = (await response_hub.json()) as connected_players
-	}
-
-	const response_survival = await fetch(`${host}:${s_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.survival}`
-		}
-	})
-	if (!response_survival.ok) {
-		logger.error('Error getting survival players.')
-	} else {
-		data_survival = (await response_survival.json()) as connected_players
-	}
-
-	const response_creative = await fetch(`${host}:${c_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.creative}`
-		}
-	})
-	if (!response_creative.ok) {
-		logger.error('Error getting creative players.')
-	} else {
-		data_creative = (await response_creative.json()) as connected_players
-	}
-
-	const response_event = await fetch(`${host}:${e_port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${tokens.event}`
-		}
-	})
-	if (!response_event.ok) {
-		logger.error('Error getting event players.')
-	} else {
-		data_event = (await response_event.json()) as connected_players
-	}
-
-	if (!data_hub || !data_survival || !data_creative || !data_event) {
+	if (!user || !pass || !host) {
+		logger.error('MC_USER, MC_PASS, or MC_HOST not set in env')
 		return
 	}
 
-	// work out the total players online
-	const total_online =
-		data_hub?.online_players.length +
-		data_survival?.online_players.length +
-		data_creative.online_players.length +
-		data_event.online_players.length
+	const body = { username: user, password: pass }
+	const servers: ServerKey[] = ['hub', 'survival', 'creative', 'event']
 
-	const all_players_arr = [] as player[]
-	all_players_arr.concat(data_hub.online_players)
-	all_players_arr.concat(data_survival.online_players)
-	all_players_arr.concat(data_creative.online_players)
-	all_players_arr.concat(data_event.online_players)
+	for (const server of servers) {
+		const details = (await server_port_token_resolver(server)) as server_details
 
-	const all_lists = {
-		hub: data_hub,
-		survival: data_survival,
-		creative: data_creative,
-		event: data_event,
-		total_online: total_online,
-		all_players: all_players_arr
-	} as all_player_list
+		try {
+			const res = await fetch(`${host}:${details.port}/api/auth/login`, {
+				method: 'POST',
+				body: JSON.stringify(body)
+			})
 
-	return all_lists
+			if (!res.ok) {
+				logger.error(`Error logging in to ${server}.`)
+				continue
+			}
+
+			const data = (await res.json()) as token
+			await setState(`${server}_token`, data.token)
+		} catch (err) {
+			logger.error(`Error loading token for ${server}:`, err)
+		}
+	}
+
+	logger.info(`Logged in to all servers and stored tokens`)
+}
+
+// a function to get all online players across all servers
+export async function getPlayerListAllServers(): Promise<all_player_list | undefined> {
+	const host = process.env.MC_HOST
+	const servers: ServerKey[] = ['hub', 'survival', 'creative', 'event']
+	const results: Record<ServerKey, connected_players> = {} as Record<ServerKey, connected_players>
+	let total_online = 0
+	let all_players: player[] = []
+
+	for (const server of servers) {
+		const details = (await server_port_token_resolver(server)) as server_details
+
+		try {
+			const res = await fetch(`${host}:${details.port}/api/players`, {
+				headers: { Authorization: `Bearer ${details.token}` }
+			})
+
+			if (!res.ok) {
+				logger.error(`Error getting ${server} players.`)
+				return
+			}
+
+			const data = (await res.json()) as connected_players
+			results[server] = data
+			total_online += data.online_players.length
+			all_players = all_players.concat(data.online_players)
+		} catch (err) {
+			logger.error(`Failed to fetch ${server} players: ${err}`)
+			return
+		}
+	}
+
+	return {
+		...results,
+		total_online,
+		all_players
+	}
+}
+
+export async function online_server_check(mc_name: string) {
+	const lists = (await getPlayerListAllServers()) as all_player_list
+
+	const servers: ServerKey[] = ['hub', 'survival', 'creative', 'event']
+
+	for (const server of servers) {
+		const found = lists[server].online_players.find((p: player) => p.name.toLowerCase() === mc_name.toLowerCase())
+		if (found) return server
+	}
+
+	return false
+}
+
+export async function server_port_token_resolver(server: ServerKey): Promise<server_details> {
+	const tokens = getTokens() as tokens
+
+	const config: Record<ServerKey, server_details> = {
+		hub: {
+			port: process.env.HUB_PORT ?? '00',
+			token: tokens.hub
+		},
+		survival: {
+			port: process.env.SURVIVAL_PORT ?? '00',
+			token: tokens.survival
+		},
+		creative: {
+			port: process.env.CREATIVE_PORT ?? '00',
+			token: tokens.creative
+		},
+		event: {
+			port: process.env.EVENT_PORT ?? '00',
+			token: tokens.event
+		}
+	}
+
+	return config[server]
+}
+
+export async function mc_command(server: ServerKey, command: string) {
+	const host = process.env.MC_HOST
+	const details = (await server_port_token_resolver(server)) as server_details
+	const body_command = {
+		command: command
+	}
+
+	const response = await fetch(`${host}:${details.port}/api/server/command`, {
+		method: 'post',
+		headers: {
+			Authorization: `Bearer ${details.token}`
+		},
+		body: JSON.stringify(body_command)
+	})
+
+	return (await response.json()) as return_command
+}
+
+export async function message_player(mc_username: string, msg: string) {
+	const host = process.env.MC_HOST
+	const server = await online_server_check(mc_username)
+	const body_message = {
+		player: mc_username,
+		message: msg
+	}
+
+	if (!server) return
+
+	const details = await server_port_token_resolver(server)
+
+	const response = await fetch(`${host}:${details.port}/api/player/message`, {
+		method: 'post',
+		headers: {
+			Authorization: `Bearer ${details.token}`
+		},
+		body: JSON.stringify(body_message)
+	})
+
+	return true
+}
+
+export async function mc_ban_player(mc_username: string, msg: string, mins: string) {
+	const host = process.env.MC_HOST
+	const details = (await server_port_token_resolver(`hub`)) as server_details
+	const body_command = {
+		command: `ban ${mc_username} ${mins} ${msg}`
+	}
+
+	const response = await fetch(`${host}:${details.port}/api/server/command`, {
+		method: 'post',
+		headers: {
+			Authorization: `Bearer ${details.token}`
+		},
+		body: JSON.stringify(body_command)
+	})
+
+	return (await response.json()) as return_command
+}
+
+export async function BAN(user_id: string, mc_username: string, reason: string, banned_till: string) {
+	const warnings = (await getWarningsEffectBansByUserId(user_id)) as db_warns[]
+
+	const createdAt = new Date(warnings[warnings.length - 1].created_at)
+	const expiryDate = new Date(createdAt)
+	expiryDate.setFullYear(expiryDate.getFullYear() + 1)
+	const diffMs = expiryDate.getTime() - Date.now()
+	const mins_till_unban = Math.max(0, Math.floor(diffMs / (1000 * 60)))
+	if (!warnings) {
+		console.log(`cant ban user with no Warnings`)
+		return false
+	} else {
+		await createBan(user_id, reason, banned_till)
+		const server = (await mc_ban_player(mc_username, reason, `${mins_till_unban}m`)) as return_command
+
+		if (server.success) return true
+	}
 }

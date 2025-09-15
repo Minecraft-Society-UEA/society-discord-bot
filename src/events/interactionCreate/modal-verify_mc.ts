@@ -1,7 +1,7 @@
 import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
-import { getTokens } from '../../utill/functions'
-import { db_player, tokens } from '../../utill/types'
+import { mc_command, message_player } from '../../utill/functions'
+import { db_player, role_storage } from '../../utill/types'
 import { createPlayerProfile, updatePlayerProfile } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
@@ -17,35 +17,19 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 		// compare if they match
 		if (code === user_code) {
 			// declaring variables we need
-			const host = process.env.MC_HOST
-			const h_port = process.env.HUB_PORT
-			const tokens = getTokens() as tokens
 			const username = (await Flashcore.get(`verify_code-mc_username-${interaction.user.id}`)) as string
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const embed = new EmbedBuilder()
 			const member = interaction.member as GuildMember
+			const roles = Flashcore.get(`mc_role_id`) as role_storage
 
-			// create bodys for adding the in game permition and messaging them success
-			const body_command = {
-				command: `lp user ${username} promote player`
-			}
-
-			const body_message = {
-				player: username,
-				message: `[MC-UEA VERIFY] Successfully Verified`
-			}
+			await member.roles.add(roles.mc_verified)
 
 			// add the players permitions
-			const response = await fetch(`${host}:${h_port}/api/server/command`, {
-				method: 'post',
-				headers: {
-					Authorization: `Bearer ${tokens.hub}`
-				},
-				body: JSON.stringify(body_command)
-			})
+			const response = await mc_command(`hub`, `lp user ${username} promote player`)
 
 			// if adding permition failed dont proceed and send a message
-			if (response.status !== 200) {
+			if (!response) {
 				logger.error('Error running command in hub.')
 				return interaction.reply({
 					embeds: [embed.setColor('Red').setTitle(`Failed to add user permitions on the servers`)]
@@ -65,13 +49,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
 			// send the player a sucsess message
-			const response2 = await fetch(`${host}:${h_port}/api/player/message`, {
-				method: 'post',
-				headers: {
-					Authorization: `Bearer ${tokens.hub}`
-				},
-				body: JSON.stringify(body_message)
-			})
+			await message_player(username, `[MC-UEA VERIFY] Successfully Verified`)
 
 			// set player nickname in disocrds
 			await member.setNickname(`${member.displayName} ✧ ${username}`)

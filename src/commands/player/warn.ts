@@ -2,6 +2,8 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionF
 import { client, createCommandConfig, getState, logger, setState } from 'robo.js'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
+import { db_warns } from '~/utill/types'
+import { isStringOneByteRepresentation } from 'v8'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -30,14 +32,19 @@ export default async (
 	if (!interaction.guildId) return
 	// declaring variables we need
 	const user = options.user
-	const alr = (await getState<boolean>(`warn_session_inprog-${interaction.user.id}`)) ?? false
+	const alr = getState<boolean>(`warn_session_inprog-${interaction.user.id}`) ?? false
 	const embed = new EmbedBuilder()
+	const warn = {} as db_warns
+
+	warn.user_id = user.id
+	warn.warn_effects_bans = true
 
 	// check if the admin has already started a warning
 	if (alr)
 		return { embeds: [embed.setColor(`Red`).setTitle(`you already have a open warning creator finish there first`)] }
 
-	await setState<boolean>(`warn_session_inprog-${interaction.user.id}`, true)
+	setState<boolean>(`warn_session_inprog-${interaction.user.id}`, true)
+	setState<db_warns>(`warn_create_${interaction.user.id}`, warn)
 
 	// make buttons for editing the warning
 	const btn_reason = new ButtonBuilder()
@@ -87,24 +94,17 @@ export default async (
 				value: ``
 			}
 		)
+		.setFooter({ text: `Redo any button or command to edit the option` })
 		.setTimestamp()
 
 	// assemble the action rows
 	const row0 = new ActionRowBuilder<ButtonBuilder>().addComponents(btn_reason, btn_effusr, btn_img, btn_warn)
 	const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(btn_confirm, btn_cancel)
 
-	// find the channel
-	const guild = await client.guilds.cache.get(interaction.guildId)
-	const channel = guild?.channels.cache.get(interaction.channelId) as TextChannel
-
-	if (!channel || !channel.isTextBased() || !channel.isSendable()) {
-		logger.error(`${interaction.guild?.name} | Channel not found or is not a text channel`)
-	}
-
 	// send the message
 	const message = await interaction.reply({ embeds: [embed], components: [row0, row1], fetchReply: true })
 
-	await setState<string>(`warn_msg-${interaction.user.id}`, `${interaction.channelId}-${message.id}`)
+	setState<string>(`warn_msg-${interaction.user.id}`, `${interaction.channelId}-${message.id}`)
 
 	return
 }

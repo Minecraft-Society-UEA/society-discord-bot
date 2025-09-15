@@ -20,12 +20,20 @@ export type connected_players = {
 	online_players: player[]
 }
 
+// server key type
+export type ServerKey = 'hub' | 'survival' | 'creative' | 'event'
+
 // the type of the worlds array the server info returns
 export type world = {
 	name: string
 	player_count: number
 	time: number
 	weather: string
+}
+
+export type server_details = {
+	port: string
+	token: string
 }
 
 //the type /server/info returns
@@ -48,7 +56,7 @@ export type tokens = {
 }
 
 // mc rank type or what ranks a player can be
-export type mc_rank_type = 'unverified' | 'verified' | 'member' | 'admin'
+export type mc_rank_type = 'unverified' | 'verified' | 'member' | 'tester' | 'admin'
 
 //the type of the player profiles stored in the Database
 export type db_player = {
@@ -65,16 +73,18 @@ export type db_player = {
 
 // type of player warnings in the db
 export type db_warns = {
+	warn_id: string
 	user_id: string
 	reason: string
-	img: string[]
-	effected_users: string[]
+	img?: string[]
+	effected_users?: string[]
 	warn_effects_bans: boolean
 	created_at: string
 }
 
 // type of player mc bans in db
 export type db_bans = {
+	ban_id: string
 	user_id: string
 	reason: string
 	banned_till: string
@@ -101,4 +111,24 @@ export type all_player_list = {
 	event: connected_players
 	total_online: number
 	all_players: player[]
+}
+
+export type role_storage = {
+	mc_verified: string
+	member: string
+	tester: string
+}
+
+export type UploadResponse = {
+	success: boolean
+	statusCode: number
+	timestamp: string
+	timeMs: number
+	data?: {
+		id?: string
+		user_id: string
+		created: string
+		file_name: string
+		expires_at: string | null
+	}
 }

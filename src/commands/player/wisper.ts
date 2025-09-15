@@ -1,9 +1,8 @@
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
-import { createCommandConfig, logger } from 'robo.js'
+import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { all_player_list, tokens } from '../../utill/types'
-import { getPlayerListAllServers, getTokens } from '../../utill/functions'
+import { message_player, online_server_check } from '../../utill/functions'
 import { getProfileByDId } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
@@ -41,12 +40,6 @@ export default async (
 	const embed = new EmbedBuilder()
 	const target = options.user
 	const msg = options.message
-	const host = process.env.MC_HOST
-	const tokens = getTokens() as tokens
-
-	let port
-	let server_token
-
 	const profile = await getProfileByDId(target.user.id)
 
 	if (profile === `error` || !profile.mc_username)
@@ -56,57 +49,17 @@ export default async (
 			]
 		}
 
-	// get all players make sure there online and set the port and server token
-	const all_players = (await getPlayerListAllServers()) as all_player_list
+	// send the message to the player and return a embed confirming it was sent
+	const msg_rtn = await message_player(profile.mc_username, `[DISCORD] ${interaction.user.displayName}: ${msg}`)
 
-	if (all_players.hub.online_players.find((p) => p.name === profile.mc_username)) {
-		server_token = tokens.hub
-		port = process.env.HUB_PORT
-	} else if (all_players.survival.online_players.find((p) => p.name === profile.mc_username)) {
-		server_token = tokens.survival
-		port = process.env.SURVIVAL_PORT
-	} else if (all_players.creative.online_players.find((p) => p.name === profile.mc_username)) {
-		server_token = tokens.creative
-		port = process.env.CREATIVE_PORT
-	} else if (all_players.event.online_players.find((p) => p.name === profile.mc_username)) {
-		server_token = tokens.event
-		port = process.env.EVENT_PORT
-	} else
+	if (!msg_rtn)
+		return { embeds: [embed.setColor(`Red`).setTitle(`Likely the player is offline, unlinked or there was a error`)] }
+
+	if (msg_rtn)
 		return {
 			embeds: [
-				embed
-					.setColor('Red')
-					.setTitle(
-						`user ${target.user.displayName}'s minecraft account ${profile.mc_username} cannot be found on the server`
-					)
-			]
+				embed.setColor('Green').setTitle(`Message sent to user, sadly there is no way for them to reply at this time.`)
+			],
+			ephemeral: true
 		}
-
-	// create the message body to send the code to the player
-	const body = {
-		player: `${profile.mc_username}`,
-		message: `[DISCORD] ${interaction.user.displayName}: ${msg}`
-	}
-
-	// send the player a message in the server with the code
-	const response = await fetch(`${host}:${port}/api/player/message`, {
-		method: 'post',
-		headers: {
-			Authorization: `Bearer ${server_token}`
-		},
-		body: JSON.stringify(body)
-	})
-
-	// checks the message was sent correctly
-	if (response.status !== 200) {
-		logger.error('Error sending player the message.')
-		return { embeds: [embed.setColor('Red').setTitle(`Failed sending the message`)] }
-	}
-
-	return {
-		embeds: [
-			embed.setColor('Green').setTitle(`Message sent to user, sadly there is no way for them to reply at this time.`)
-		],
-		ephemeral: true
-	}
 }
