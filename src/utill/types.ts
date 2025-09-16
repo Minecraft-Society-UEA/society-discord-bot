@@ -118,17 +118,3 @@ export type role_storage = {
 	member: string
 	tester: string
 }
-
-export type UploadResponse = {
-	success: boolean
-	statusCode: number
-	timestamp: string
-	timeMs: number
-	data?: {
-		id?: string
-		user_id: string
-		created: string
-		file_name: string
-		expires_at: string | null
-	}
-}

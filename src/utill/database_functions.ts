@@ -1,7 +1,6 @@
 import { logger } from 'robo.js'
-import { sql } from '../events/ready'
+import { sql } from '../events/clientReady'
 import { db_bans, db_player, db_warns } from './types'
-import { warn } from 'console'
 
 //function to get and find a user based on diffrent things
 export async function getProfileByDId(userId: string) {

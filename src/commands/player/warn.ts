@@ -1,9 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } from 'discord.js'
-import { client, createCommandConfig, getState, logger, setState } from 'robo.js'
-import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
+import { createCommandConfig, getState, setState } from 'robo.js'
+import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { db_warns } from '~/utill/types'
-import { isStringOneByteRepresentation } from 'v8'
+import { db_warns } from '../../utill/types'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands

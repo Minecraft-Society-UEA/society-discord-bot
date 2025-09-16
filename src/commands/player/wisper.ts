@@ -2,7 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { message_player, online_server_check } from '../../utill/functions'
+import { message_player } from '../../utill/functions'
 import { getProfileByDId } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs

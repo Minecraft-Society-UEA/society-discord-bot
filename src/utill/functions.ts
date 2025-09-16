@@ -13,7 +13,6 @@ import {
 	tokens
 } from './types'
 import { createBan, getProfileByDId, getWarningsEffectBansByUserId } from './database_functions'
-import { create } from 'domain'
 
 // a function to easily get all tokens for every server and return them as a object
 export function getTokens() {

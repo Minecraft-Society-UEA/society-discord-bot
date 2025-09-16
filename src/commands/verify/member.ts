@@ -2,8 +2,6 @@ import { EmbedBuilder } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandResult } from 'robo.js'
-import type { check_member_return } from '../../utill/types'
-import { checkMember } from '../../utill/functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
