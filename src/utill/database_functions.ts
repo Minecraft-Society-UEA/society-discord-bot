@@ -1,6 +1,7 @@
 import { logger } from 'robo.js'
 import { sql } from '../events/ready'
 import { db_bans, db_player, db_warns } from './types'
+import { warn } from 'console'
 
 //function to get and find a user based on diffrent things
 export async function getProfileByDId(userId: string) {
@@ -162,6 +163,20 @@ export async function getWarningsByUserId(userId: string) {
 	}
 }
 
+// delete sp[ecific warning
+export async function deleteWarning(warnId: string) {
+	try {
+		const del = await sql`
+			DELETE FROM warns
+			WHERE warn_id = ${warnId};
+		`
+		return true
+	} catch (err) {
+		logger.error(`Error deleting warning ${warnId}: ${err}`)
+		return false
+	}
+}
+
 // get all warnings that effect bans for a specific user_id
 export async function getWarningsEffectBansByUserId(userId: string) {
 	try {
@@ -170,6 +185,7 @@ export async function getWarningsEffectBansByUserId(userId: string) {
 			FROM warns
 			WHERE user_id = ${userId} AND warn_effects_bans = true
 			ORDER BY created_at DESC
+			LIMIT 3;
 		`
 		return warnings
 	} catch (err) {

@@ -87,7 +87,7 @@ export type db_bans = {
 	ban_id: string
 	user_id: string
 	reason: string
-	banned_till: string
+	banned_till: number
 	created_at: string
 }
 

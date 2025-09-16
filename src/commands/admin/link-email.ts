@@ -56,7 +56,11 @@ export default async (
 	// checking if the user already has verifide
 	if (!already_verified)
 		return {
-			embeds: [embed.setTitle(`you need to verify on Minecraft first with: /verify mc`).setColor('Red')],
+			embeds: [
+				embed
+					.setTitle(`you need to verify on Minecraft first with: /verify mc or the admin needs todo /admin link-mc`)
+					.setColor('Red')
+			],
 			ephemeral: true
 		}
 	if (already_verified.uea_email)

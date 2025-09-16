@@ -142,7 +142,7 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 			.setTitle(`⚠️ Warning created for ${user?.displayName}`)
 			.setFooter({ text: 'No further changes allowed warning commited' })
 
-		const warnings = prev_warn.length + 1
+		const warnings = prev_warn.length
 		const oldestWarning = prev_warn[prev_warn.length - 1]
 		const createdAt = new Date(oldestWarning.created_at)
 		const expiryDate = new Date(createdAt)

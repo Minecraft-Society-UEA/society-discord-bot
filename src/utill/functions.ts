@@ -244,3 +244,40 @@ export async function BAN(user_id: string, mc_username: string, reason: string, 
 		if (server.success) return true
 	}
 }
+
+export function dateAfterMinutes(minutes: number): string {
+	const target = new Date(Date.now() + minutes * 60000)
+
+	const day = String(target.getDate()).padStart(2, '0')
+	const month = String(target.getMonth() + 1).padStart(2, '0')
+	const year = target.getFullYear()
+
+	return `${day}/${month}/${year}`
+}
+
+export async function getServerPlayer(server: ServerKey, mc_user: string) {
+	const host = process.env.MC_HOST
+	const details = await server_port_token_resolver(server)
+	const response_hub = await fetch(`${host}:${details.port}/api/players`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${details.token}`
+		}
+	})
+
+	if (!response_hub.ok) {
+		logger.error('Error getting hub players.')
+		return false
+	}
+
+	const data_hub = (await response_hub.json()) as connected_players
+
+	if (!data_hub) {
+		console.error(`hub server is down`)
+		return false
+	}
+
+	const player = data_hub.online_players.find((p) => p.name === mc_user) as player
+
+	return player
+}
