@@ -9,7 +9,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	if (!interaction.isModalSubmit()) return
 
 	// check the modal being submitted matches the custom id set on the mc verifi one
-	if (interaction.customId === `verifiy-mc-code-${interaction.user.id}`) {
+	if (interaction.customId === `mc-code-${interaction.user.id}`) {
 		// get the original code and the one the player inputed
 		const code = interaction.fields.getTextInputValue('mc-code') as string
 		const user_code = (await Flashcore.get(`verify_code-${interaction.user.id}`)) as string
@@ -43,7 +43,6 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			playerProfile.mc_rank = `verified`
 			playerProfile.mc_username = username
 			playerProfile.mc_uuid = uuid
-			playerProfile.mc_verifid = true
 
 			// update the players profile with the new data
 			await updatePlayerProfile(interaction.user.id, playerProfile)

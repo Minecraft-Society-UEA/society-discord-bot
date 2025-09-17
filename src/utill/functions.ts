@@ -225,7 +225,7 @@ export async function mc_ban_player(mc_username: string, msg: string, mins: stri
 	return (await response.json()) as return_command
 }
 
-export async function BAN(user_id: string, mc_username: string, reason: string, banned_till: string) {
+export async function BAN(user_id: string, mc_username: string, reason: string, duationM: string) {
 	const warnings = (await getWarningsEffectBansByUserId(user_id)) as db_warns[]
 
 	const createdAt = new Date(warnings[warnings.length - 1].created_at)
@@ -237,7 +237,7 @@ export async function BAN(user_id: string, mc_username: string, reason: string, 
 		console.log(`cant ban user with no Warnings`)
 		return false
 	} else {
-		await createBan(user_id, reason, banned_till)
+		await createBan(user_id, reason, mins_till_unban)
 		const server = (await mc_ban_player(mc_username, reason, `${mins_till_unban}m`)) as return_command
 
 		if (server.success) return true

@@ -1,11 +1,4 @@
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	EmbedBuilder,
-	PermissionFlagsBits,
-	ReactionUserManager
-} from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig, setState } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildBasedChannel, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
@@ -57,7 +50,7 @@ export default async (
 		if (onplayer) {
 			embed.addFields({
 				name: `Player is in ${online} 🟢`,
-				value: `${onplayer.health} | lavel: ${onplayer.level}`
+				value: `${onplayer.health} | level: ${onplayer.level}`
 			})
 		}
 	} else {

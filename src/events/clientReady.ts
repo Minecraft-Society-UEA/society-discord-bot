@@ -9,7 +9,7 @@ export const pool = mariadb.createPool({
 	user: process.env.DB_USERNAME,
 	password: process.env.DB_PASSWORD,
 	database: process.env.DB_DATABASE,
-	connectionLimit: 5
+	connectionLimit: 10
 })
 
 export default async () => {

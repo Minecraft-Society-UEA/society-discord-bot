@@ -4,8 +4,6 @@ CREATE TABLE players (
     mc_username VARCHAR(255), -- minecraft username
     mc_uuid CHAR(36) UNIQUE, -- UUIDs are fixed length (36 chars)
     mc_rank ENUM('unverified', 'verified', 'member', 'tester', 'admin') NOT NULL DEFAULT 'unverified', -- permission level
-    mc_verifid BOOLEAN NOT NULL DEFAULT false,
-    email_verifid BOOLEAN NOT NULL DEFAULT false,
     is_member BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

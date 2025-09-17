@@ -24,7 +24,6 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 
 			// add the players data
 			playerProfile.uea_email === email
-			playerProfile.email_verifid === true
 
 			// update the players profile with the new data
 			await updatePlayerProfile(interaction.user.id, playerProfile)

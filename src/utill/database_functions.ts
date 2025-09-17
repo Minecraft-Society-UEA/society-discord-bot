@@ -7,40 +7,40 @@ import { pool } from '../events/clientReady'
 export async function getProfileByDId(userId: string) {
 	try {
 		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE user_id = ?', [userId])
-		return rows[0] || false
+		return rows.length > 0 ? rows[0] : null
 	} catch (err) {
 		logger.error(`Error fetching user profile by discord id: ${err}`)
-		return false
+		return null
 	}
 }
 
 export async function getProfileByMcUuid(mcUuid: string) {
 	try {
 		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE mc_uuid = ?', [mcUuid])
-		return rows[0] || false
+		return rows.length > 0 ? rows[0] : null
 	} catch (err) {
 		logger.error(`Error fetching user profile by mc_uuid: ${err}`)
-		return false
+		return null
 	}
 }
 
 export async function getProfileByMcUsername(mcUsername: string) {
 	try {
 		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE mc_username = ?', [mcUsername])
-		return rows[0] || false
+		return rows.length > 0 ? rows[0] : null
 	} catch (err) {
 		logger.error(`Error fetching user profile by mc_username: ${err}`)
-		return false
+		return null
 	}
 }
 
 export async function getProfileByUeaEmail(email: string) {
 	try {
 		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE uea_email = ?', [email])
-		return rows[0] || false
+		return rows.length > 0 ? rows[0] : null
 	} catch (err) {
 		logger.error(`Error fetching user profile by email: ${err}`)
-		return false
+		return null
 	}
 }
 
@@ -59,21 +59,17 @@ export async function updatePlayerProfile(did: string, new_playerP: db_player) {
 		await pool.query(
 			`UPDATE players
        SET uea_email = ?,
-           mc_verifid = ?,
            mc_uuid = ?,
            mc_username = ?,
            mc_rank = ?,
            is_member = ?,
-           email_verifid = ?
        WHERE user_id = ?`,
 			[
 				new_playerP.uea_email,
-				new_playerP.mc_verifid,
 				new_playerP.mc_uuid,
 				new_playerP.mc_username,
 				new_playerP.mc_rank,
 				new_playerP.is_member,
-				new_playerP.email_verifid,
 				did
 			]
 		)

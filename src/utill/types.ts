@@ -65,8 +65,6 @@ export type db_player = {
 	mc_username: string | null
 	mc_uuid: string | null
 	mc_rank: mc_rank_type
-	mc_verifid: boolean
-	email_verifid: boolean
 	is_member: boolean
 	created_at: string
 }
