@@ -1,29 +1,32 @@
 CREATE TABLE players (
-    user_id BIGINT UNSIGNED NOT NULL unique PRIMARY KEY, -- discord user id
-    uea_email VARCHAR(255) unique, -- uea email
-    mc_username VARCHAR(255), -- there minecraft username
-    mc_uuid TEXT unique, -- there minecraft accounts unique user id
-    mc_rank ENUM('unverified', 'verified', 'member', 'tester', 'admin') NOT NULL DEFAULT 'unverified',
-    mc_verifid BOOLEAN NOT NULL DEFAULT false, -- 
-    email_verifid BOOLEAN NOT NULL DEFAULT false, -- have they verifide there email
-    is_member BOOLEAN NOT NULL DEFAULT false, -- boolean if there a paid member or not
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- discord user id
+    uea_email VARCHAR(255) UNIQUE, -- uea email
+    mc_username VARCHAR(255), -- minecraft username
+    mc_uuid CHAR(36) UNIQUE, -- UUIDs are fixed length (36 chars)
+    mc_rank ENUM('unverified', 'verified', 'member', 'tester', 'admin') NOT NULL DEFAULT 'unverified', -- permission level
+    mc_verifid BOOLEAN NOT NULL DEFAULT false,
+    email_verifid BOOLEAN NOT NULL DEFAULT false,
+    is_member BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE warns ( -- 3 warns and the user is added to bans
-    warn_id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL unique PRIMARY KEY, -- id for the warning
-    user_id BIGINT UNSIGNED NOT NULL, -- discord user id
-    reason TEXT, -- reason for the warning
-    img jsonb, -- array of suppoting image urls
-    effected_users jsonb, -- array of user ids effected by the culpruit
-    warn_effects_bans BOOLEAN DEFAULT true, -- weather this warning will effects bans after being added to bans these are set to fasle so when unbanned old warns wont effect the user but are still stored
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+CREATE TABLE warns (
+    warn_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- warning id
+    user_id BIGINT UNSIGNED NOT NULL, -- discord user id (FK?)
+    issuer BIGINT UNSIGNED NOT NULL, -- discord id of committee member
+    reason TEXT,
+    img JSON, -- array of supporting image URLs
+    effected_users JSON, -- array of user ids affected
+    warn_effects_bans BOOLEAN DEFAULT true,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES players(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE bans ( -- ban effects just minecraft discord ban should be handdled through discord but 
-    ban_id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL unique PRIMARY KEY, -- id for the ban
-    user_id BIGINT UNSIGNED NOT NULL, -- culpruit discord user id
-    reason TEXT, -- reason for the warning
-    banned_till TEXT, -- dd/mm/yyyy of banned till
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+CREATE TABLE bans (
+    ban_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    reason TEXT,
+    banned_till BIGINT, -- until what date/time they’re banned
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES players(user_id) ON DELETE CASCADE
 );

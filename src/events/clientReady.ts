@@ -1,11 +1,19 @@
 import { ActivityType } from 'discord.js'
-import postgres from 'postgres'
 import { client, logger } from 'robo.js'
 import { AsyncTask, CronJob, ToadScheduler } from 'toad-scheduler'
 import { loadTokens } from '../utill/functions'
+import mariadb from 'mariadb'
+
+export const pool = mariadb.createPool({
+	host: process.env.DB_HOST,
+	user: process.env.DB_USERNAME,
+	password: process.env.DB_PASSWORD,
+	database: process.env.DB_DATABASE,
+	connectionLimit: 5
+})
 
 export default async () => {
-	logger.ready('Database Connected and ready')
+	logger.ready('Database Conection and ready')
 
 	client.user?.setActivity({
 		name: `For Players`,
@@ -31,12 +39,3 @@ export default async () => {
 	scheduler.addCronJob(job)
 	logger.ready('started cron job to fetch new tokens every 12th hour')
 }
-
-// the sql database object
-export const sql = postgres({
-	host: process.env.POSTGRES_HOST,
-	port: process.env.POSTGRES_PORT,
-	database: process.env.POSTGRES_DATABASE,
-	username: process.env.POSTGRES_USERNAME,
-	password: process.env.POSTGRES_PASSWORD
-})

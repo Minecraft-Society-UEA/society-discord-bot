@@ -1,174 +1,131 @@
 import { logger } from 'robo.js'
-import { sql } from '../events/clientReady'
 import { db_bans, db_player, db_warns } from './types'
+import { pool } from '../events/clientReady'
 
-//function to get and find a user based on diffrent things
+// ---------------- Players ----------------
+
 export async function getProfileByDId(userId: string) {
 	try {
-		const playerProfile = await sql<db_player[]>`
-        SELECT *
-        FROM players
-      	WHERE user_id = ${userId}
-      `
-
-		if (playerProfile.length > 0) {
-			return playerProfile[0]
-		} else {
-			return false
-		}
+		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE user_id = ?', [userId])
+		return rows[0] || false
 	} catch (err) {
-		logger.error(`Error fetching user profile:\n\n ${err}`)
+		logger.error(`Error fetching user profile by discord id: ${err}`)
 		return false
 	}
 }
 
-export async function getProfileByMcUuid(McUuid: string) {
+export async function getProfileByMcUuid(mcUuid: string) {
 	try {
-		const playerProfile = await sql<db_player[]>`
-        SELECT *
-        FROM players
-      	WHERE mc_uuid = ${McUuid}
-      `
-
-		if (playerProfile.length > 0) {
-			return playerProfile[0]
-		} else {
-			return false
-		}
+		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE mc_uuid = ?', [mcUuid])
+		return rows[0] || false
 	} catch (err) {
-		logger.error(`Error fetching user profile:\n\n ${err}`)
+		logger.error(`Error fetching user profile by mc_uuid: ${err}`)
 		return false
 	}
 }
 
-export async function getProfileByMcUsername(McUsername: string) {
+export async function getProfileByMcUsername(mcUsername: string) {
 	try {
-		const playerProfile = await sql<db_player[]>`
-        SELECT *
-        FROM players
-      	WHERE mc_username = ${McUsername}
-      `
-
-		if (playerProfile.length > 0) {
-			return playerProfile[0]
-		} else {
-			return false
-		}
+		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE mc_username = ?', [mcUsername])
+		return rows[0] || false
 	} catch (err) {
-		logger.error(`Error fetching user profile:\n\n ${err}`)
+		logger.error(`Error fetching user profile by mc_username: ${err}`)
 		return false
 	}
 }
 
-export async function getProfileByUeaEmail(Email: string) {
+export async function getProfileByUeaEmail(email: string) {
 	try {
-		const playerProfile = await sql<db_player[]>`
-        SELECT *
-        FROM players
-      	WHERE uea_email = ${Email}
-      `
-
-		if (playerProfile.length > 0) {
-			return playerProfile[0]
-		} else {
-			return false
-		}
+		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE uea_email = ?', [email])
+		return rows[0] || false
 	} catch (err) {
-		logger.error(`Error fetching user profile:\n\n ${err}`)
+		logger.error(`Error fetching user profile by email: ${err}`)
 		return false
 	}
 }
 
-// create a player profile for a discord user
 export async function createPlayerProfile(userId: string) {
-	const newUser = await sql<db_player[]>`
-  INSERT INTO players (user_id) 
-  VALUES (${userId}) 
-  RETURNING user_id
-  `
-
-	if (!newUser.length) return 'Failed to create profile.'
-	return newUser[0]
+	try {
+		const result = await pool.query('INSERT INTO players (user_id) VALUES (?)', [userId])
+		return { user_id: result.insertId.toString() } // minimal return
+	} catch (err) {
+		logger.error(`Error creating player profile: ${err}`)
+		return null
+	}
 }
 
-// update a profiles details
 export async function updatePlayerProfile(did: string, new_playerP: db_player) {
 	try {
-		if (!new_playerP) return
+		await pool.query(
+			`UPDATE players
+       SET uea_email = ?,
+           mc_verifid = ?,
+           mc_uuid = ?,
+           mc_username = ?,
+           mc_rank = ?,
+           is_member = ?,
+           email_verifid = ?
+       WHERE user_id = ?`,
+			[
+				new_playerP.uea_email,
+				new_playerP.mc_verifid,
+				new_playerP.mc_uuid,
+				new_playerP.mc_username,
+				new_playerP.mc_rank,
+				new_playerP.is_member,
+				new_playerP.email_verifid,
+				did
+			]
+		)
 
-		const updatedProfile = await sql<db_player[]>`
-		UPDATE quiz_guildSettings
-		SET 
-			uea_email = ${new_playerP.uea_email}, 
-			mc_verifid = ${new_playerP.mc_verifid},
-			mc_uuid = ${new_playerP.mc_uuid},
-			mc_username = ${new_playerP.mc_username},
-			mc_rank = ${new_playerP.mc_rank},
-			is_member = ${new_playerP.is_member},
-			email_verifid = ${new_playerP.email_verifid}
-		WHERE user_id = ${did}
-		RETURNING *;
-		`
-
-		return updatedProfile[0]
+		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE user_id = ?', [did])
+		return rows[0] || null
 	} catch (err) {
-		logger.error(`Error updating player profile: ${err} `)
+		logger.error(`Error updating player profile: ${err}`)
 		return false
 	}
 }
 
-// create a new warning
+// ---------------- Warnings ----------------
+
 export async function createWarning(
 	userId: string,
-	isuer: string,
+	issuer: string,
 	reason: string,
 	img: string[] = [],
 	effectedUsers: string[] = [],
 	warnEffectsBans: boolean = true
 ) {
 	try {
-		const newWarning = await sql<db_warns[]>`
-			INSERT INTO warns (user_id, isuer, reason, img, effected_users, warn_effects_bans)
-			VALUES (
-				${userId},
-				${isuer},
-				${reason},
-				${sql.json(img)},
-				${sql.json(effectedUsers)},
-				${warnEffectsBans}
-			)
-			RETURNING *
-		`
-		return newWarning[0]
+		await pool.query(
+			`INSERT INTO warns (user_id, issuer, reason, img, effected_users, warn_effects_bans)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+			[userId, issuer, reason, JSON.stringify(img), JSON.stringify(effectedUsers), warnEffectsBans]
+		)
+
+		const rows = await pool.query<db_warns[]>(
+			'SELECT * FROM warns WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+			[userId]
+		)
+		return rows[0] || null
 	} catch (err) {
 		logger.error(`Error creating warning: ${err}`)
 		return null
 	}
 }
 
-// get all warnings for a specific user_id
 export async function getWarningsByUserId(userId: string) {
 	try {
-		const warnings = await sql<db_warns[]>`
-			SELECT *
-			FROM warns
-			WHERE user_id = ${userId}
-			ORDER BY created_at DESC
-		`
-		return warnings
+		return await pool.query<db_warns[]>('SELECT * FROM warns WHERE user_id = ? ORDER BY created_at DESC', [userId])
 	} catch (err) {
 		logger.error(`Error fetching warnings for user ${userId}: ${err}`)
 		return []
 	}
 }
 
-// delete sp[ecific warning
 export async function deleteWarning(warnId: string) {
 	try {
-		const del = await sql`
-			DELETE FROM warns
-			WHERE warn_id = ${warnId};
-		`
+		await pool.query('DELETE FROM warns WHERE warn_id = ?', [warnId])
 		return true
 	} catch (err) {
 		logger.error(`Error deleting warning ${warnId}: ${err}`)
@@ -176,105 +133,87 @@ export async function deleteWarning(warnId: string) {
 	}
 }
 
-// get all warnings that effect bans for a specific user_id
 export async function getWarningsEffectBansByUserId(userId: string) {
 	try {
-		const warnings = await sql<db_warns[]>`
-			SELECT *
-			FROM warns
-			WHERE user_id = ${userId} AND warn_effects_bans = true
-			ORDER BY created_at DESC
-			LIMIT 3;
-		`
-		return warnings
+		return await pool.query<db_warns[]>(
+			`SELECT * FROM warns 
+       WHERE user_id = ? AND warn_effects_bans = true 
+       ORDER BY created_at DESC LIMIT 3`,
+			[userId]
+		)
 	} catch (err) {
 		logger.error(`Error fetching warnings for user ${userId}: ${err}`)
 		return []
 	}
 }
 
-// get warnings where effected_users contains a given user_id
 export async function getWarningsByEffectedUser(effectedUserId: string) {
 	try {
-		const warnings = await sql<db_warns[]>`
-			SELECT *
-			FROM warns
-			WHERE effected_users @> ${sql.json([effectedUserId])}
-			ORDER BY created_at DESC
-		`
-		return warnings
+		return await pool.query<db_warns[]>(
+			`SELECT * FROM warns
+       WHERE JSON_CONTAINS(effected_users, ?)
+       ORDER BY created_at DESC`,
+			[`"${effectedUserId}"`] // JSON_CONTAINS needs JSON string value
+		)
 	} catch (err) {
 		logger.error(`Error fetching warnings for effected user ${effectedUserId}: ${err}`)
 		return []
 	}
 }
 
-// create a new ban
-export async function createBan(userId: string, reason: string, bannedTill: string) {
+// ---------------- Bans ----------------
+
+export async function createBan(userId: string, reason: string, bannedTill: number) {
 	try {
-		const newBan = await sql<db_bans[]>`
-			INSERT INTO bans (user_id, reason, banned_till)
-			VALUES (${userId}, ${reason}, ${bannedTill})
-			RETURNING *
-		`
-		return newBan[0]
+		await pool.query('INSERT INTO bans (user_id, reason, banned_till) VALUES (?, ?, ?)', [userId, reason, bannedTill])
+
+		const rows = await pool.query<db_bans[]>('SELECT * FROM bans WHERE user_id = ? ORDER BY created_at DESC LIMIT 1', [
+			userId
+		])
+		return rows[0] || null
 	} catch (err) {
 		logger.error(`Error creating ban: ${err}`)
 		return null
 	}
 }
 
-// get all bans for a specific user_id
 export async function getBansByUserId(userId: string) {
 	try {
-		const bans = await sql<db_bans[]>`
-			SELECT *
-			FROM bans
-			WHERE user_id = ${userId}
-			ORDER BY created_at DESC
-		`
-		return bans
+		return await pool.query<db_bans[]>('SELECT * FROM bans WHERE user_id = ? ORDER BY created_at DESC', [userId])
 	} catch (err) {
 		logger.error(`Error fetching bans for user ${userId}: ${err}`)
 		return []
 	}
 }
 
-// get all bans expiring today
 export async function getBansExpiringToday() {
 	try {
-		// format today's date as DD/MM/YYYY
-		const today = new Date()
-		const dd = String(today.getDate()).padStart(2, '0')
-		const mm = String(today.getMonth() + 1).padStart(2, '0')
-		const yyyy = today.getFullYear()
-		const todayStr = `${dd}/${mm}/${yyyy}`
+		const [rows] = await pool.query<db_bans[]>(
+			`SELECT * 
+       FROM bans
+       WHERE DATE(DATE_ADD(created_at, INTERVAL banned_till MINUTE)) = CURDATE()
+       ORDER BY created_at DESC`
+		)
 
-		const expiringBans = await sql<db_bans[]>`
-			SELECT *
-			FROM bans
-			WHERE banned_till = ${todayStr}
-			ORDER BY created_at DESC
-		`
-		return expiringBans
+		return rows
 	} catch (err) {
 		logger.error(`Error fetching expiring bans: ${err}`)
 		return []
 	}
 }
 
-// expire old warnings (older than 1 year) so they no longer count toward bans
+// ---------------- Maintenance ----------------
+
 export async function expireOldWarnings() {
 	try {
-		const expiredWarnings = await sql<db_warns[]>`
-			UPDATE warns
-			SET warn_effects_bans = false
-			WHERE warn_effects_bans = true
-			  AND created_at < NOW() - INTERVAL '1 year'
-			RETURNING *
-		`
+		await pool.query(
+			`UPDATE warns
+       SET warn_effects_bans = false
+       WHERE warn_effects_bans = true
+       AND created_at < DATE_SUB(NOW(), INTERVAL 1 YEAR)`
+		)
 
-		return expiredWarnings
+		return await pool.query<db_warns[]>('SELECT * FROM warns WHERE warn_effects_bans = false ORDER BY created_at DESC')
 	} catch (err) {
 		logger.error(`Error expiring old warnings: ${err}`)
 		return []

@@ -75,6 +75,7 @@ export type db_player = {
 export type db_warns = {
 	warn_id: string
 	user_id: string
+	issuer: string
 	reason: string
 	img?: string[]
 	effected_users?: string[]
