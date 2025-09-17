@@ -14,11 +14,11 @@
 
 # TBD
 
-- [ ] Warning's (types, giving a warning command/system, 3 warns = ban)
-- [ ] Bans (Types, banning a user command/system, change ban length)
-- [ ] Audit (audit a user based off the discord name or mc username, shows all there warning if there banned or not and all the details)
-- [ ] Member stutus (devlope a way to check if a users email is a paid member)
-- [ ] Admin commands to brute force player membership or verifide status with out linking (force a mc username on a account with out verification proccess)
+- [x] Warning's (types, giving a warning command/system, 3 warns = ban)
+- [x] Bans (Types, banning a user command/system, change ban length)
+- [x] Audit (audit a user based off the discord name or mc username, shows all there warning if there banned or not and all the details)
+- [x] Member stutus (devlope a way to check if a users email is a paid member)
+- [x] Admin commands to brute force player membership or verifide status with out linking (force a mc username on a account with out verification proccess)
 
 <br />
 <br />
