@@ -173,15 +173,25 @@ export async function mc_command(server: ServerKey, command: string) {
 		command: command
 	}
 
-	const response = await fetch(`${host}:${details.port}/api/server/command`, {
+	const res = await fetch(`${host}:${details.port}/api/server/command`, {
 		method: 'post',
 		headers: {
 			Authorization: `Bearer ${details.token}`
 		},
 		body: JSON.stringify(body_command)
 	})
+	if (!res.ok) {
+		throw new Error(`mc_command failed with status ${res.status}: ${await res.text()}`)
+	}
 
-	return (await response.json()) as return_command
+	const text = await res.text()
+	if (!text) return null // empty response
+
+	try {
+		return JSON.parse(text)
+	} catch {
+		return text // fallback if not JSON
+	}
 }
 
 export async function message_player(mc_username: string, msg: string) {

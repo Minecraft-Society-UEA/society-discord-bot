@@ -36,6 +36,4 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 		await interaction.reply({ content: `use the '/warn image' and upload image/screen shots (up to 4)` })
 		return
 	}
-
-	return
 }

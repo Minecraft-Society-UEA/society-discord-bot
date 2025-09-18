@@ -22,7 +22,7 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 		const two = new TextInputBuilder()
 			.setCustomId(`name`)
 			.setLabel('Prefured Name')
-			.setMaxLength(5)
+			.setMaxLength(16)
 			.setPlaceholder('Jerry...')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short)

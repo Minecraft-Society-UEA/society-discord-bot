@@ -53,7 +53,7 @@ export default async (
 		return { embeds: [embed.setTitle(`already verified your email`).setColor('Green')], ephemeral: true }
 
 	//checking if username is already linked
-	if (!email_inuse)
+	if (email_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
@@ -74,15 +74,12 @@ export default async (
 
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
 
+	await emailCode(email, code, interaction.user.displayName)
+
 	// sending a message and button to open the model
-	const message = await interaction.reply({
+	return {
 		embeds: [embed.setTitle(`Press the button to get the popup to input your email code`).setColor('Green')],
 		components: [row],
-		fetchReply: true
-	})
-
-	// emailing the user a code to verify them
-	await emailCode(email, code, message.url, interaction.user.displayName)
-
-	return
+		ephemeral: true
+	}
 }

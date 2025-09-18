@@ -15,13 +15,13 @@ const transporter = nodemailer.createTransport({
 	}
 })
 
-export async function emailCode(email: string, code: string, msg_url: string, username: string) {
+export async function emailCode(email: string, code: string, username: string) {
 	// urls and some bits in the html email are verables to make them custom and easier to change
 	const VERIFICATION_CODE = code
 	const LOGO_URL = `https://photo.uncommmon.dev/i/24aef466-9364-4f62-8c38-8d1c2dc1b6e6.png`
 	const SERVER_NAME = `UEA Minecraft Society`
 	const NAME = username
-	const VERIFY_URL = msg_url
+	const VERIFY_URL = `https://discord.com/channels/1403421910557130842/1418026676469633144`
 	const DIRT_IMAGE_URL = `https://photo.uncommmon.dev/i/1de0d2e2-c3bd-44a6-94af-9a7d82c007e0.png`
 	const SUPPORT_EMAIL = user
 	const DISCORD_URL = `https://discord.gg/KRBY8WvnJy`

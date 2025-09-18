@@ -1,9 +1,9 @@
 import { ActivityType } from 'discord.js'
-import { client, logger } from 'robo.js'
+import { client, Flashcore, logger } from 'robo.js'
 import { AsyncTask, CronJob, ToadScheduler } from 'toad-scheduler'
 import { loadTokens } from '../utill/functions'
 import mariadb from 'mariadb'
-import { db_player } from '../utill/types'
+import { db_player, role_storage } from '../utill/types'
 
 export const pool = mariadb.createPool({
 	host: process.env.DB_HOST,
@@ -40,4 +40,10 @@ export default async () => {
 	const job = new CronJob({ cronExpression: '0 */12 * * *' }, task, { preventOverrun: true })
 	scheduler.addCronJob(job)
 	logger.ready('started cron job to fetch new tokens every 12th hour')
+
+	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
+	roles.mc_verified = `1416022868390580275`
+	roles.member = `1416022441444118599`
+	roles.tester = `1416022556523233322`
+	await Flashcore.set(`mc_role_id`, roles)
 }

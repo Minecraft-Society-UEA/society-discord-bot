@@ -62,14 +62,14 @@ export async function updatePlayerProfile(did: string, new_playerP: db_player) {
            mc_uuid = ?,
            mc_username = ?,
            mc_rank = ?,
-           is_member = ?,
+           is_member = ?
        WHERE user_id = ?`,
 			[
 				new_playerP.uea_email,
 				new_playerP.mc_uuid,
 				new_playerP.mc_username,
 				new_playerP.mc_rank,
-				new_playerP.is_member,
+				new_playerP.is_member ?? false,
 				did
 			]
 		)
