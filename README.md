@@ -1,54 +1,30 @@
-<br />
-<br />
+# 📚 Resources & Links
 
-# LINK'S
-
-- <a href="https://discord.js.org/docs/packages/discord.js/14.21.0">Discord.js docs</a>
-- <a href="https://discordjs.guide/#before-you-begin">Discord.js Guide</a>
-- <a href="https://robojs.dev/getting-started">Robo.js docs</a>
-
-<br />
-<br />
+- [Discord.js Docs](https://discord.js.org/docs/packages/discord.js/14.21.0)
+- [Discord.js Guide](https://discordjs.guide/#before-you-begin)
+- [Robo.js Docs](https://robojs.dev/getting-started)
 
 ---
 
-# TBD
+# 💡 Project Ideas
 
-- [x] Warning's (types, giving a warning command/system, 3 warns = ban)
-- [x] Bans (Types, banning a user command/system, change ban length)
-- [x] Audit (audit a user based off the discord name or mc username, shows all there warning if there banned or not and all the details)
-- [x] Member stutus (devlope a way to check if a users email is a paid member)
-- [x] Admin commands to brute force player membership or verifide status with out linking (force a mc username on a account with out verification proccess)
-
-<br />
-<br />
+- A basic website to advertise the server and provide verification instructions
+- A web admin dashboard (manage warnings/bans, view registered players, execute server/Discord actions from a button)
+- Integration with an in-game economy system
+- Automatic backups of world files
+- Admin commands to reset or regenerate world files with new/random seeds (with automatic backup before reset)
+- Automatic checks for updated member status and database sync if matched
+- Admin commands to reset all member statuses
 
 ---
 
-## commands to make
+# 🙌 Credits
 
-- src\commands\admin\change-ban.ts
-- src\commands\admin\change-warn.ts
-- src\commands\admin\force-member.ts
-- src\commands\admin\link-email.ts
-- src\commands\admin\link-mc.ts
-- src\commands\player\dc\audit.ts
-- src\commands\player\mc\audit.ts
-- src\commands\player\ban.ts
-- src\commands\player\warn.ts
-- src\commands\verify\member.ts
+### 👤 Harry _(uncommon34)_
 
-<br />
-<br />
- 
- ---
+- 🌐 [Website](https://uncommon34.dev)
+- 💬 [Discord](https://discord.gg/g2p8hBe9AG)
 
-# Idea's
+### 👤 Cailey _(TheCatzi)_
 
-- A baisic website to advertise the server and have verify instructions
-- A web admin dashboard (to manage and see warnings and bans, see all registard players and there details, peform acctions on the server and discord form a button)
-- Links to a in game economy system
-- auto backups of the world files
-- admin commands to wipe the world file add a new seed or radomly gernerate one and reload (for end of year transition, backs up first)
-- auto check for updated member status and update the database if a player matches
-- admin commands to reset everyones member status
+---
