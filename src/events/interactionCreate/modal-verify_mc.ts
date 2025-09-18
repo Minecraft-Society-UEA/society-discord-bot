@@ -42,7 +42,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
 			// send the player a sucsess message
-			await message_player(username, `[MC-UEA VERIFY] Successfully Verified`)
+			await message_player(username, `UEAMCSOC VERIFY ✦ Successfully Verified`)
 
 			// set player nickname in disocrds
 			if (
@@ -54,7 +54,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
 			}
 
-			return { embeds: [embed.setTitle(`Successfully Verified`).setColor('Green')] }
+			return { embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] }
 		} else {
 			return { embeds: [embed.setTitle(`Failed Codes mismatched`).setColor(`Red`)] }
 		}

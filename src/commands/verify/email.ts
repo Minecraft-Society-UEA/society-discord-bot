@@ -43,21 +43,21 @@ export default async (
 	if (!email.match(/^[A-Za-z]{3}[0-9]{2}[A-Za-z]{3}@uea\.ac\.uk/gm))
 		return { embeds: [embed.setTitle(`Please enter a valid UEA Email`).setColor('Red')], ephemeral: true }
 
-	// checking if the user already has verifide
+	// checking if the user already has verified
 	if (!already_verified)
 		return {
-			embeds: [embed.setTitle(`you need to verify on Minecraft first with: /verify mc`).setColor('Red')],
+			embeds: [embed.setTitle(`You need to verify on Minecraft first with: /verify mc`).setColor('Red')],
 			ephemeral: true
 		}
 	if (already_verified.uea_email)
-		return { embeds: [embed.setTitle(`already verified your email`).setColor('Green')], ephemeral: true }
+		return { embeds: [embed.setTitle(`Already verified your email`).setColor('Green')], ephemeral: true }
 
 	//checking if username is already linked
 	if (email_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
-					`email is already verifide under a diffrent user if this is your account contact a member of the committee`
+					`Email is already verified under a different user - if this is your account contact a member of the committee`
 				)
 			]
 		}
@@ -78,7 +78,7 @@ export default async (
 
 	// sending a message and button to open the model
 	return {
-		embeds: [embed.setTitle(`Press the button to get the popup to input your email code`).setColor('Green')],
+		embeds: [embed.setTitle(`✦ Press the button to get the pop-up to input your email code`).setColor('Green')],
 		components: [row],
 		ephemeral: true
 	}

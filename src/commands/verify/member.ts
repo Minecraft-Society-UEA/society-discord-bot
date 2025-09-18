@@ -6,7 +6,7 @@ import type { CommandResult } from 'robo.js'
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'verify your status as a member of the society',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	sage: { ephemeral: true }
@@ -21,6 +21,6 @@ export default async (
 	const embed = new EmbedBuilder()
 
 	return {
-		embeds: [embed.setTitle(`sorry not finished/set up yetr there will be an anouncment when ready`).setColor(`Green`)]
+		embeds: [embed.setTitle(`not finished/set up yet there will be an announcement when ready`).setColor(`Green`)]
 	}
 }

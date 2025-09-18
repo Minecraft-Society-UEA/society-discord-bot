@@ -96,7 +96,7 @@ export default async (
 		// build modal
 		const codeInput = new TextInputBuilder()
 			.setCustomId('mc-code')
-			.setLabel('The code whispered to you in-game')
+			.setLabel('Input the code whispered to you in-game')
 			.setMaxLength(5)
 			.setPlaceholder('Code eg: 12345')
 			.setRequired(true)
@@ -111,7 +111,7 @@ export default async (
 		await interaction.showModal(modal)
 	} else if (already_verified?.mc_username || username_inuse) {
 		return {
-			embeds: [embed.setColor('Yellow').setTitle('You are already verified on Minecraft. or that username is in use')]
+			embeds: [embed.setColor('Yellow').setTitle('✦ You are already verified on Minecraft or that username is in use')]
 		}
 	}
 }

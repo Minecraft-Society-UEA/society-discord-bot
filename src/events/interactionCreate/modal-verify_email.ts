@@ -44,7 +44,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			}
 
 			return await interaction.editReply({
-				embeds: [embed.setTitle(`Successfully Verified UEA Email`).setColor('Green')]
+				embeds: [embed.setTitle(`✦ Successfully Verified UEA Email`).setColor('Green')]
 			})
 		} else {
 			return await interaction.editReply({

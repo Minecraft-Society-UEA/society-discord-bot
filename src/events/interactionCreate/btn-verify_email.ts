@@ -8,22 +8,22 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 	if (interaction.customId === `btn-${interaction.user.id}-open_email_code_model`) {
 		const modal = new ModalBuilder()
 			.setCustomId(`verifiy-email-code-${interaction.user.id}`)
-			.setTitle('Email Verification Code')
+			.setTitle('✦ Email Verification Code ✦')
 
 		//creating the modal to show the suer on discord
 		const one = new TextInputBuilder()
 			.setCustomId(`email-code`)
-			.setLabel('The code Verify Wispered to you')
+			.setLabel('Input the code sent to your UEA email address')
 			.setMaxLength(5)
-			.setPlaceholder('Code eg: 12345')
+			.setPlaceholder('e.g AB123')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short)
 
 		const two = new TextInputBuilder()
 			.setCustomId(`name`)
-			.setLabel('Prefured Name')
+			.setLabel('What is your preferred name?')
 			.setMaxLength(16)
-			.setPlaceholder('Jerry...')
+			.setPlaceholder('e.g Steve')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short)
 

@@ -9,7 +9,7 @@ import { dateAfterMinutes, getServerPlayer, online_server_check } from '../../ut
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'user audit',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
@@ -49,13 +49,13 @@ export default async (
 		const onplayer = (await getServerPlayer(online, profile.mc_username ?? ``)) as player
 		if (onplayer) {
 			embed.addFields({
-				name: `Player is in ${online} 🟢`,
+				name: `✦ Player is in ${online} 🟢`,
 				value: `${onplayer.health} | level: ${onplayer.level}`
 			})
 		}
 	} else {
 		embed.addFields({
-			name: `Player is offline 🔴`,
+			name: `✦ Player is offline 🔴`,
 			value: ``
 		})
 	}
