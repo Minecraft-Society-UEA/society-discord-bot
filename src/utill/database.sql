@@ -1,5 +1,5 @@
 CREATE TABLE players (
-    user_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- discord user id
+    user_id BIGINT UNSIGNED PRIMARY KEY, -- discord user id
     uea_email VARCHAR(255) UNIQUE, -- uea email
     mc_username VARCHAR(255), -- minecraft username
     mc_uuid CHAR(36) UNIQUE, -- UUIDs are fixed length (36 chars)

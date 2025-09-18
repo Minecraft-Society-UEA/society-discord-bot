@@ -1,4 +1,4 @@
-import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
+import { EmbedBuilder, flatten, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig, Flashcore } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildMember, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
@@ -14,9 +14,30 @@ export const config = createCommandConfig({
 	integrationTypes: ['GuildInstall'],
 	options: [
 		{
-			name: 'user',
+			name: 'stored',
 			description: 'the user to warn',
-			type: 'member',
+			type: `string`,
+			choices: [
+				{
+					name: `mc_verifide`,
+					value: `mc_verifide`
+				},
+				{
+					name: `paid-member`,
+					value: `member`
+				},
+				{
+					name: `tester`,
+					value: `tester`
+				}
+			],
+			required: true
+		},
+		{
+			name: 'role',
+			description: 'the role to save',
+			type: `role`,
+			options: [],
 			required: true
 		}
 	],
@@ -30,30 +51,26 @@ export default async (
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
 	if (!interaction.guild) return
-	const user = options.user
-	if (!user) return { content: `user you selected is invalid` }
-	const profile = (await getProfileByDId(user.id)) as db_player
-	const embed = new EmbedBuilder()
-	if (!profile.mc_username) return
-
-	const online = await online_server_check(profile.mc_username)
-	if (!online) return { embeds: [embed.setColor(`Red`).setTitle(`Player isnt online and must be to be made a tester`)] }
-
-	const cmd = await mc_command(online, `lp user ${profile.mc_username} parent set beta-tester`)
-	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully Become a Tester`)
-
-	const member = interaction.member as GuildMember
+	const role = options.role as Role
+	const roletype = options.stored
 	const roles = Flashcore.get(`mc_role_id`) as role_storage
-	const role = (await interaction.guild.roles.cache.get(roles.mc_verified)) as Role
+	if (!role) return { content: `role you selected is invalid` }
 
-	await member.roles.add(role)
+	switch (roletype) {
+		case `mc_verifide`:
+			roles.mc_verified = role.id
+			break
+		case `member`:
+			roles.member = role.id
+			break
+		case `tester`:
+			roles.tester = role.id
+			break
+		default:
+			return { content: `stored role error` }
+	}
 
-	profile.mc_rank = `tester`
-	await updatePlayerProfile(user.id, profile)
-	embed
-		.setColor(`Green`)
-		.setTitle(`Successfully made ${user.displayName} (${profile.mc_username}) a beta tester`)
-		.setDescription(cmd.message)
+	await Flashcore.set(`mc_role_id`, roles)
 
-	return { embeds: [embed] }
+	return { content: `saved ${role.name} as the roll they get for becoming ${roletype}` }
 }

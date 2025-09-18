@@ -1,4 +1,4 @@
-import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember } from 'discord.js'
+import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
 import { mc_command, message_player } from '../../utill/functions'
 import { db_player, role_storage } from '../../utill/types'
@@ -6,7 +6,8 @@ import { createPlayerProfile, updatePlayerProfile } from '../../utill/database_f
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
-	if (!interaction.isModalSubmit()) return
+	if (!interaction.isModalSubmit() || !interaction.guild) return
+	await interaction.deferReply({ flags: 'Ephemeral' })
 
 	// check the modal being submitted matches the custom id set on the mc verifi one
 	if (interaction.customId === `mc-code-${interaction.user.id}`) {
@@ -22,8 +23,9 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const embed = new EmbedBuilder()
 			const member = interaction.member as GuildMember
 			const roles = Flashcore.get(`mc_role_id`) as role_storage
+			const role = (await interaction.guild.roles.cache.get(roles.mc_verified)) as Role
 
-			await member.roles.add(roles.mc_verified)
+			await member.roles.add(role)
 
 			// add the players permitions
 			const response = await mc_command(`hub`, `lp user ${username} promote player`)
@@ -31,7 +33,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// if adding permition failed dont proceed and send a message
 			if (!response) {
 				logger.error('Error running command in hub.')
-				return interaction.reply({
+				return await interaction.editReply({
 					embeds: [embed.setColor('Red').setTitle(`Failed to add user permitions on the servers`)]
 				})
 			}
@@ -53,8 +55,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// set player nickname in disocrds
 			await member.setNickname(`${member.displayName} ✧ ${username}`)
 
-			await interaction.reply({ embeds: [embed.setTitle(`Successfully Verified`).setColor('Green')], ephemeral: true })
-			return
+			return await interaction.editReply({ embeds: [embed.setTitle(`Successfully Verified`).setColor('Green')] })
 		}
 	}
 
