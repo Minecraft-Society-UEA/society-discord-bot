@@ -25,23 +25,23 @@ export default async (
 	// create embed with total player and what servers there on
 	embed
 		.setColor('DarkPurple')
-		.setTitle('online players across all servers')
+		.setTitle('✦ Online players across all servers')
 		.setDescription(`Online: ${list.total_online}/300`)
 		.addFields(
 			{
-				name: `The Hub: ${list.hub.online_players.length} Player's`,
+				name: `The Hub: ${list.hub.online_players.length} players`,
 				value: `${list.hub.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Survival: ${list.survival.online_players.length} Player's`,
+				name: `Survival: ${list.survival.online_players.length} players`,
 				value: `${list.survival.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Creative: ${list.creative.online_players.length} Player's`,
+				name: `Creative: ${list.creative.online_players.length} players`,
 				value: `${list.creative.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Event: ${list.event.online_players.length} Player's`,
+				name: `Event: ${list.event.online_players.length} players`,
 				value: `${list.event.online_players.map((player) => player.name).join(', ')}`
 			}
 		)
