@@ -8,7 +8,7 @@ import { getProfileByDId } from '../../utill/database_functions'
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'whisper message to player',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [

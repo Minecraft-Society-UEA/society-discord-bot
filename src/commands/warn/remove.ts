@@ -7,13 +7,13 @@ import { deleteWarning } from '../../utill/database_functions'
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'remove warning',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
 		{
 			name: 'warning_id',
-			description: 'tthe id from the warning you want to delete',
+			description: 'the id from the warning you want to delete',
 			type: 'string',
 			required: true
 		}

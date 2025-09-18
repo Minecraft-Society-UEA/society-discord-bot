@@ -9,7 +9,7 @@ import { getProfileByDId, getProfileByMcUsername, updatePlayerProfile } from '..
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'link mc',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
@@ -55,7 +55,7 @@ export default async (
 		return {
 			embeds: [
 				embed.setTitle(
-					`username is already verifide under a diffrent user if this is your account contact a member of the committee`
+					`username is already verified under a different user if this is your account contact a member of the committee`
 				)
 			]
 		}

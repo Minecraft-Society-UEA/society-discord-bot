@@ -7,7 +7,7 @@ import { role_storage } from '../../utill/types'
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'role storage',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
@@ -70,5 +70,5 @@ export default async (
 
 	await Flashcore.set(`mc_role_id`, roles)
 
-	return { content: `saved ${role.name} as the roll they get for becoming ${roletype}` }
+	return { content: `saved ${role.name} as the role they get for becoming ${roletype}` }
 }

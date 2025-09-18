@@ -8,7 +8,7 @@ import { getPlayerListAllServers } from '../../utill/functions'
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'Unlock the hidden prowess of someone',
+	description: 'list the players currently online',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	defaultMemberPermissions: PermissionFlagsBits.SendMessages
