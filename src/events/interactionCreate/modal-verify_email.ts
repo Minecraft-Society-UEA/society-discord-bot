@@ -27,7 +27,6 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// create a player profile in the database
 			const playerProfile = (await getProfileByDId(interaction.user.id)) as db_player
 
-			console.log(email)
 			// add the players data
 			playerProfile.uea_email = email
 

@@ -34,26 +34,22 @@ export default async (
 	if (!user) return { content: `user you selected is invalid` }
 	const profile = (await getProfileByDId(user.id)) as db_player
 	const embed = new EmbedBuilder()
-	if (!profile.mc_username) return
+	if (!profile || !profile.mc_username) return `error getting profile`
 
 	const online = await online_server_check(profile.mc_username)
 	if (!online) return { embeds: [embed.setColor(`Red`).setTitle(`Player isnt online and must be to be made a tester`)] }
 
-	const cmd = await mc_command(online, `lp user ${profile.mc_username} parent set beta-tester`)
+	await mc_command(online, `lp user ${profile.mc_username} parent set beta-tester`)
 	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully Become a Tester`)
 
-	const member = interaction.member as GuildMember
-	const roles = Flashcore.get(`mc_role_id`) as role_storage
-	const role = (await interaction.guild.roles.cache.get(roles.mc_verified)) as Role
+	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
+	const role = (await interaction.guild.roles.cache.get(roles.tester)) as Role
 
-	await member.roles.add(role)
+	await user.roles.add(role)
 
 	profile.mc_rank = `tester`
 	await updatePlayerProfile(user.id, profile)
-	embed
-		.setColor(`Green`)
-		.setTitle(`Successfully made ${user.displayName} (${profile.mc_username}) a beta tester`)
-		.setDescription(cmd.message)
+	embed.setColor(`Green`).setTitle(`Successfully made ${user.displayName} (${profile.mc_username}) a beta tester`)
 
 	return { embeds: [embed] }
 }
