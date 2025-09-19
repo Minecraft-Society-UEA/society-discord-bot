@@ -49,7 +49,7 @@ export default async (
 
 	profile.mc_rank = `tester`
 	await updatePlayerProfile(user.id, profile)
-	embed.setColor(`Green`).setTitle(`Successfully made ${user.displayName} (${profile.mc_username}) a beta tester`)
+	embed.setColor(`Green`).setTitle(`✦ Successfully made ${user.displayName} (${profile.mc_username}) a beta tester! Join the server and do /game to join the world.`)
 
 	return { embeds: [embed] }
 }

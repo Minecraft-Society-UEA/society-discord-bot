@@ -111,7 +111,7 @@ export default async (
 		await interaction.showModal(modal)
 	} else if (already_verified?.mc_username || username_inuse) {
 		return {
-			embeds: [embed.setColor('Yellow').setTitle('✦ You are already verified on Minecraft or that username is in use')]
+			embeds: [embed.setColor('Yellow').setTitle('✦ You have already successfully verified on Minecraft or that username is in use.')]
 		}
 	}
 }
