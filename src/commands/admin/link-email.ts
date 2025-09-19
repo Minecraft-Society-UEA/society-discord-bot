@@ -36,7 +36,7 @@ export default async (
 	// declaring variables we need
 	const user = options.user
 	const email = options.uea_email
-	if (!user || !email) return { content: `user you selected is invalid or error in the mc name` }
+	if (!user || !email) return { content: `The user you selected is invalid or there is an error in the Minecraft name`}
 	const embed = new EmbedBuilder()
 	const profile = (await getProfileByDId(user.id)) as db_player
 
@@ -52,20 +52,20 @@ export default async (
 		return {
 			embeds: [
 				embed
-					.setTitle(`you need to verify on Minecraft first with: /verify mc or the admin needs todo /admin link-mc`)
+					.setTitle(`You need to verify on Minecraft first with: \`/verify mc\` or the admin needs to do \`/admin link-mc\``)
 					.setColor('Red')
 			],
 			ephemeral: true
 		}
 	if (already_verified.uea_email)
-		return { embeds: [embed.setTitle(`already verified your email`).setColor('Green')], ephemeral: true }
+		return { embeds: [embed.setTitle(`Email already verified`).setColor('Green')], ephemeral: true }
 
 	//checking if username is already linked
 	if (!email_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
-					`email is already verified under a different user if this is your account contact a member of the committee`
+					`This email address has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
 				)
 			]
 		}

@@ -62,7 +62,7 @@ export default async (
 	const profile = (await getProfileByDId(user.id)) as db_player
 	if (!profile.mc_username)
 		return {
-			content: `unabel to ban as there not linked with mc discord bans are still handeled with the discord methords`
+			content: `Could not identify any linked Minecraft accounts for user U:${user.user.tag} (${user.user.id})`
 		}
 
 	const ban = await BAN(user.id, profile.mc_username, reason, duationM)

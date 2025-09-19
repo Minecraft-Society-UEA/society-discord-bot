@@ -35,7 +35,7 @@ export default async (
 	const warnEmbed = new EmbedBuilder()
 	const banEmbed = new EmbedBuilder()
 
-	if (!user) return { content: `user you selected is invalid` }
+	if (!user) return { content: `No user found` }
 
 	const warnings = (await getWarningsByUserId(user.id)) as db_warns[]
 	const bans = (await getBansByUserId(user.id)) as db_bans[]
@@ -72,7 +72,7 @@ export default async (
 	if (!interaction.channel) return `invalid channel`
 	const channel = (await interaction.guild.channels.cache.get(interaction.channel.id)) as GuildBasedChannel
 
-	if (!channel.isSendable() || !channel.isTextBased()) return `invalid channel`
+	if (!channel.isSendable() || !channel.isTextBased()) return `Either <#${channel.id}> (#${channel.name}) is not TextBased, or I do not have the required permissions to send messages there`
 
 	if (warnings) {
 		let warnmsgid

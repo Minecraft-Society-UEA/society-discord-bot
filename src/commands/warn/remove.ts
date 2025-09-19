@@ -31,5 +31,5 @@ export default async (
 
 	await deleteWarning(id)
 
-	return { content: `deleted warning` }
+	return { content: `Successfully removed warning ${options.warning_id}` }
 }

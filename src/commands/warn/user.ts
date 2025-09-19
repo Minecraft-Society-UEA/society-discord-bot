@@ -35,14 +35,17 @@ export default async (
 	const embed = new EmbedBuilder()
 	const warn = {} as db_warns
 
-	if (!user) return { content: `user you selected is invalid` }
+	// @todo - add reason logic(?)
+	let reason;
+
+	if (!user) return { content: `Invalid user` }
 
 	warn.user_id = user.id
 	warn.warn_effects_bans = true
 
 	// check if the admin has already started a warning
 	if (alr)
-		return { embeds: [embed.setColor(`Red`).setTitle(`you already have a open warning creator finish there first`)] }
+		return { embeds: [embed.setColor(`Red`).setDescription(`You may only have one warning creator open at once. Why don't you finish up there first?`)] }
 
 	setState<boolean>(`warn_session_inprog-${interaction.user.id}`, true)
 	setState<db_warns>(`warn_create_${interaction.user.id}`, warn)
@@ -79,7 +82,7 @@ export default async (
 	embed
 		.setColor(`Yellow`)
 		.setTitle(`Creating Warning for ${user.displayName}`)
-		.setDescription(`Reason: \nAdd Reason`)
+		.setDescription(`Reason: \n${reason}`)
 		.setThumbnail(user.displayAvatarURL())
 		.addFields(
 			{
@@ -87,8 +90,8 @@ export default async (
 				value: ``
 			},
 			{
-				name: `Should this Warning Count to the 3 Warning's Ban`,
-				value: `yes`
+				name: `Should this warning count to the 3-warning ban?`,
+				value: `Yes`
 			},
 			{
 				name: `Supporting Image Links: `,

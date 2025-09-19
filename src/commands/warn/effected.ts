@@ -44,7 +44,7 @@ export default async (
 	// declaring variables we need
 	const embed = new EmbedBuilder()
 	const eff1 = options.effected1
-	if (!eff1) return { content: `a user you selected is invalid` }
+	if (!eff1) return { content: `effected1 is invalid` }
 	const eff2 = options.effected2 ?? null
 	const eff3 = options.effected3 ?? null
 	const alr = (await getState<boolean>(`warn_session_inprog-${interaction.user.id}`)) ?? false
@@ -52,8 +52,8 @@ export default async (
 	let eff = [] as string[]
 	const ids = getState(`warn_msg-${interaction.user.id}`)?.split(`-`)
 
-	if (!warn || !ids) return { content: `error getting stored warning/message bot may require restart` }
-	if (!alr) return { embeds: [embed.setColor(`Red`).setTitle(`this can only be used if you opened the warning`)] }
+	if (!warn || !ids) return { content: `Error getting stored warning/message; bot may require restart` }
+	if (!alr) return { embeds: [embed.setColor(`Red`).setTitle(`This can only be used if you opened the warning`)] }
 
 	eff.push(`${eff1.user.id}`)
 	if (eff2) eff.push(`${eff2.user.id}`)
@@ -80,5 +80,5 @@ export default async (
 		embeds: [embed_new]
 	})
 
-	return { embeds: [embed.setColor(`Green`).setTitle(`added users to effected users on warning`)] }
+	return { embeds: [embed.setColor(`Green`).setTitle(`Added users to effected users on warning`)] }
 }
