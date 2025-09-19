@@ -21,7 +21,7 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 
 		const two = new TextInputBuilder()
 			.setCustomId(`name`)
-			.setLabel('What is your preferred name?')
+			.setLabel('What is your IRL firstname?')
 			.setMaxLength(16)
 			.setPlaceholder('e.g Steve')
 			.setRequired(true)
