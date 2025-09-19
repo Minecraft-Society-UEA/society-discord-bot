@@ -37,7 +37,7 @@ export default async (
 	// declaring variables we need
 	const user = options.user
 	const mc_name = options.mc_username
-	if (!user || !mc_name) return { content: `user you selected is invalid or error in the mc name` }
+	if (!user || !mc_name) return { content: `The user you selected is invalid or there is an error in the Minecraft name`}
 	const embed = new EmbedBuilder()
 	const profile = (await getProfileByDId(user.id)) as db_player
 	const host = process.env.MC_HOST
@@ -48,14 +48,14 @@ export default async (
 	let data_hub
 
 	// checking if the user already has verifide
-	if (!already_verified) return { embeds: [embed.setTitle(`already verified on minecraft`)] }
+	if (!already_verified) return { embeds: [embed.setTitle(`Already verified on minecraft`)] }
 
 	//checking if username is already linked
 	if (!username_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
-					`username is already verified under a different user if this is your account contact a member of the committee`
+					`This email address has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
 				)
 			]
 		}
@@ -76,7 +76,7 @@ export default async (
 
 	// checks if data is valid
 	if (!data_hub) {
-		return `hub server is down`
+		return `Hub server is down :c`
 	}
 
 	//  checks if player is online in the hub server

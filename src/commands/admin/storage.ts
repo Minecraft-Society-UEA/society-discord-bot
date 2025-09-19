@@ -52,7 +52,7 @@ export default async (
 	const role = options.role as Role
 	const roletype = options.stored
 	const roles = Flashcore.get(`mc_role_id`) as role_storage
-	if (!role) return { content: `role you selected is invalid` }
+	if (!role) return { content: "Invalid role" }
 
 	switch (roletype) {
 		case `mc_verifide`:
@@ -70,5 +70,5 @@ export default async (
 
 	await Flashcore.set(`mc_role_id`, roles)
 
-	return { content: `saved ${role.name} as the role they get for becoming ${roletype}` }
+	return { content: `Successfully updated ${role.name} ${role.id} as "${roletype}" role.` }
 }
