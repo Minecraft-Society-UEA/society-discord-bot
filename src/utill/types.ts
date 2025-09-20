@@ -116,4 +116,5 @@ export type role_storage = {
 	mc_verified: string
 	member: string
 	tester: string
+	unverified: string
 }

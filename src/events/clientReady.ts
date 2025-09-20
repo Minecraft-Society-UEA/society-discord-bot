@@ -3,7 +3,7 @@ import { client, Flashcore, logger } from 'robo.js'
 import { AsyncTask, CronJob, ToadScheduler } from 'toad-scheduler'
 import { loadTokens } from '../utill/functions'
 import mariadb from 'mariadb'
-import { db_player, role_storage } from '../utill/types'
+import { role_storage } from '../utill/types'
 
 export const pool = mariadb.createPool({
 	host: process.env.DB_HOST,
@@ -45,5 +45,6 @@ export default async () => {
 	roles.mc_verified = `1416022868390580275`
 	roles.member = `1416022441444118599`
 	roles.tester = `1416022556523233322`
+	roles.unverified = `1418967932108673045`
 	await Flashcore.set(`mc_role_id`, roles)
 }

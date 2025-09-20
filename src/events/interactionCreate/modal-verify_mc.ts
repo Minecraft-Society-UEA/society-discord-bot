@@ -24,7 +24,9 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const member = interaction.member as GuildMember
 			const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
 			const role = (await interaction.guild.roles.cache.get(roles.mc_verified)) as Role
+			const rmrole = (await interaction.guild.roles.cache.get(roles.unverified)) as Role
 
+			await member.roles.remove(rmrole)
 			await member.roles.add(role)
 
 			// add the players permitions
