@@ -41,7 +41,7 @@ export default async (
 
 	// checks if there email is a uea email
 	if (!email.match(/^[A-Za-z]{3}[0-9]{2}[A-Za-z]{3}@uea\.ac\.uk/gm))
-		return { embeds: [embed.setTitle(`Please enter a valid UEA Email`).setColor('Red')], ephemeral: true }
+		return { embeds: [embed.setTitle(`Please enter a valid UEA email address`).setColor('Red')], ephemeral: true }
 
 	// checking if the user already has verified
 	if (!already_verified)
@@ -50,14 +50,14 @@ export default async (
 			ephemeral: true
 		}
 	if (already_verified.uea_email)
-		return { embeds: [embed.setTitle(`Already verified your email`).setColor('Green')], ephemeral: true }
+		return { embeds: [embed.setTitle(`Already verified your email!`).setColor('Green')], ephemeral: true }
 
 	//checking if username is already linked
 	if (email_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
-					`Email is already verified under a different user - if this is your account contact a member of the committee`
+					`This email address has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
 				)
 			]
 		}

@@ -29,19 +29,19 @@ export default async (
 		.setDescription(`Online: ${list.total_online}/300`)
 		.addFields(
 			{
-				name: `The Hub: ${list.hub.online_players.length} players`,
+				name: `🏠︎ The Hub: ${list.hub.online_players.length} players`,
 				value: `${list.hub.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Survival: ${list.survival.online_players.length} players`,
+				name: `⚔️ Survival: ${list.survival.online_players.length} players`,
 				value: `${list.survival.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Creative: ${list.creative.online_players.length} players`,
+				name: `🎨 Creative: ${list.creative.online_players.length} players`,
 				value: `${list.creative.online_players.map((player) => player.name).join(', ')}`
 			},
 			{
-				name: `Event: ${list.event.online_players.length} players`,
+				name: `🎊 Event: ${list.event.online_players.length} players`,
 				value: `${list.event.online_players.map((player) => player.name).join(', ')}`
 			}
 		)

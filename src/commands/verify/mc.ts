@@ -62,7 +62,7 @@ export default async (
 		}
 
 		if (!data_hub) {
-			console.log(`1hub is down`)
+			console.log(`hub is down`)
 			return {
 				embeds: [embed.setColor('Red').setTitle('Hub is Down')]
 			}
@@ -70,9 +70,9 @@ export default async (
 		// find player in hub
 		const player = data_hub.online_players.find((p) => p.name === username)
 		if (!player) {
-			console.log(`No player with username: ${username} connected to Hub`)
+			console.log(`Player "${username}" is not connected to the Hub`)
 			return {
-				embeds: [embed.setColor('Yellow').setTitle('No player with username: ${username} connected to Hub')]
+				embeds: [embed.setColor('Yellow').setTitle(`Player "${username}" is not connected to the Hub`)]
 			}
 		}
 		// generate code + store
@@ -82,7 +82,7 @@ export default async (
 		await Flashcore.set(`verify_code-mc_uuid-${interaction.user.id}`, player.uuid)
 
 		// send code in-game
-		const body = { player: player.name, message: `[MC-UEA VERIFY] Code: ${code}` }
+		const body = { player: player.name, message: `UEAMCSOC VERIFY ✦ Code: ${code}` }
 		const response = await fetch(`${host}:${h_port}/api/player/message`, {
 			method: 'POST',
 			headers: { Authorization: `Bearer ${tokens.hub}` },
@@ -98,7 +98,7 @@ export default async (
 			.setCustomId('mc-code')
 			.setLabel('Input the code whispered to you in-game')
 			.setMaxLength(5)
-			.setPlaceholder('Code eg: 12345')
+			.setPlaceholder('e.g: AB123')
 			.setRequired(true)
 			.setStyle(TextInputStyle.Short)
 

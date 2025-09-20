@@ -52,7 +52,7 @@ export default async (
 		}
 
 	// send the message to the player and return a embed confirming it was sent
-	const msg_rtn = await message_player(profile.mc_username, `[DISCORD] ${interaction.user.displayName}: ${msg}`)
+	const msg_rtn = await message_player(profile.mc_username, `DISCORD ✦ ${interaction.user.displayName}: ${msg}`)
 
 	if (!msg_rtn)
 		return { embeds: [embed.setColor(`Red`).setTitle(`Likely the player is offline, unlinked or there was a error`)] }

@@ -55,7 +55,7 @@ export default async (
 		return {
 			embeds: [
 				embed.setTitle(
-					`This email address has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
+					`This username has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
 				)
 			]
 		}

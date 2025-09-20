@@ -56,7 +56,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 
 			return { embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] }
 		} else {
-			return { embeds: [embed.setTitle(`Failed Codes mismatched`).setColor(`Red`)] }
+			return { embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)] }
 		}
 	}
 }

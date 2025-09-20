@@ -21,6 +21,6 @@ export default async (
 	const embed = new EmbedBuilder()
 
 	return {
-		embeds: [embed.setTitle(`not finished/set up yet there will be an announcement when ready`).setColor(`Green`)]
+		embeds: [embed.setTitle(`✦ Not ready yet — an announcement will follow when it is set up`).setColor(`Green`)]
 	}
 }

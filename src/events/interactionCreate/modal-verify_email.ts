@@ -47,7 +47,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			})
 		} else {
 			return await interaction.editReply({
-				embeds: [embed.setTitle(`Failed to verify codes mismatched try again`).setColor(`Red`)]
+				embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)]
 			})
 		}
 	}
