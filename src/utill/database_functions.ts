@@ -34,6 +34,16 @@ export async function getProfileByMcUsername(mcUsername: string) {
 	}
 }
 
+export async function getProfileByBedMcUsername(bedMcUsername: string) {
+	try {
+		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE bed_mc_username = ?', [bedMcUsername])
+		return rows.length > 0 ? rows[0] : null
+	} catch (err) {
+		logger.error(`Error fetching user profile by bed_mc_username: ${err}`)
+		return null
+	}
+}
+
 export async function getProfileByUeaEmail(email: string) {
 	try {
 		const rows = await pool.query<db_player[]>('SELECT * FROM players WHERE uea_email = ?', [email])

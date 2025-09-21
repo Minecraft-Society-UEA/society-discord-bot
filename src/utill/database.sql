@@ -2,6 +2,7 @@ CREATE TABLE players (
     user_id BIGINT UNSIGNED PRIMARY KEY, -- discord user id
     uea_email VARCHAR(255) UNIQUE, -- uea email
     mc_username VARCHAR(255), -- minecraft username
+    bed_mc_username VARCHAR(255),
     mc_uuid CHAR(36) UNIQUE, -- UUIDs are fixed length (36 chars)
     mc_rank ENUM('unverified', 'verified', 'member', 'tester', 'admin') NOT NULL DEFAULT 'unverified', -- permission level
     is_member BOOLEAN NOT NULL DEFAULT false,

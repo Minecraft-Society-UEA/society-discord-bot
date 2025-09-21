@@ -34,7 +34,7 @@ export default async (
 	if (!user) return { content: `Invalid user` }
 	const profile = (await getProfileByDId(user.id)) as db_player
 	const embed = new EmbedBuilder()
-	if (!profile || !profile.mc_username) return `Could not fetch data for Minecraft user or no Minecraft username`;
+	if (!profile || !profile.mc_username) return `Could not fetch data for Minecraft user or no Minecraft username`
 
 	const online = await online_server_check(profile.mc_username)
 	if (!online) return { embeds: [embed.setColor(`Red`).setTitle(`Player isnt online and must be to be made a tester`)] }
@@ -49,7 +49,11 @@ export default async (
 
 	profile.mc_rank = `tester`
 	await updatePlayerProfile(user.id, profile)
-	embed.setColor(`Green`).setTitle(`✦ Successfully made ${user.displayName} (${profile.mc_username}) a beta tester! Join the server and do \`/game\` to join the world.`)
+	embed
+		.setColor(`Green`)
+		.setTitle(
+			`✦ Successfully made ${user} (${profile.mc_username}) a beta tester! Join the server and do \`/game\` to join the world.`
+		)
 
 	return { embeds: [embed] }
 }

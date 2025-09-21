@@ -1,4 +1,4 @@
-import { ColorResolvable } from 'discord.js'
+import { ColorResolvable, HexColorString } from 'discord.js'
 
 // the type the /login endpoint returns
 export type token = {
@@ -58,11 +58,12 @@ export type tokens = {
 // mc rank type or what ranks a player can be
 export type mc_rank_type = 'unverified' | 'verified' | 'member' | 'tester' | 'admin'
 
-//the type of the player profiles stored in the Database
+//the type of the player profiles stored in the Databaseastari
 export type db_player = {
 	user_id: string
 	uea_email: string | null
 	mc_username: string | null
+	bed_mc_username: string | null
 	mc_uuid: string | null
 	mc_rank: mc_rank_type
 	is_member: boolean
@@ -117,4 +118,21 @@ export type role_storage = {
 	member: string
 	tester: string
 	unverified: string
+}
+
+export type checksarr = {
+	key: string
+	value: string
+}
+
+export type guild_settings = {
+	welcome_msg: welcome_settings
+}
+
+export type welcome_settings = {
+	channelid: string
+	title: string
+	description: string
+	colourhex: HexColorString
+	path: string
 }
