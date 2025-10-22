@@ -2,7 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig, Flashcore } from 'robo.js'
 import type { ChatInputCommandInteraction, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { getProfileByDId, updatePlayerProfile } from '../../utill/database_functions'
+import { getProfileByDId } from '../../utill/database_functions'
 import { db_player, role_storage } from '../../utill/types'
 import { mc_command, message_player, online_server_check } from '../../utill/functions'
 
@@ -20,7 +20,7 @@ export const config = createCommandConfig({
 			required: true
 		}
 	],
-	defaultMemberPermissions: PermissionFlagsBits.ManageRoles
+	defaultMemberPermissions: PermissionFlagsBits.Administrator
 } as const)
 
 // the main code that executes when the command is used
@@ -34,26 +34,22 @@ export default async (
 	if (!user) return { content: `Invalid user` }
 	const profile = (await getProfileByDId(user.id)) as db_player
 	const embed = new EmbedBuilder()
-	if (!profile || !profile.mc_username) return `Could not fetch data for Minecraft user or no Minecraft username`
+	if (!profile || !profile.mc_username)
+		return `Could not fetch data for Minecraft user or no Minecraft username/Unverifide`
 
 	const online = await online_server_check(profile.mc_username)
-	if (!online) return { embeds: [embed.setColor(`Red`).setTitle(`Player isnt online and must be to be made a tester`)] }
+	if (!online)
+		return { embeds: [embed.setColor(`Red`).setTitle(`Player isnt online and must be to be made a committee member`)] }
 
-	await mc_command(online, `lp user ${profile.mc_username} parent set beta-tester`)
-	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully Become a Tester :tada:`)
+	await mc_command(online, `lp user ${profile.mc_username} promote committee`)
+	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully Become a committee :tada:`)
 
 	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
-	const role = (await interaction.guild.roles.cache.get(roles.tester)) as Role
+	const role = (await interaction.guild.roles.cache.get(roles.committee)) as Role
 
 	await user.roles.add(role)
 
-	profile.mc_rank = `tester`
-	await updatePlayerProfile(user.id, profile)
-	embed
-		.setColor(`Green`)
-		.setTitle(
-			`✦ Successfully made ${user} (${profile.mc_username}) a beta tester! Join the server and do \`/game\` to join the world.`
-		)
+	embed.setColor(`Green`).setTitle(`✦ Successfully made ${user} (${profile.mc_username}) a committee member!`)
 
 	return { embeds: [embed] }
 }

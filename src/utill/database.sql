@@ -29,3 +29,21 @@ CREATE TABLE bans (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES players(user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE servers (
+    id VARCHAR(40) PRIMARY KEY,
+    name TEXT,
+    emoji text,
+    host TEXT,
+    game_port TEXT,
+    port TEXT,
+    user TEXT,
+    pass TEXT,
+    currently_online BIGINT,
+    players TEXT
+)
+
+CREATE TABLE guild_settings (
+    id VARCHAR(255) PRIMARY KEY,
+    players JSON
+)

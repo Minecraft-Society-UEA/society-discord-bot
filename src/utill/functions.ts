@@ -1,34 +1,29 @@
-import { getState, logger, setState } from 'robo.js'
+import { client, Flashcore, getState, logger, setState } from 'robo.js'
 import {
 	all_player_list,
 	check_member_return,
 	connected_players,
 	db_player,
+	db_server,
 	db_warns,
 	player,
 	return_command,
-	server_details,
-	ServerKey,
-	token,
-	tokens
+	token
 } from './types'
-import { createBan, getProfileByDId, getWarningsEffectBansByUserId } from './database_functions'
+import {
+	createBan,
+	getAllServers,
+	getProfileByDId,
+	getServerByID,
+	getWarningsEffectBansByUserId,
+	updateServerPlayers
+} from './database_functions'
+import { TextChannel, VoiceBasedChannel } from 'discord.js'
+import { EmbedBuilder } from '@discordjs/builders'
 
-// a function to easily get all tokens for every server and return them as a object
-export function getTokens() {
-	const h_tok = getState('hub_token')
-	const s_tok = getState('survival_token')
-	const c_tok = getState('creative_token')
-	const e_tok = getState('event_token')
-
-	const tokens = {
-		hub: h_tok,
-		survival: s_tok,
-		creative: c_tok,
-		event: e_tok
-	} as tokens
-
-	return tokens
+// resolve the token for a server
+export function server_token_resolver(id: string) {
+	return getState(`${id}_token`)
 }
 
 // a function to generate a 5 digit long code for verification
@@ -55,33 +50,22 @@ export async function checkMember(userid: string) {
 
 //function to get and save all tokens for each server
 export async function loadTokens() {
-	const user = process.env.MC_USER
-	const pass = process.env.MC_PASS
-	const host = process.env.MC_HOST
-	if (!user || !pass || !host) {
-		logger.error('MC_USER, MC_PASS, or MC_HOST not set in env')
-		return
-	}
-
-	const body = { username: user, password: pass }
-	const servers: ServerKey[] = ['hub', 'survival', 'creative', 'event']
-
+	const servers = (await getAllServers()) as db_server[]
 	for (const server of servers) {
-		const details = (await server_port_token_resolver(server)) as server_details
-
 		try {
-			const res = await fetch(`${host}:${details.port}/api/auth/login`, {
+			const body = { username: server.user, password: server.pass }
+			const res = await fetch(`${server.host}:${server.port}/api/auth/login`, {
 				method: 'POST',
 				body: JSON.stringify(body)
 			})
 
 			if (!res.ok) {
-				logger.error(`Error logging in to ${server}.`)
+				logger.error(`Error logging in to ${server.name}.`)
 				continue
 			}
 
 			const data = (await res.json()) as token
-			await setState(`${server}_token`, data.token)
+			await setState(`${server.id}_token`, data.token)
 		} catch (err) {
 			logger.error(`Error loading token for ${server}:`, err)
 		}
@@ -92,18 +76,15 @@ export async function loadTokens() {
 
 // a function to get all online players across all servers
 export async function getPlayerListAllServers(): Promise<all_player_list | undefined> {
-	const host = process.env.MC_HOST
-	const servers: ServerKey[] = ['hub', 'survival', 'creative', 'event']
-	const results: Record<ServerKey, connected_players> = {} as Record<ServerKey, connected_players>
+	const servers = (await getAllServers()) as db_server[]
 	let total_online = 0
 	let all_players: player[] = []
+	let server_players: { id: string; players: player[] }[] = []
 
 	for (const server of servers) {
-		const details = (await server_port_token_resolver(server)) as server_details
-
 		try {
-			const res = await fetch(`${host}:${details.port}/api/players`, {
-				headers: { Authorization: `Bearer ${details.token}` }
+			const res = await fetch(`${server.host}:${server.port}/api/players`, {
+				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
 			})
 
 			if (!res.ok) {
@@ -112,9 +93,15 @@ export async function getPlayerListAllServers(): Promise<all_player_list | undef
 			}
 
 			const data = (await res.json()) as connected_players
-			results[server] = data
-			total_online += data.online_players.length
+
+			server.currently_online = data.online_players.length
+			server.players = data.online_players
+
+			await updateServerPlayers(server.id, data.online_players, data.online_players.length)
+
+			total_online = total_online + data.online_players.length
 			all_players = all_players.concat(data.online_players)
+			server_players.push({ id: server.id, players: data.online_players })
 		} catch (err) {
 			logger.error(`Failed to fetch ${server} players: ${err}`)
 			return
@@ -122,61 +109,61 @@ export async function getPlayerListAllServers(): Promise<all_player_list | undef
 	}
 
 	return {
-		...results,
+		server_players,
 		total_online,
 		all_players
 	}
 }
 
+// a function to get all online players across all servers
+export async function getPlayerList(serverid: string): Promise<connected_players | undefined> {
+	const server = (await getServerByID(serverid)) as db_server
+
+	try {
+		const res = await fetch(`${server.host}:${server.port}/api/players`, {
+			headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
+		})
+
+		if (!res.ok) {
+			logger.error(`Error getting ${server} players.`)
+			return
+		}
+
+		const data = (await res.json()) as connected_players
+		return data
+	} catch (err) {
+		logger.error(`Failed to fetch ${server} players: ${err}`)
+		return
+	}
+}
+
+// check if player is online and returns what server there in
 export async function online_server_check(mc_name: string) {
 	const lists = (await getPlayerListAllServers()) as all_player_list
 
-	const servers: ServerKey[] = ['hub', 'survival', 'creative', 'event']
+	const servers = (await getAllServers()) as db_server[]
 
 	for (const server of servers) {
-		const found = lists[server].online_players.find((p: player) => p.name.toLowerCase() === mc_name.toLowerCase())
-		if (found) return server
+		let found
+		const players = server.players
+		for (const player of players) {
+			if (player.name === mc_name) return server.id
+		}
 	}
 
 	return false
 }
 
-export async function server_port_token_resolver(server: ServerKey): Promise<server_details> {
-	const tokens = getTokens() as tokens
-
-	const config: Record<ServerKey, server_details> = {
-		hub: {
-			port: process.env.HUB_PORT ?? '00',
-			token: tokens.hub
-		},
-		survival: {
-			port: process.env.SURVIVAL_PORT ?? '00',
-			token: tokens.survival
-		},
-		creative: {
-			port: process.env.CREATIVE_PORT ?? '00',
-			token: tokens.creative
-		},
-		event: {
-			port: process.env.EVENT_PORT ?? '00',
-			token: tokens.event
-		}
-	}
-
-	return config[server]
-}
-
-export async function mc_command(server: ServerKey, command: string) {
-	const host = process.env.MC_HOST
-	const details = (await server_port_token_resolver(server)) as server_details
+export async function mc_command(id: string, command: string) {
+	const details = (await getServerByID(id)) as db_server
 	const body_command = {
 		command: command
 	}
 
-	const res = await fetch(`${host}:${details.port}/api/server/command`, {
+	const res = await fetch(`${details.host}:${details.port}/api/server/command`, {
 		method: 'post',
 		headers: {
-			Authorization: `Bearer ${details.token}`
+			Authorization: `Bearer ${server_token_resolver(details.id)}`
 		},
 		body: JSON.stringify(body_command)
 	})
@@ -185,31 +172,30 @@ export async function mc_command(server: ServerKey, command: string) {
 	}
 
 	const text = await res.text()
-	if (!text) return null // empty response
+	if (!text) return null
 
 	try {
 		return JSON.parse(text)
 	} catch {
-		return text // fallback if not JSON
+		return text
 	}
 }
 
 export async function message_player(mc_username: string, msg: string) {
-	const host = process.env.MC_HOST
-	const server = await online_server_check(mc_username)
+	const online = await online_server_check(mc_username)
+	if (!online) return false
+	const server = (await getServerByID(online)) as db_server
 	const body_message = {
 		player: mc_username,
 		message: msg
 	}
 
-	if (!server) return
+	if (!server) return false
 
-	const details = await server_port_token_resolver(server)
-
-	const response = await fetch(`${host}:${details.port}/api/player/message`, {
+	const response = await fetch(`${server.host}:${server.port}/api/player/message`, {
 		method: 'post',
 		headers: {
-			Authorization: `Bearer ${details.token}`
+			Authorization: `Bearer ${server_token_resolver(server.id)}`
 		},
 		body: JSON.stringify(body_message)
 	})
@@ -218,16 +204,17 @@ export async function message_player(mc_username: string, msg: string) {
 }
 
 export async function mc_ban_player(mc_username: string, msg: string, mins: string) {
-	const host = process.env.MC_HOST
-	const details = (await server_port_token_resolver(`hub`)) as server_details
+	const online = await online_server_check(mc_username)
+	if (!online) return false
+	const server = (await getServerByID(online)) as db_server
 	const body_command = {
 		command: `ban ${mc_username} ${mins} ${msg}`
 	}
 
-	const response = await fetch(`${host}:${details.port}/api/server/command`, {
+	const response = await fetch(`${server.host}:${server.port}/api/server/command`, {
 		method: 'post',
 		headers: {
-			Authorization: `Bearer ${details.token}`
+			Authorization: `Bearer ${server_token_resolver(server.id)}`
 		},
 		body: JSON.stringify(body_command)
 	})
@@ -264,29 +251,65 @@ export function dateAfterMinutes(minutes: number): string {
 	return `${day}/${month}/${year}`
 }
 
-export async function getServerPlayer(server: ServerKey, mc_user: string) {
-	const host = process.env.MC_HOST
-	const details = await server_port_token_resolver(server)
-	const response_hub = await fetch(`${host}:${details.port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${details.token}`
+export async function updatePlayersChannel() {
+	console.log(`updating players channel`)
+	const guildid = process.env.GUILD_ID
+	const channelid = process.env.SERVER_LIST_CHANNEL_ID
+	const channelid2 = process.env.ONLINE_CHANNEL_ID
+	const messageid = (await Flashcore.get<string>(`players_msg_id`)) ?? undefined
+
+	await getPlayerListAllServers()
+
+	const embed = new EmbedBuilder()
+	const servers = (await getAllServers()) as db_server[]
+	let tot_online: number = 0
+
+	embed.setTitle('✦ Online players across all servers:').setTimestamp().setColor([136, 61, 255])
+
+	for (const server of servers) {
+		if (!server.players) {
+			server.players = []
+		} else if (typeof server.players === 'string') {
+			try {
+				server.players = JSON.parse(server.players)
+			} catch {
+				server.players = []
+			}
 		}
-	})
 
-	if (!response_hub.ok) {
-		logger.error('Error getting hub players.')
-		return false
+		tot_online += server.players.length
+
+		embed.addFields({
+			name: `${server.emoji} ${server.name}: ${server.players.length} Players`,
+			value: server.players.length > 0 ? server.players.map((p) => p.name).join(', ') : ''
+		})
 	}
 
-	const data_hub = (await response_hub.json()) as connected_players
+	embed.setDescription(`Online: ${tot_online}/300`)
 
-	if (!data_hub) {
-		console.error(`hub server is down`)
-		return false
+	if (!guildid || !channelid || !channelid2) return console.error(`env not loaded correctly?...`)
+
+	const guild = await client.guilds.cache.get(guildid)
+	if (!guild) return console.error(`guild not gotten from client...`)
+	const channelmsg = (await guild.channels.cache.get(channelid)) as TextChannel
+	if (!channelmsg?.isSendable() || !channelmsg.isTextBased()) return console.log(`channel invalid`)
+	const channel = (await guild.channels.cache.get(channelid2)) as VoiceBasedChannel
+	if (!channel.isVoiceBased()) return console.log(`channel invalid`)
+
+	await channel.setName(`✦ Online: ${tot_online}/300`)
+
+	if (messageid) {
+		try {
+			const msg = await channelmsg.messages.fetch(messageid)
+			await msg.edit({ embeds: [embed] })
+		} catch (err) {
+			console.warn(`Failed to edit existing message, sending new one instead:`, err)
+			const msg = await channelmsg.send({ embeds: [embed] })
+			await Flashcore.set<string>('players_msg_id', msg.id)
+		}
+	} else {
+		const msg = await channelmsg.send({ embeds: [embed] })
+		await Flashcore.set<string>('players_msg_id', msg.id)
 	}
-
-	const player = data_hub.online_players.find((p) => p.name === mc_user) as player
-
-	return player
+	return
 }

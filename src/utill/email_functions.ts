@@ -18,16 +18,16 @@ const transporter = nodemailer.createTransport({
 export async function emailCode(email: string, code: string, username: string) {
 	// urls and some bits in the html email are verables to make them custom and easier to change
 	const VERIFICATION_CODE = code
-	const LOGO_URL = `https://photo.uncommmon.dev/i/24aef466-9364-4f62-8c38-8d1c2dc1b6e6.png`
+	const LOGO_URL = `https://media.discordapp.net/attachments/1403422858499198997/1425471337002041425/Untitled82_20250811081052.png?ex=68e7b522&is=68e663a2&hm=c6786bfb30d0856005cee2b2b24a8b06f2545b6ef365c2fcebbc170720171660&=&format=webp&quality=lossless&width=960&height=960`
 	const SERVER_NAME = `UEA Minecraft Society`
 	const NAME = username
 	const VERIFY_URL = `https://discord.com/channels/1403421910557130842/1418026676469633144`
-	const DIRT_IMAGE_URL = `https://photo.uncommmon.dev/i/1de0d2e2-c3bd-44a6-94af-9a7d82c007e0.png`
+	const DIRT_IMAGE_URL = `https://media.discordapp.net/attachments/1403422858499198997/1425472251490467861/mc-dirt_block.png?ex=68e7b5fc&is=68e6647c&hm=e46e4d8b00ef551ee7536e110ee523f467f569c7bc3bf8ba60370cfe6bdf8947&=&format=webp&quality=lossless`
 	const SUPPORT_EMAIL = user
 	const DISCORD_URL = `https://discord.gg/KRBY8WvnJy`
 	const INSTAGRAM_URL = `https://www.instagram.com/ueamcsoc`
-	const DISCORD_IMG_URL = `https://photo.uncommmon.dev/i/375efc0b-b565-4fb4-9d08-c8497e30192c.png`
-	const INSTAGRAM_IMG_URL = `https://photo.uncommmon.dev/i/5b4e1905-57cf-4046-9df1-6f0fe348776c.png`
+	const DISCORD_IMG_URL = `https://media.discordapp.net/attachments/1403422858499198997/1425472252002042019/discord-logo.png?ex=68e7b5fc&is=68e6647c&hm=40139874797427ca2afd1ce10ef5eef6d4fe8dcc5d7524857edd1ddcd4552413&=&format=webp&quality=lossless&width=748&height=856`
+	const INSTAGRAM_IMG_URL = `https://media.discordapp.net/attachments/1403422858499198997/1425472252366950430/Instagram_icon.png?ex=68e7b5fc&is=68e6647c&hm=85842a2ff66d02b3280fca6aeead8c47ce29a07eaa9f80e5e53378b06b2cb5dc&=&format=webp&quality=lossless&width=856&height=856`
 	const CURRENT_YEAR = new Date().getFullYear()
 
 	/// sending the email and the emails html code

@@ -11,11 +11,12 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 
 	// check the modal being submitted matches the custom id set on the mc verifi one
 	if (interaction.customId === `mc-code-${interaction.user.id}`) {
+		await interaction.deferReply({ flags: 'Ephemeral' })
 		// get the original code and the one the player inputed
 		const code = interaction.fields.getTextInputValue('mc-code') as string
 		const user_code = (await Flashcore.get(`verify_code-${interaction.user.id}`)) as string
 		const embed = new EmbedBuilder()
-
+		console.log(`1`)
 		// compare if they match
 		if (code === user_code) {
 			// declaring variables we need
@@ -23,15 +24,11 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const member = interaction.member as GuildMember
 			const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
-			const role = (await interaction.guild.roles.cache.get(roles.mc_verified)) as Role
-			const rmrole = (await interaction.guild.roles.cache.get(roles.unverified)) as Role
 
-			await member.roles.remove(rmrole)
-			await member.roles.add(role)
-
+			console.log(`3`)
 			// add the players permitions
-			await mc_command(`hub`, `lp user ${username} promote player`)
-
+			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${username} promote player`)
+			console.log(`4`)
 			// create a player profile in the database
 			const playerProfile = (await createPlayerProfile(interaction.user.id)) as db_player
 
@@ -52,13 +49,15 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				member.id !== interaction.guild.ownerId
 			) {
 				await member.setNickname(`${member.user.username} ✧ ${username}`)
+				await member.roles.remove((await interaction.guild.roles.cache.get(roles.unverified)) as Role)
+				await member.roles.add((await interaction.guild.roles.cache.get(roles.mc_verified)) as Role)
+				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
 			} else {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
+				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
 			}
-
-			return { embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] }
 		} else {
-			return { embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)] }
+			await interaction.editReply({ embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)] })
 		}
 	}
 }

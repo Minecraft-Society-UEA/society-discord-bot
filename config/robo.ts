@@ -19,6 +19,7 @@ export default <Config>{
 	},
 	plugins: [],
 	type: 'robo',
+	excludePaths: [`/src/commands/warn`, `/src/commands/admin/tmp`, `src/commands/verify/double-check.ts`],
 	flashcore: {
 		keyv: {
 			store: new KeyvMysql({ uri: process.env.DB_URI })

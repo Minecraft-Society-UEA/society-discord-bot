@@ -1,15 +1,15 @@
-import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember } from 'discord.js'
+import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
-import { db_player } from '../../utill/types'
+import { db_player, role_storage } from '../../utill/types'
 import { getProfileByDId, updatePlayerProfile } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
 	if (!interaction.isModalSubmit() || !interaction.guild?.members.me) return
-	await interaction.deferReply({ flags: 'Ephemeral' })
 
 	// check the modal being submitted matches the custom id set on the mc verifi one
 	if (interaction.customId === `verifiy-email-code-${interaction.user.id}`) {
+		await interaction.deferReply({ flags: 'Ephemeral' })
 		// get the original code and the one the player inputed
 		const code = interaction.fields.getTextInputValue('email-code') as string
 		const name_pref = interaction.fields.getTextInputValue('name') as string
@@ -33,11 +33,14 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// update the players profile with the new data
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
+			const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
+
 			if (
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId
 			) {
 				await member.setNickname(`${name_pref} ✧ ${playerProfile.mc_username}`)
+				await member.roles.add((await interaction.guild.roles.cache.get(roles.email_verified)) as Role)
 			} else {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
 			}

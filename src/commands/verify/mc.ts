@@ -8,9 +8,9 @@ import {
 } from 'discord.js'
 import { createCommandConfig, Flashcore, logger } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { connected_players, db_player, tokens } from '../../utill/types'
-import { generateCode, getTokens } from '../../utill/functions'
-import { getProfileByDId, getProfileByMcUsername } from '../../utill/database_functions'
+import type { connected_players, db_player } from '../../utill/types'
+import { generateCode, server_token_resolver } from '../../utill/functions'
+import { getProfileByDId, getProfileByMcUsername, getServerByName } from '../../utill/database_functions'
 
 export const config = createCommandConfig({
 	description: 'verify and link your mc to the discord allowing you to join',
@@ -30,9 +30,8 @@ export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
-	const host = process.env.MC_HOST
-	const h_port = process.env.HUB_PORT
-	const tokens = getTokens() as tokens
+	const server = await getServerByName(`The Hub`)
+	if (!server) return `db server = null`
 	const username = options['mc-username']
 	const embed = new EmbedBuilder()
 
@@ -44,9 +43,9 @@ export default async (
 		// pull hub players
 		let data_hub: connected_players | null = null
 		try {
-			const response_hub = await fetch(`${host}:${h_port}/api/players`, {
+			const response_hub = await fetch(`${server.host}:${server.port}/api/players`, {
 				method: 'GET',
-				headers: { Authorization: `Bearer ${tokens.hub}` }
+				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
 			})
 
 			if (response_hub.ok) {
@@ -83,9 +82,9 @@ export default async (
 
 		// send code in-game
 		const body = { player: player.name, message: `UEAMCSOC VERIFY ✦ Code: ${code}` }
-		const response = await fetch(`${host}:${h_port}/api/player/message`, {
+		const response = await fetch(`${server.host}:${server.port}/api/player/message`, {
 			method: 'POST',
-			headers: { Authorization: `Bearer ${tokens.hub}` },
+			headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` },
 			body: JSON.stringify(body)
 		})
 
@@ -111,7 +110,11 @@ export default async (
 		await interaction.showModal(modal)
 	} else if (already_verified?.mc_username || username_inuse) {
 		return {
-			embeds: [embed.setColor('Yellow').setTitle('✦ You have already successfully verified on Minecraft or that username is in use.')]
+			embeds: [
+				embed
+					.setColor('Yellow')
+					.setTitle('✦ You have already successfully verified on Minecraft or that username is in use.')
+			]
 		}
 	}
 }

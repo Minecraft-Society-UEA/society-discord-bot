@@ -21,11 +21,11 @@ export default async (
 	const embed = new EmbedBuilder()
 	const kvarr = [] as checksarr[]
 	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
-	const role = (await interaction.guild.roles.cache.get(roles.tester)) as Role
+	const tester_role = (await interaction.guild.roles.cache.get(roles.tester)) as Role
 
 	if (profile.mc_rank === `tester`) {
 		if (!member.roles.cache.has(roles.tester)) {
-			await member.roles.add(role)
+			await member.roles.add(tester_role)
 		}
 
 		if (profile.bed_mc_username) {
@@ -47,7 +47,7 @@ export default async (
 		}
 	} else {
 		if (member.roles.cache.has(roles.tester)) {
-			await member.roles.remove(role)
+			await member.roles.remove(tester_role)
 			kvarr.push({
 				key: `your no longer a tester: `,
 				value: `tester role removed`

@@ -20,20 +20,12 @@ export type connected_players = {
 	online_players: player[]
 }
 
-// server key type
-export type ServerKey = 'hub' | 'survival' | 'creative' | 'event'
-
 // the type of the worlds array the server info returns
 export type world = {
 	name: string
 	player_count: number
 	time: number
 	weather: string
-}
-
-export type server_details = {
-	port: string
-	token: string
 }
 
 //the type /server/info returns
@@ -45,14 +37,6 @@ export type server_info = {
 	max_players: number
 	current_players: number
 	worlds: world[]
-}
-
-// the type gettokens returns
-export type tokens = {
-	hub: string
-	survival: string
-	creative: string
-	event: string
 }
 
 // mc rank type or what ranks a player can be
@@ -91,6 +75,19 @@ export type db_bans = {
 	created_at: string
 }
 
+export type db_server = {
+	id: string
+	name: string
+	emoji: string
+	host: string
+	game_port: string
+	port: string
+	user: string
+	pass: string
+	currently_online: number
+	players: player[]
+}
+
 //the type /server/command returns
 export type return_command = {
 	success: boolean
@@ -105,30 +102,33 @@ export type check_member_return = {
 
 // all player list from every server
 export type all_player_list = {
-	hub: connected_players
-	survival: connected_players
-	creative: connected_players
-	event: connected_players
+	server_players: { id: string; players: player[] }[]
 	total_online: number
 	all_players: player[]
 }
 
+// roles being stored
 export type role_storage = {
 	mc_verified: string
+	email_verified: string
 	member: string
 	tester: string
 	unverified: string
+	committee: string
 }
 
+// array of kv for embed in double check : keep its modular
 export type checksarr = {
 	key: string
 	value: string
 }
 
+// working out how i want to store guild settings
 export type guild_settings = {
 	welcome_msg: welcome_settings
 }
 
+// settings for the welcome message
 export type welcome_settings = {
 	channelid: string
 	title: string

@@ -36,24 +36,17 @@ export default async (
 	const embed = new EmbedBuilder()
 	if (!profile || !profile.mc_username) return `Could not fetch data for Minecraft user or no Minecraft username`
 
-	const online = await online_server_check(profile.mc_username)
-	if (!online) return { embeds: [embed.setColor(`Red`).setTitle(`Player isnt online and must be to be made a tester`)] }
-
-	await mc_command(online, `lp user ${profile.mc_username} parent set beta-tester`)
-	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully Become a Tester :tada:`)
+	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_username} parent set verified`)
+	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully removed Tester :tada:`)
 
 	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
 	const role = (await interaction.guild.roles.cache.get(roles.tester)) as Role
 
-	await user.roles.add(role)
+	await user.roles.remove(role)
 
-	profile.mc_rank = `tester`
+	profile.mc_rank = `verified`
 	await updatePlayerProfile(user.id, profile)
-	embed
-		.setColor(`Green`)
-		.setTitle(
-			`✦ Successfully made ${user} (${profile.mc_username}) a beta tester! Join the server and do \`/game\` to join the world.`
-		)
+	embed.setColor(`Green`).setTitle(`✦ Successfully removed ${user} (${profile.mc_username}) from beta testers!`)
 
 	return { embeds: [embed] }
 }

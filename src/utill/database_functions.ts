@@ -1,5 +1,5 @@
 import { logger } from 'robo.js'
-import { db_bans, db_player, db_warns } from './types'
+import { db_bans, db_player, db_server, db_warns, player } from './types'
 import { pool } from '../events/clientReady'
 
 // ---------------- Players ----------------
@@ -223,5 +223,111 @@ export async function expireOldWarnings() {
 	} catch (err) {
 		logger.error(`Error expiring old warnings: ${err}`)
 		return []
+	}
+}
+
+// ---------------- Servers ----------------
+
+export async function getServerByID(id: string) {
+	try {
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE id = ?', [id])
+		return rows.length > 0 ? rows[0] : null
+	} catch (err) {
+		logger.error(`Error fetching servers by id: ${err}`)
+		return null
+	}
+}
+
+export async function getServerByName(name: string) {
+	try {
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE name = ?', [name])
+		return rows.length > 0 ? rows[0] : null
+	} catch (err) {
+		logger.error(`Error fetching servers by name: ${err}`)
+		return null
+	}
+}
+
+export async function getAllServers() {
+	try {
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers')
+		return rows.length > 0 ? rows : null
+	} catch (err) {
+		logger.error(`Error fetching servers: ${err}`)
+		return null
+	}
+}
+
+export async function getAllServerNames() {
+	try {
+		const rows = await pool.query<{ name: string }[]>('SELECT id, name FROM servers')
+		return rows.length > 0 ? rows : null
+	} catch (err) {
+		logger.error(`Error fetching server names: ${err}`)
+		return null
+	}
+}
+
+export async function createServer(id: string) {
+	try {
+		const result = await pool.query('INSERT INTO servers (id) VALUES (?)', [id])
+		return { id: result.insertId.toString() }
+	} catch (err) {
+		logger.error(`Error creating player profile: ${err}`)
+		return null
+	}
+}
+
+export async function updateServer(id: string, newServer: db_server) {
+	try {
+		await pool.query(
+			`UPDATE servers
+       SET name = ?,
+           emoji = ?,
+           host = ?,
+           game_port = ?,
+           port = ?,
+		   user = ?,
+           pass = ?,
+           currently_online = ?,
+           players = ?
+       WHERE id = ?`,
+			[
+				newServer.name,
+				newServer.emoji,
+				newServer.host,
+				newServer.game_port,
+				newServer.port,
+				newServer.user,
+				newServer.pass,
+				newServer.currently_online,
+				newServer.players,
+				id
+			]
+		)
+
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE id = ?', [id])
+		return rows[0] || null
+	} catch (err) {
+		logger.error(`Error updating server profile: ${err}`)
+		return false
+	}
+}
+
+export async function updateServerPlayers(id: string, players: player[], total: number) {
+	try {
+		await pool.query(
+			`UPDATE servers
+       SET currently_online = ?,
+           players = ?
+       WHERE id = ?`,
+			[total, JSON.stringify(players), id]
+		)
+
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE id = ?', [id])
+		return rows[0] || null
+	} catch (err) {
+		logger.error(`Error updating server profile: ${err}`)
+		return false
 	}
 }

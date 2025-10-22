@@ -2,9 +2,9 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionF
 import { createCommandConfig, setState } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildBasedChannel, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { db_bans, db_player, db_warns, player, ServerKey } from '../../utill/types'
-import { getBansByUserId, getProfileByDId, getWarningsByUserId } from '../../utill/database_functions'
-import { dateAfterMinutes, getServerPlayer, online_server_check } from '../../utill/functions'
+import { db_bans, db_player, db_warns, player, ServerKey } from '../../../utill/types'
+import { getBansByUserId, getProfileByDId, getWarningsByUserId } from '../../../utill/database_functions'
+import { dateAfterMinutes, getServerPlayer, online_server_check } from '../../../utill/functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -72,7 +72,8 @@ export default async (
 	if (!interaction.channel) return `invalid channel`
 	const channel = (await interaction.guild.channels.cache.get(interaction.channel.id)) as GuildBasedChannel
 
-	if (!channel.isSendable() || !channel.isTextBased()) return `Either <#${channel.id}> (#${channel.name}) is not TextBased, or I do not have the required permissions to send messages there`
+	if (!channel.isSendable() || !channel.isTextBased())
+		return `Either <#${channel.id}> (#${channel.name}) is not TextBased, or I do not have the required permissions to send messages there`
 
 	if (warnings) {
 		let warnmsgid
