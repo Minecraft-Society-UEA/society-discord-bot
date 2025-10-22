@@ -9,7 +9,7 @@ import {
 	getServerByName,
 	updatePlayerProfile
 } from '../../utill/database_functions'
-import { server_token_resolver } from '~/utill/functions'
+import { server_token_resolver } from '../../utill/functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands

@@ -4,7 +4,7 @@ import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
 import { all_player_list, db_server } from '../../utill/types'
 import { getPlayerListAllServers } from '../../utill/functions'
-import { getAllServers } from '~/utill/database_functions'
+import { getAllServers } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
