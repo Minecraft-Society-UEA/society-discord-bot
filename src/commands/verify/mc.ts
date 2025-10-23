@@ -10,7 +10,7 @@ import { createCommandConfig, Flashcore, logger } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
 import type { connected_players, db_player } from '../../utill/types'
 import { generateCode, server_token_resolver } from '../../utill/functions'
-import { getProfileByDId, getProfileByMcUsername, getServerByName } from '../../utill/database_functions'
+import { getProfileByDId, getProfileByMcUsername, getServerByID } from '../../utill/database_functions'
 
 export const config = createCommandConfig({
 	description: 'verify and link your mc to the discord allowing you to join',
@@ -30,7 +30,7 @@ export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
-	const server = await getServerByName(`The Hub`)
+	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
 	if (!server) return `db server = null`
 	const username = options['mc-username']
 	const embed = new EmbedBuilder()

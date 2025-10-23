@@ -238,19 +238,9 @@ export async function getServerByID(id: string) {
 	}
 }
 
-export async function getServerByName(name: string) {
-	try {
-		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE name = ?', [name])
-		return rows.length > 0 ? rows[0] : null
-	} catch (err) {
-		logger.error(`Error fetching servers by name: ${err}`)
-		return null
-	}
-}
-
 export async function getAllServers() {
 	try {
-		const rows = await pool.query<db_server[]>('SELECT * FROM servers')
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE online = true')
 		return rows.length > 0 ? rows : null
 	} catch (err) {
 		logger.error(`Error fetching servers: ${err}`)
@@ -326,6 +316,34 @@ export async function updateServerPlayers(id: string, players: player[], total: 
 
 		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE id = ?', [id])
 		return rows[0] || null
+	} catch (err) {
+		logger.error(`Error updating server profile: ${err}`)
+		return false
+	}
+}
+
+// ---------------- Servers ----------------
+
+export async function getSettingByid(id: string) {
+	try {
+		const rows = await pool.query<any[]>('SELECT setting FROM guild_settings WHERE id = ?', [id])
+		return rows.length > 0 ? rows[0] : null
+	} catch (err) {
+		logger.error(`Error fetching servers by id: ${err}`)
+		return null
+	}
+}
+
+export async function updateSettings(id: string, setting: any) {
+	try {
+		await pool.query(
+			`UPDATE guild_settings
+       SET setting = ?
+       WHERE id = ?`,
+			[setting, id]
+		)
+
+		return true
 	} catch (err) {
 		logger.error(`Error updating server profile: ${err}`)
 		return false

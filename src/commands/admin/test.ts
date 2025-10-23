@@ -1,10 +1,10 @@
-import { PermissionFlagsBits } from 'discord.js'
-import { createCommandConfig } from 'robo.js'
-import type { ChatInputCommandInteraction } from 'discord.js'
+import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
+import { client, createCommandConfig } from 'robo.js'
+import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { connected_players } from '../../utill/types'
-import { getPlayerList } from '../../utill/functions'
-import { servers_req } from '../../utill/servers'
+import { all_player_list, db_server } from '../../utill/types'
+import { getPlayerListAllServers } from '../../utill/functions'
+import { getAllServers } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -12,8 +12,7 @@ export const config = createCommandConfig({
 	description: 'list the players currently online',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
-	defaultMemberPermissions: PermissionFlagsBits.SendMessages,
-	options: [servers_req]
+	defaultMemberPermissions: PermissionFlagsBits.Administrator
 } as const)
 
 export default async (
@@ -21,8 +20,9 @@ export default async (
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
 	// declaring variables we need
-	const server_id = options.server as string
-	const list = (await getPlayerList(server_id)) as connected_players
+	const member = interaction.member as GuildMember
+	if (!member) return `no`
+	await client.emit(`guildMemberAdd`, member)
 
-	return { content: JSON.stringify(list) }
+	return `yes`
 }

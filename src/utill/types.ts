@@ -123,11 +123,6 @@ export type checksarr = {
 	value: string
 }
 
-// working out how i want to store guild settings
-export type guild_settings = {
-	welcome_msg: welcome_settings
-}
-
 // settings for the welcome message
 export type welcome_settings = {
 	channelid: string
@@ -135,4 +130,8 @@ export type welcome_settings = {
 	description: string
 	colourhex: HexColorString
 	path: string
+}
+
+export type setting_return = {
+	setting: any
 }

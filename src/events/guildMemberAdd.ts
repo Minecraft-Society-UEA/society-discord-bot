@@ -2,7 +2,12 @@ import { AttachmentBuilder, EmbedBuilder, GuildMember, HexColorString, Role } fr
 import path from 'path'
 import { Flashcore } from 'robo.js'
 import sharp from 'sharp'
-import { guild_settings, role_storage } from '~/utill/types'
+import { role_storage, welcome_settings } from '../utill/types'
+import { getSettingByid } from '../utill/database_functions'
+
+type setting_type = {
+	setting: welcome_settings
+}
 
 export default async (member: GuildMember) => {
 	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
@@ -10,15 +15,16 @@ export default async (member: GuildMember) => {
 
 	await member.roles.add(role)
 
-	const settings = await Flashcore.get<guild_settings>(`guild_settings-${member.guild.id}`)
+	const settings = (await getSettingByid(`welcome_message`)) as setting_type
 	const embed = new EmbedBuilder()
 	const guild = member.guild
-	const channel = guild?.channels.cache.get(`${settings.welcome_msg.channelid}`)
-	const path = convertPath(settings.welcome_msg.path)
+	const channel = guild?.channels.cache.get(`${settings.setting.channelid}`)
+	const path = convertPath(settings.setting.path)
 	const file = (await image_process(
-		settings.welcome_msg.colourhex,
+		settings.setting.colourhex,
 		member.user.displayAvatarURL(),
-		path
+		path,
+		member.user.id
 	)) as AttachmentBuilder
 
 	if (!channel || !channel.isTextBased()) {
@@ -27,11 +33,11 @@ export default async (member: GuildMember) => {
 	}
 
 	embed
-		.setTitle(settings.welcome_msg.title)
-		.setDescription(settings.welcome_msg.description)
-		.setColor(settings.welcome_msg.colourhex)
+		.setTitle(settings.setting.title)
+		.setDescription(settings.setting.description)
+		.setColor(settings.setting.colourhex)
 		.setTimestamp()
-		.setImage(`attachment://done-${member.user.displayAvatarURL()}.png`)
+		.setImage(`attachment://done-${member.user.id}.png`)
 
 	await channel.send({ content: `${member}`, embeds: [embed], files: [file] })
 	return
@@ -45,7 +51,7 @@ export const convertPath = (configPath: string) => {
 	return templatePath
 }
 
-export async function image_process(hexcolor: HexColorString, avatarUrl: string, path: any) {
+export async function image_process(hexcolor: HexColorString, avatarUrl: string, path: any, userid: string) {
 	const avatarurl = avatarUrl
 	const response = await fetch(avatarurl)
 	if (!response.ok) {
@@ -79,6 +85,6 @@ export async function image_process(hexcolor: HexColorString, avatarUrl: string,
 		.png()
 		.toBuffer()
 
-	const file = new AttachmentBuilder(finalImageBuffer, { name: `done-${avatarUrl}.png` })
+	const file = new AttachmentBuilder(finalImageBuffer, { name: `done-${userid}.png` })
 	return file
 }

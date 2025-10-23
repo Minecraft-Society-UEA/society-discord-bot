@@ -16,7 +16,6 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 		const code = interaction.fields.getTextInputValue('mc-code') as string
 		const user_code = (await Flashcore.get(`verify_code-${interaction.user.id}`)) as string
 		const embed = new EmbedBuilder()
-		console.log(`1`)
 		// compare if they match
 		if (code === user_code) {
 			// declaring variables we need
@@ -25,10 +24,8 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const member = interaction.member as GuildMember
 			const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
 
-			console.log(`3`)
 			// add the players permitions
 			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${username} promote player`)
-			console.log(`4`)
 			// create a player profile in the database
 			const playerProfile = (await createPlayerProfile(interaction.user.id)) as db_player
 
@@ -48,7 +45,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId
 			) {
-				await member.setNickname(`${member.user.username} ✧ ${username}`)
+				await member.setNickname(`${member.user.displayName} ✧ ${username}`)
 				await member.roles.remove((await interaction.guild.roles.cache.get(roles.unverified)) as Role)
 				await member.roles.add((await interaction.guild.roles.cache.get(roles.mc_verified)) as Role)
 				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })

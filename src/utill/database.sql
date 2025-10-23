@@ -40,10 +40,11 @@ CREATE TABLE servers (
     user TEXT,
     pass TEXT,
     currently_online BIGINT,
-    players TEXT
+    players TEXT,
+    online BOOLEAN DEFAULT true
 )
 
 CREATE TABLE guild_settings (
     id VARCHAR(255) PRIMARY KEY,
-    players JSON
+    setting JSON
 )

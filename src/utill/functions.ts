@@ -22,8 +22,8 @@ import { TextChannel, VoiceBasedChannel } from 'discord.js'
 import { EmbedBuilder } from '@discordjs/builders'
 
 // resolve the token for a server
-export function server_token_resolver(id: string) {
-	return getState(`${id}_token`)
+export function server_token_resolver(id: string): string | null {
+	return getState<string>(`${id}_token`)
 }
 
 // a function to generate a 5 digit long code for verification
@@ -80,7 +80,6 @@ export async function getPlayerListAllServers(): Promise<all_player_list | undef
 	let total_online = 0
 	let all_players: player[] = []
 	let server_players: { id: string; players: player[] }[] = []
-
 	for (const server of servers) {
 		try {
 			const res = await fetch(`${server.host}:${server.port}/api/players`, {
@@ -263,7 +262,6 @@ export async function updatePlayersChannel() {
 	const embed = new EmbedBuilder()
 	const servers = (await getAllServers()) as db_server[]
 	let tot_online: number = 0
-
 	embed.setTitle('✦ Online players across all servers:').setTimestamp().setColor([136, 61, 255])
 
 	for (const server of servers) {
@@ -271,7 +269,7 @@ export async function updatePlayersChannel() {
 			server.players = []
 		} else if (typeof server.players === 'string') {
 			try {
-				server.players = JSON.parse(server.players)
+				server.players = await JSON.parse(server.players)
 			} catch {
 				server.players = []
 			}
@@ -296,7 +294,7 @@ export async function updatePlayersChannel() {
 	const channel = (await guild.channels.cache.get(channelid2)) as VoiceBasedChannel
 	if (!channel.isVoiceBased()) return console.log(`channel invalid`)
 
-	await channel.setName(`✦ Online: ${tot_online}/300`)
+	await channel.setName(`👥 Online: ${tot_online}/300`)
 
 	if (messageid) {
 		try {

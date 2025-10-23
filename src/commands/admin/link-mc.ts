@@ -6,7 +6,7 @@ import { connected_players, db_player } from '../../utill/types'
 import {
 	getProfileByDId,
 	getProfileByMcUsername,
-	getServerByName,
+	getServerByID,
 	updatePlayerProfile
 } from '../../utill/database_functions'
 import { server_token_resolver } from '../../utill/functions'
@@ -48,7 +48,7 @@ export default async (
 	const profile = (await getProfileByDId(user.id)) as db_player
 	const already_verified = await getProfileByDId(user.id)
 	const username_inuse = await getProfileByMcUsername(mc_name)
-	const server = await getServerByName(`The Hub`)
+	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
 	if (!server) return `db server = null`
 	let data_hub
 
