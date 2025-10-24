@@ -34,7 +34,6 @@ export default async (member: GuildMember) => {
 
 	embed
 		.setTitle(settings.setting.title)
-		.setDescription(settings.setting.description)
 		.setColor(settings.setting.colourhex)
 		.setTimestamp()
 		.setImage(`attachment://done-${member.user.id}.png`)
@@ -81,7 +80,7 @@ export async function image_process(hexcolor: HexColorString, avatarUrl: string,
 
 	const template = sharp(templatePath).resize(1000, 600)
 	const finalImageBuffer = await template
-		.composite([{ input: borderedImage, top: 200, left: 385 }])
+		.composite([{ input: borderedImage, top: 100, left: 385 }])
 		.png()
 		.toBuffer()
 

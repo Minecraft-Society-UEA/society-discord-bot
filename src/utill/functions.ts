@@ -252,7 +252,7 @@ export function dateAfterMinutes(minutes: number): string {
 
 export async function updatePlayersChannel() {
 	console.log(`updating players channel`)
-	const guildid = process.env.GUILD_ID
+	const guildid = process.env.DISCORD_GUILD_ID
 	const channelid = process.env.SERVER_LIST_CHANNEL_ID
 	const channelid2 = process.env.ONLINE_CHANNEL_ID
 	const messageid = (await Flashcore.get<string>(`players_msg_id`)) ?? undefined

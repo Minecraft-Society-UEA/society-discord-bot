@@ -127,7 +127,6 @@ export type checksarr = {
 export type welcome_settings = {
 	channelid: string
 	title: string
-	description: string
 	colourhex: HexColorString
 	path: string
 }
