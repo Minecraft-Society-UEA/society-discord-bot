@@ -1,8 +1,5 @@
-import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 'discord.js'
-import { Flashcore, logger } from 'robo.js'
-import { mc_command, message_player } from '../../utill/functions'
-import { db_player, role_storage } from '../../utill/types'
-import { createPlayerProfile, updatePlayerProfile, updateSettings } from '../../utill/database_functions'
+import { ModalSubmitInteraction, Client } from 'discord.js'
+import { updateSettings } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit

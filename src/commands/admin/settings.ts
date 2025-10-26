@@ -28,6 +28,10 @@ export const config = createCommandConfig({
 				{
 					name: `welcome Settings`,
 					value: `welcome_message`
+				},
+				{
+					name: `role storage`,
+					value: `roles`
 				}
 			]
 		}

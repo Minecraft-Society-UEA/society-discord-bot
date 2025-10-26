@@ -2,7 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig, Flashcore } from 'robo.js'
 import type { ChatInputCommandInteraction, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { getProfileByDId } from '../../utill/database_functions'
+import { getProfileByDId, getSettingByid } from '../../utill/database_functions'
 import { db_player, role_storage } from '../../utill/types'
 import { mc_command, message_player, online_server_check } from '../../utill/functions'
 
@@ -44,7 +44,7 @@ export default async (
 	await mc_command(online, `lp user ${profile.mc_username} promote committee`)
 	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully Become a committee :tada:`)
 
-	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
+	const roles = (await getSettingByid(`roles`)) as role_storage
 	const role = (await interaction.guild.roles.cache.get(roles.committee)) as Role
 
 	await user.roles.add(role)

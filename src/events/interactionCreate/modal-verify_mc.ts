@@ -2,7 +2,7 @@ import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 
 import { Flashcore, logger } from 'robo.js'
 import { mc_command, message_player } from '../../utill/functions'
 import { db_player, role_storage } from '../../utill/types'
-import { createPlayerProfile, updatePlayerProfile } from '../../utill/database_functions'
+import { createPlayerProfile, getSettingByid, updatePlayerProfile } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
@@ -22,7 +22,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const username = (await Flashcore.get(`verify_code-mc_username-${interaction.user.id}`)) as string
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const member = interaction.member as GuildMember
-			const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
+			const roles = (await getSettingByid(`roles`)) as role_storage
 
 			// add the players permitions
 			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${username} promote player`)
@@ -40,7 +40,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// send the player a sucsess message
 			await message_player(username, `UEAMCSOC VERIFY ✦ Successfully Verified`)
 
-			// set player nickname in disocrds
+			// set player nickname and roles in disocrds
 			if (
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId

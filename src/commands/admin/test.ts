@@ -1,10 +1,7 @@
-import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
+import { PermissionFlagsBits } from 'discord.js'
 import { client, createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { all_player_list, db_server } from '../../utill/types'
-import { getPlayerListAllServers } from '../../utill/functions'
-import { getAllServers } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -22,7 +19,7 @@ export default async (
 	// declaring variables we need
 	const member = interaction.member as GuildMember
 	if (!member) return `no`
-	await client.emit(`guildMemberAdd`, member)
+	//await client.emit(`guildMemberAdd`, member)
 
 	return `yes`
 }

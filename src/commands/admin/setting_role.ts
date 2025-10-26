@@ -1,8 +1,9 @@
 import { PermissionFlagsBits } from 'discord.js'
-import { createCommandConfig, Flashcore } from 'robo.js'
+import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
 import { role_storage } from '../../utill/types'
+import { getSettingByid, updateSettings } from '../../utill/database_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -27,6 +28,18 @@ export const config = createCommandConfig({
 				{
 					name: `tester`,
 					value: `tester`
+				},
+				{
+					name: `email_verified`,
+					value: `email_verified`
+				},
+				{
+					name: `committee`,
+					value: `committee`
+				},
+				{
+					name: `unverified`,
+					value: `unverified`
 				}
 			],
 			required: true
@@ -51,8 +64,8 @@ export default async (
 	if (!interaction.guild) return
 	const role = options.role as Role
 	const roletype = options.stored
-	const roles = Flashcore.get(`mc_role_id`) as role_storage
-	if (!role) return { content: "Invalid role" }
+	const roles = (await getSettingByid(`roles`)) as role_storage
+	if (!role) return { content: 'Invalid role' }
 
 	switch (roletype) {
 		case `mc_verifide`:
@@ -64,11 +77,20 @@ export default async (
 		case `tester`:
 			roles.tester = role.id
 			break
+		case `email_verified`:
+			roles.email_verified = role.id
+			break
+		case `unverified`:
+			roles.unverified = role.id
+			break
+		case `committee`:
+			roles.committee = role.id
+			break
 		default:
 			return { content: `stored role error` }
 	}
 
-	await Flashcore.set(`mc_role_id`, roles)
+	await updateSettings(`roles`, roles)
 
-	return { content: `Successfully updated ${role.name} ${role.id} as "${roletype}" role.` }
+	return { content: `Successfully updated ${role.name} | ${role.id} as "${roletype}" role.`, flags: [`Ephemeral`] }
 }

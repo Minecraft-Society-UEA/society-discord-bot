@@ -3,6 +3,7 @@ import {
 	all_player_list,
 	check_member_return,
 	connected_players,
+	db_online_player,
 	db_player,
 	db_server,
 	db_warns,
@@ -12,7 +13,10 @@ import {
 } from './types'
 import {
 	createBan,
+	getAllPlayers,
 	getAllServers,
+	getPlayersByName,
+	getPlayersByServer,
 	getProfileByDId,
 	getServerByID,
 	getWarningsEffectBansByUserId,
@@ -20,6 +24,7 @@ import {
 } from './database_functions'
 import { TextChannel, VoiceBasedChannel } from 'discord.js'
 import { EmbedBuilder } from '@discordjs/builders'
+import { match } from 'assert'
 
 // resolve the token for a server
 export function server_token_resolver(id: string): string | null {
@@ -75,82 +80,25 @@ export async function loadTokens() {
 }
 
 // a function to get all online players across all servers
-export async function getPlayerListAllServers(): Promise<all_player_list | undefined> {
-	const servers = (await getAllServers()) as db_server[]
-	let total_online = 0
-	let all_players: player[] = []
-	let server_players: { id: string; players: player[] }[] = []
-	for (const server of servers) {
-		try {
-			const res = await fetch(`${server.host}:${server.port}/api/players`, {
-				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
-			})
-
-			if (!res.ok) {
-				logger.error(`Error getting ${server} players.`)
-				return
-			}
-
-			const data = (await res.json()) as connected_players
-
-			server.currently_online = data.online_players.length
-			server.players = data.online_players
-
-			await updateServerPlayers(server.id, data.online_players, data.online_players.length)
-
-			total_online = total_online + data.online_players.length
-			all_players = all_players.concat(data.online_players)
-			server_players.push({ id: server.id, players: data.online_players })
-		} catch (err) {
-			logger.error(`Failed to fetch ${server} players: ${err}`)
-			return
-		}
-	}
-
-	return {
-		server_players,
-		total_online,
-		all_players
-	}
-}
+export async function getPlayerListAllServers() {}
 
 // a function to get all online players across all servers
 export async function getPlayerList(serverid: string): Promise<connected_players | undefined> {
 	const server = (await getServerByID(serverid)) as db_server
+	const connected_players = {} as connected_players
+	const players = (await getPlayersByServer(serverid)) as player[]
 
-	try {
-		const res = await fetch(`${server.host}:${server.port}/api/players`, {
-			headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
-		})
+	connected_players.max_players = 300
+	connected_players.online_players = players
 
-		if (!res.ok) {
-			logger.error(`Error getting ${server} players.`)
-			return
-		}
-
-		const data = (await res.json()) as connected_players
-		return data
-	} catch (err) {
-		logger.error(`Failed to fetch ${server} players: ${err}`)
-		return
-	}
+	return connected_players
 }
 
 // check if player is online and returns what server there in
 export async function online_server_check(mc_name: string) {
-	const lists = (await getPlayerListAllServers()) as all_player_list
-
-	const servers = (await getAllServers()) as db_server[]
-
-	for (const server of servers) {
-		let found
-		const players = server.players
-		for (const player of players) {
-			if (player.name === mc_name) return server.id
-		}
-	}
-
-	return false
+	const player = (await getPlayersByName(mc_name)) as db_online_player
+	if (!player) return false
+	return player ? player.server : false
 }
 
 export async function mc_command(id: string, command: string) {
@@ -252,62 +200,94 @@ export function dateAfterMinutes(minutes: number): string {
 
 export async function updatePlayersChannel() {
 	console.log(`updating players channel`)
-	const guildid = process.env.DISCORD_GUILD_ID
-	const channelid = process.env.SERVER_LIST_CHANNEL_ID
-	const channelid2 = process.env.ONLINE_CHANNEL_ID
-	const messageid = (await Flashcore.get<string>(`players_msg_id`)) ?? undefined
+	const guildId = process.env.DISCORD_GUILD_ID
+	const textChannelId = process.env.SERVER_LIST_CHANNEL_ID
+	const voiceChannelId = process.env.ONLINE_CHANNEL_ID
+	const messageId = (await Flashcore.get<string>(`players_msg_id`)) ?? undefined
 
-	await getPlayerListAllServers()
+	if (!guildId || !textChannelId || !voiceChannelId) return console.error(`Missing env vars`)
+
+	const guild = client.guilds.cache.get(guildId)
+	if (!guild) return console.error(`Guild not found`)
+
+	const textChannel = guild.channels.cache.get(textChannelId) as TextChannel
+	const voiceChannel = guild.channels.cache.get(voiceChannelId) as VoiceBasedChannel
+	if (!textChannel?.isTextBased() || !textChannel.isSendable()) return console.error(`Invalid text channel`)
+	if (!voiceChannel?.isVoiceBased()) return console.error(`Invalid voice channel`)
+
+	const servers = (await getAllServers()) as db_server[]
+	const players = (await getAllPlayers()) as db_online_player[]
+	let totalOnline = 0
 
 	const embed = new EmbedBuilder()
-	const servers = (await getAllServers()) as db_server[]
-	let tot_online: number = 0
-	embed.setTitle('✦ Online players across all servers:').setTimestamp().setColor([136, 61, 255])
+		.setTitle('✦ Online players across all servers:')
+		.setTimestamp()
+		.setColor([136, 61, 255])
 
 	for (const server of servers) {
-		if (!server.players) {
-			server.players = []
-		} else if (typeof server.players === 'string') {
-			try {
-				server.players = await JSON.parse(server.players)
-			} catch {
-				server.players = []
-			}
-		}
-
-		tot_online += server.players.length
+		const serverPlayers = players.filter((p) => p.server === server.id)
+		totalOnline += serverPlayers.length
 
 		embed.addFields({
-			name: `${server.emoji} ${server.name}: ${server.players.length} Players`,
-			value: server.players.length > 0 ? server.players.map((p) => p.name).join(', ') : ''
+			name: `${server.emoji} ${server.name}: ${serverPlayers.length} Players`,
+			value: serverPlayers.length > 0 ? serverPlayers.map((p) => p.name).join(', ') : '\u200b'
 		})
 	}
 
-	embed.setDescription(`Online: ${tot_online}/300`)
+	embed.setDescription(`Online: ${totalOnline}/300`)
 
-	if (!guildid || !channelid || !channelid2) return console.error(`env not loaded correctly?...`)
-
-	const guild = await client.guilds.cache.get(guildid)
-	if (!guild) return console.error(`guild not gotten from client...`)
-	const channelmsg = (await guild.channels.cache.get(channelid)) as TextChannel
-	if (!channelmsg?.isSendable() || !channelmsg.isTextBased()) return console.log(`channel invalid`)
-	const channel = (await guild.channels.cache.get(channelid2)) as VoiceBasedChannel
-	if (!channel.isVoiceBased()) return console.log(`channel invalid`)
-
-	await channel.setName(`👥 Online: ${tot_online}/300`)
-
-	if (messageid) {
-		try {
-			const msg = await channelmsg.messages.fetch(messageid)
-			await msg.edit({ embeds: [embed] })
-		} catch (err) {
-			console.warn(`Failed to edit existing message, sending new one instead:`, err)
-			const msg = await channelmsg.send({ embeds: [embed] })
-			await Flashcore.set<string>('players_msg_id', msg.id)
+	try {
+		const newName = `👥 Online: ${totalOnline}/300`
+		if (voiceChannel.name !== newName) {
+			voiceChannel.setName(newName)
 		}
-	} else {
-		const msg = await channelmsg.send({ embeds: [embed] })
-		await Flashcore.set<string>('players_msg_id', msg.id)
+	} catch (err) {
+		logger.warn(`Failed to rename channel "${voiceChannelId}": ${err}`)
 	}
-	return
+
+	try {
+		const newEmbedJSON = JSON.stringify(embed.toJSON())
+		const lastEmbedJSON = await Flashcore.get<string>('players_embed_cache')
+
+		if (newEmbedJSON !== lastEmbedJSON) {
+			if (messageId) {
+				try {
+					const msg = await textChannel.messages.fetch(messageId)
+					await msg.edit({ embeds: [embed] })
+				} catch {
+					const msg = await textChannel.send({ embeds: [embed] })
+					await Flashcore.set('players_msg_id', msg.id)
+				}
+			} else {
+				const msg = await textChannel.send({ embeds: [embed] })
+				await Flashcore.set('players_msg_id', msg.id)
+			}
+			await Flashcore.set('players_embed_cache', newEmbedJSON)
+		}
+	} catch (err) {
+		logger.error(`Failed to update player embed message: ${err}`)
+	}
+}
+
+export async function refreshOnlinePlayers() {
+	const servers = (await getAllServers()) as db_server[]
+	for (const server of servers) {
+		try {
+			const res = await fetch(`${server.host}:${server.port}/api/players`, {
+				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
+			})
+
+			if (!res.ok) {
+				logger.error(`Error getting ${server} players.`)
+				return
+			}
+
+			const data = (await res.json()) as connected_players
+
+			await updateServerPlayers(server.id, data.online_players)
+		} catch (err) {
+			logger.error(`Failed to fetch ${server.name} players: ${err}`)
+			return
+		}
+	}
 }

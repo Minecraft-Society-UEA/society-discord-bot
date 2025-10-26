@@ -1,12 +1,13 @@
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig, logger } from 'robo.js'
-import type { ChatInputCommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction, GuildMember, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { connected_players, db_player } from '../../utill/types'
+import { connected_players, db_player, role_storage } from '../../utill/types'
 import {
 	getProfileByDId,
 	getProfileByMcUsername,
 	getServerByID,
+	getSettingByid,
 	updatePlayerProfile
 } from '../../utill/database_functions'
 import { server_token_resolver } from '../../utill/functions'
@@ -38,7 +39,7 @@ export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
-	if (!interaction.guildId) return
+	if (!interaction.guild || !interaction.guild.members.me) return
 	// declaring variables we need
 	const user = options.user
 	const mc_name = options.mc_username
@@ -49,6 +50,8 @@ export default async (
 	const already_verified = await getProfileByDId(user.id)
 	const username_inuse = await getProfileByMcUsername(mc_name)
 	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
+	const member = interaction.member as GuildMember
+	const roles = (await getSettingByid(`roles`)) as role_storage
 	if (!server) return `db server = null`
 	let data_hub
 
@@ -96,6 +99,19 @@ export default async (
 	profile.mc_rank === `verified`
 
 	await updatePlayerProfile(user.id, profile)
+
+	// set player nickname and roles in disocrds
+	if (
+		interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
+		member.id !== interaction.guild.ownerId
+	) {
+		await member.setNickname(`${member.user.displayName} ✧ ${mc_name}`)
+		await member.roles.remove((await interaction.guild.roles.cache.get(roles.unverified)) as Role)
+		await member.roles.add((await interaction.guild.roles.cache.get(roles.mc_verified)) as Role)
+		await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
+	} else {
+		logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
+	}
 
 	// create embed
 	embed

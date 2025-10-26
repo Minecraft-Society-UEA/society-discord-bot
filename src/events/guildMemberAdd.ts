@@ -1,4 +1,13 @@
-import { AttachmentBuilder, EmbedBuilder, GuildMember, HexColorString, Role } from 'discord.js'
+import {
+	ActionRowBuilder,
+	AttachmentBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	EmbedBuilder,
+	GuildMember,
+	HexColorString,
+	Role
+} from 'discord.js'
 import path from 'path'
 import { Flashcore } from 'robo.js'
 import sharp from 'sharp'
@@ -17,6 +26,7 @@ export default async (member: GuildMember) => {
 
 	const settings = (await getSettingByid(`welcome_message`)) as setting_type
 	const embed = new EmbedBuilder()
+	const button = new ButtonBuilder()
 	const guild = member.guild
 	const channel = guild?.channels.cache.get(`${settings.setting.channelid}`)
 	const path = convertPath(settings.setting.path)
@@ -32,13 +42,20 @@ export default async (member: GuildMember) => {
 		return
 	}
 
+	button
+		.setLabel(`Become A Member!`)
+		.setURL(`https://www.ueasu.org/communities/societies/group/minecraft/`)
+		.setStyle(ButtonStyle.Link)
+		.setEmoji(`🌟`)
+
+	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
+
 	embed
 		.setTitle(settings.setting.title)
 		.setColor(settings.setting.colourhex)
-		.setTimestamp()
 		.setImage(`attachment://done-${member.user.id}.png`)
 
-	await channel.send({ content: `${member}`, embeds: [embed], files: [file] })
+	await channel.send({ content: `${member}`, embeds: [embed], files: [file], components: [row] })
 	return
 }
 

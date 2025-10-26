@@ -1,7 +1,7 @@
 import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
 import { db_player, role_storage } from '../../utill/types'
-import { getProfileByDId, updatePlayerProfile } from '../../utill/database_functions'
+import { getProfileByDId, getSettingByid, updatePlayerProfile } from '../../utill/database_functions'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
@@ -33,7 +33,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// update the players profile with the new data
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
-			const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
+			const roles = (await getSettingByid(`roles`)) as role_storage
 
 			if (
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&

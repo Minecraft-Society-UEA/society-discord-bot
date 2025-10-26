@@ -1,9 +1,8 @@
 import { ActivityType } from 'discord.js'
-import { client, Flashcore, logger } from 'robo.js'
+import { client, logger } from 'robo.js'
 import { AsyncTask, CronJob, ToadScheduler } from 'toad-scheduler'
-import { getPlayerListAllServers, loadTokens, updatePlayersChannel } from '../utill/functions'
+import { getPlayerListAllServers, loadTokens, refreshOnlinePlayers, updatePlayersChannel } from '../utill/functions'
 import mariadb from 'mariadb'
-import { role_storage } from '../utill/types'
 
 export const pool = mariadb.createPool({
 	host: process.env.DB_HOST,
@@ -25,8 +24,8 @@ export default async () => {
 
 	// loads tokens on start up for making requests to the servers
 	await loadTokens()
-	await getPlayerListAllServers()
-
+	refreshOnlinePlayers()
+	updatePlayersChannel()
 	// create a cron job to go off on every 12th hour t oreload the tokens with fresh ones
 	const scheduler1 = new ToadScheduler()
 	const scheduler2 = new ToadScheduler()
@@ -39,11 +38,24 @@ export default async () => {
 		}
 	})
 
+	async function refreshandchannle() {
+		await refreshOnlinePlayers()
+		updatePlayersChannel()
+	}
+
 	const task_update_players = new AsyncTask('update player message and channel', async () => {
 		try {
-			await updatePlayersChannel()
-			await new Promise((resolve) => setTimeout(resolve, 30000))
-			await updatePlayersChannel()
+			refreshOnlinePlayers()
+			await new Promise((resolve) => setTimeout(resolve, 10000))
+			refreshandchannle()
+			await new Promise((resolve) => setTimeout(resolve, 10000))
+			refreshOnlinePlayers()
+			await new Promise((resolve) => setTimeout(resolve, 10000))
+			refreshandchannle()
+			await new Promise((resolve) => setTimeout(resolve, 10000))
+			refreshOnlinePlayers()
+			await new Promise((resolve) => setTimeout(resolve, 10000))
+			refreshandchannle()
 		} catch (error) {
 			logger.error(`Error in task execution:\n${error}`)
 		}
@@ -58,13 +70,4 @@ export default async () => {
 	scheduler2.addCronJob(job_update_players)
 
 	logger.ready('started cron jobs to fetch new tokens every 12th hour and refresh the online players every minute')
-
-	const roles = ((await Flashcore.get(`mc_role_id`)) ?? {}) as role_storage
-	roles.mc_verified = `1425469719305126030`
-	roles.email_verified = `1416022868390580275`
-	roles.member = `1416022441444118599`
-	roles.tester = `1416022556523233322`
-	roles.unverified = `1418967932108673045`
-	roles.committee = `1403424979634094080`
-	await Flashcore.set(`mc_role_id`, roles)
 }

@@ -54,6 +54,15 @@ export type db_player = {
 	created_at: string
 }
 
+export type db_online_player = {
+	uuid: string
+	name: string
+	level: number
+	health: number
+	gamemode: string
+	server: string
+}
+
 // type of player warnings in the db
 export type db_warns = {
 	warn_id: string
