@@ -26,7 +26,14 @@ w
 
 - 🌐 [Website](https://uncommon34.dev)
 - 💬 [Discord](https://discord.gg/g2p8hBe9AG)
+- - 🏠 [GitHub](https://github.com/Uncommon-34)
 
 ### 👤 Cailey _(TheCatzi)_
+
+- 🏠 [GitHub](https://github.com/AxonViper)
+
+### 👤 Asad _(pseudo9561)_
+
+- 🏠 [GitHub](https://github.com/AsadHumayun)
 
 ---
