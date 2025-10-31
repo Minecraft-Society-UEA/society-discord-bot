@@ -3,6 +3,10 @@ import { Flashcore, logger } from 'robo.js'
 import { db_player, role_storage } from '../../utill/types'
 import { getProfileByDId, getSettingByid, updatePlayerProfile } from '../../utill/database_functions'
 
+type role_settings = {
+	setting: role_storage
+}
+
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
 	if (!interaction.isModalSubmit() || !interaction.guild?.members.me) return
@@ -33,14 +37,14 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// update the players profile with the new data
 			await updatePlayerProfile(interaction.user.id, playerProfile)
 
-			const roles = (await getSettingByid(`roles`)) as role_storage
+			const roles = (await getSettingByid(`roles`)) as role_settings
 
 			if (
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId
 			) {
 				await member.setNickname(`${name_pref} ✧ ${playerProfile.mc_username}`)
-				await member.roles.add((await interaction.guild.roles.cache.get(roles.email_verified)) as Role)
+				await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.email_verified)) as Role)
 			} else {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
 			}

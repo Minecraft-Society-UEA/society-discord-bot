@@ -20,6 +20,5 @@ export default async (
 	const member = interaction.member as GuildMember
 	if (!member) return `no`
 	//await client.emit(`guildMemberAdd`, member)
-
 	return `yes`
 }

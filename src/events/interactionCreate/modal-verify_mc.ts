@@ -4,6 +4,10 @@ import { mc_command, message_player } from '../../utill/functions'
 import { db_player, role_storage } from '../../utill/types'
 import { createPlayerProfile, getSettingByid, updatePlayerProfile } from '../../utill/database_functions'
 
+type role_settings = {
+	setting: role_storage
+}
+
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit
 	if (!interaction.isModalSubmit() || !interaction.guild || !interaction.guild.members.me)
@@ -22,7 +26,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const username = (await Flashcore.get(`verify_code-mc_username-${interaction.user.id}`)) as string
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const member = interaction.member as GuildMember
-			const roles = (await getSettingByid(`roles`)) as role_storage
+			const roles = (await getSettingByid(`roles`)) as role_settings
 
 			// add the players permitions
 			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${username} promote player`)
@@ -46,8 +50,8 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				member.id !== interaction.guild.ownerId
 			) {
 				await member.setNickname(`${member.user.displayName} ✧ ${username}`)
-				await member.roles.remove((await interaction.guild.roles.cache.get(roles.unverified)) as Role)
-				await member.roles.add((await interaction.guild.roles.cache.get(roles.mc_verified)) as Role)
+				await member.roles.remove((await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role)
+				await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
 				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
 			} else {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)

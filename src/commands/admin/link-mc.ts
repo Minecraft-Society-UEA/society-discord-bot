@@ -11,6 +11,7 @@ import {
 	updatePlayerProfile
 } from '../../utill/database_functions'
 import { server_token_resolver } from '../../utill/functions'
+import { Settings } from 'http2'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -35,6 +36,10 @@ export const config = createCommandConfig({
 	defaultMemberPermissions: PermissionFlagsBits.ManageRoles
 } as const)
 
+type role_settings = {
+	setting: role_storage
+}
+
 export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
@@ -51,7 +56,7 @@ export default async (
 	const username_inuse = await getProfileByMcUsername(mc_name)
 	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
 	const member = interaction.member as GuildMember
-	const roles = (await getSettingByid(`roles`)) as role_storage
+	const roles = (await getSettingByid(`roles`)) as role_settings
 	if (!server) return `db server = null`
 	let data_hub
 
@@ -106,8 +111,8 @@ export default async (
 		member.id !== interaction.guild.ownerId
 	) {
 		await member.setNickname(`${member.user.displayName} ✧ ${mc_name}`)
-		await member.roles.remove((await interaction.guild.roles.cache.get(roles.unverified)) as Role)
-		await member.roles.add((await interaction.guild.roles.cache.get(roles.mc_verified)) as Role)
+		await member.roles.remove((await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role)
+		await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
 		await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
 	} else {
 		logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)

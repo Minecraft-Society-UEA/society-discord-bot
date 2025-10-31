@@ -1,7 +1,5 @@
 # 📚 Resources & Links
 
-w
-
 - [Discord.js Docs](https://discord.js.org/docs/packages/discord.js/14.21.0)
 - [Discord.js Guide](https://discordjs.guide/#before-you-begin)
 - [Robo.js Docs](https://robojs.dev/getting-started)
@@ -26,7 +24,7 @@ w
 
 - 🌐 [Website](https://uncommon34.dev)
 - 💬 [Discord](https://discord.gg/g2p8hBe9AG)
-- - 🏠 [GitHub](https://github.com/Uncommon-34)
+- 🏠 [GitHub](https://github.com/Uncommon-34)
 
 ### 👤 Cailey _(TheCatzi)_
 

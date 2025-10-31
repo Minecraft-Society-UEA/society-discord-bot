@@ -23,6 +23,10 @@ export const config = createCommandConfig({
 	defaultMemberPermissions: PermissionFlagsBits.ManageRoles
 } as const)
 
+type role_settings = {
+	setting: role_storage
+}
+
 // the main code that executes when the command is used
 export default async (
 	// interaction in the interaction coming from discord for the command
@@ -39,8 +43,8 @@ export default async (
 	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_username} parent set verified`)
 	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully removed Tester :tada:`)
 
-	const roles = (await getSettingByid(`roles`)) as role_storage
-	const role = (await interaction.guild.roles.cache.get(roles.tester)) as Role
+	const roles = (await getSettingByid(`roles`)) as role_settings
+	const role = (await interaction.guild.roles.cache.get(roles.setting.tester)) as Role
 
 	await user.roles.remove(role)
 

@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"ignoreDeprecations": "6.0",
 		"target": "ESNext",
 		"lib": ["esnext"],
 		"baseUrl": ".",
@@ -18,6 +17,6 @@
 		"isolatedModules": true,
 		"incremental": true
 	},
-	"include": ["**/*.ts"],
+	"include": ["**/*.ts", "config/robo.mts"],
 	"exclude": ["node_modules"]
 }
