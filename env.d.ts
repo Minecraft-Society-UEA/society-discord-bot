@@ -21,6 +21,10 @@ declare global {
 			SERVER_LIST_CHANNEL_ID: string
 			ONLINE_CHANNEL_ID: string
 			INTRO_CHANNLE_ID: string
+			SU_MEMBER_PAGE: string
+			SU_LOGIN_PAGE: string
+			SU_USER: string
+			SU_PASS: string
 		}
 	}
 }

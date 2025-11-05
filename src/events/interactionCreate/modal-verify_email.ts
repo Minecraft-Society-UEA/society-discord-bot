@@ -26,7 +26,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 		// compare if they match
 		if (code === user_code) {
 			// declaring variables we need
-			const email = (await Flashcore.get(`verify_email-email-${interaction.user.id}`)) as string
+			const email = ((await Flashcore.get(`verify_email-email-${interaction.user.id}`)) as string).split(`@`)[0]
 
 			// create a player profile in the database
 			const playerProfile = (await getProfileByDId(interaction.user.id)) as db_player

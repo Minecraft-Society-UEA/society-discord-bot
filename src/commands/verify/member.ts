@@ -1,7 +1,16 @@
-import { EmbedBuilder } from 'discord.js'
-import { createCommandConfig } from 'robo.js'
-import type { ChatInputCommandInteraction } from 'discord.js'
-import type { CommandResult } from 'robo.js'
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ChatInputCommandInteraction,
+	EmbedBuilder,
+	GuildMember,
+	Role
+} from 'discord.js'
+import { CommandResult, createCommandConfig, Flashcore } from 'robo.js'
+import { extractIds, fetchTableHtml, log, validateMembers } from '../../utill/functions'
+import { createMembers, getMemberUserId, getSettingByid } from '../../utill/database_functions'
+import { role_storage } from '../../utill/types'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -12,15 +21,66 @@ export const config = createCommandConfig({
 	sage: { ephemeral: true }
 } as const)
 
+type role_settings = {
+	setting: role_storage
+}
+
 // the main code that executes when the command is used
 export default async (
 	// interaction in the interaction coming from discord for the command
 	interaction: ChatInputCommandInteraction
 ): Promise<CommandResult> => {
 	// declaring variables we need
+	if (!interaction.guild) return `invalid guild`
+	const lastUsed = (await Flashcore.get('lastused')) as number | null
+	const now = Date.now()
 	const embed = new EmbedBuilder()
+	const button = new ButtonBuilder()
+	const dmember = interaction.member as GuildMember
+	const roles = (await getSettingByid(`roles`)) as role_settings
 
-	return {
-		embeds: [embed.setTitle(`✦ Not ready yet — an announcement will follow when it is set up`).setColor(`Green`)]
+	if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
+		const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
+
+		return {
+			embeds: [embed.setTitle(`Member verify is on cooldown — wait <t:${remaining}:R>`).setColor('Red')],
+			flags: 'Ephemeral' as const
+		}
+	}
+
+	await Flashcore.set('lastused', now)
+
+	const html = await fetchTableHtml()
+	log.info(`recived html`)
+	const ids = await extractIds(html)
+	await createMembers(ids)
+	log.info(`saved members from html`)
+
+	await validateMembers()
+
+	const member = getMemberUserId(interaction.user.id)
+
+	if (!member) {
+		return {
+			embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					button
+						.setLabel(`Become A Member!`)
+						.setURL(`https://www.ueasu.org/communities/societies/group/minecraft/`)
+						.setStyle(ButtonStyle.Link)
+						.setEmoji(`🌟`)
+				)
+			]
+		}
+	} else {
+		await dmember.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
+		return {
+			embeds: [
+				embed
+					.setTitle(`✦ Are now a linked member! — you can now join our awsome smp and all our other worlds`)
+					.setColor(`Green`)
+			]
+		}
 	}
 }

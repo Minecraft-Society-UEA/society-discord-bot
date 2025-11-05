@@ -50,7 +50,6 @@ export type db_player = {
 	bed_mc_username: string | null
 	mc_uuid: string | null
 	mc_rank: mc_rank_type
-	is_member: boolean
 	created_at: string
 }
 
@@ -84,6 +83,7 @@ export type db_bans = {
 	created_at: string
 }
 
+// type for servers in the db
 export type db_server = {
 	id: string
 	name: string
@@ -95,6 +95,12 @@ export type db_server = {
 	pass: string
 	currently_online: number
 	players: player[]
+}
+
+// type for member status storage
+export type db_member = {
+	id: string
+	user_id: string
 }
 
 //the type /server/command returns

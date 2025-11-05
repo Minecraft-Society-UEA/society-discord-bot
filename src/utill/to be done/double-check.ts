@@ -1,9 +1,9 @@
 import { EmbedBuilder, GuildMember, Role, type ChatInputCommandInteraction } from 'discord.js'
 import { createCommandConfig, Flashcore } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { getProfileByDId, updatePlayerProfile } from '../../utill/database_functions'
-import { mc_command, message_player, online_server_check } from '../../utill/functions'
-import { checksarr, db_player, role_storage } from '../../utill/types'
+import { getProfileByDId, updatePlayerProfile } from '../database_functions'
+import { mc_command, message_player, online_server_check } from '../functions'
+import { checksarr, db_player, role_storage } from '../types'
 
 export const config = createCommandConfig({
 	description: 'double checks your status and promotes bedrock account if nto already',
