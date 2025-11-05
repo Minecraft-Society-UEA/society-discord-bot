@@ -9,8 +9,8 @@ import {
 } from 'discord.js'
 import { CommandResult, createCommandConfig, Flashcore } from 'robo.js'
 import { extractIds, fetchTableHtml, log, validateMembers } from '../../utill/functions'
-import { createMembers, getMemberUserId, getSettingByid } from '../../utill/database_functions'
-import { role_storage } from '../../utill/types'
+import { createMembers, getMemberUserId, getProfileByDId, getSettingByid } from '../../utill/database_functions'
+import { db_player, role_storage } from '../../utill/types'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -38,6 +38,10 @@ export default async (
 	const button = new ButtonBuilder()
 	const dmember = interaction.member as GuildMember
 	const roles = (await getSettingByid(`roles`)) as role_settings
+	const profile = (await getProfileByDId(interaction.user.id)) as db_player
+
+	if (!profile.uea_email) return { content: `You need to link you email with /verify email`, flags: `Ephemeral` }
+	if (!profile.mc_uuid) return { content: `You need to link you mc account with /verify mc`, flags: `Ephemeral` }
 
 	if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
 		const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
@@ -51,7 +55,6 @@ export default async (
 	await Flashcore.set('lastused', now)
 
 	const html = await fetchTableHtml()
-	log.info(`recived html`)
 	const ids = await extractIds(html)
 	await createMembers(ids)
 	log.info(`saved members from html`)

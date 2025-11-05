@@ -375,7 +375,7 @@ export async function validateMembers() {
 				continue
 			}
 
-			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_username} promote player`)
+			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} promote player`)
 
 			profile.mc_rank = `member`
 
@@ -408,7 +408,6 @@ export async function fetchTableHtml(): Promise<string> {
 	const browser = await puppeteer.launch({ headless: true })
 	const page = await browser.newPage()
 
-	await loadCookies(page)
 	await page.goto(SU_MEMBER_PAGE, { waitUntil: 'networkidle2' })
 
 	if (page.url().includes('login')) {
@@ -417,7 +416,6 @@ export async function fetchTableHtml(): Promise<string> {
 		await page.type('#ctl00_logincontrol_Password', SU_PASS)
 		await page.click('#ctl00_logincontrol_btnLogin')
 		await page.waitForNavigation({ waitUntil: 'networkidle2' })
-		await saveCookies(browser)
 	}
 
 	await page.goto(SU_MEMBER_PAGE, { waitUntil: 'networkidle2' })
