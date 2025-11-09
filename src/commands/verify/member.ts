@@ -47,7 +47,7 @@ export default async (
 		const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
 
 		return {
-			embeds: [embed.setTitle(`Member verify is on cooldown — wait <t:${remaining}:R>`).setColor('Red')],
+			embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')],
 			flags: 'Ephemeral' as const
 		}
 	}
@@ -65,7 +65,7 @@ export default async (
 
 	if (!member) {
 		return {
-			embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
+			embeds: [embed.setTitle(`You are not a member yet — get a membership below`).setColor(`Orange`)],
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
 					button
@@ -81,7 +81,7 @@ export default async (
 		return {
 			embeds: [
 				embed
-					.setTitle(`✦ Are now a linked member! — you can now join our awsome smp and all our other worlds`)
+					.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
 					.setColor(`Green`)
 			]
 		}
