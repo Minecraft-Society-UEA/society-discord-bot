@@ -113,7 +113,7 @@ export default async (
 			embeds: [
 				embed
 					.setColor('Yellow')
-					.setTitle('🤔 You have already successfully verified on Minecraft or that username is in use.')
+					.setTitle('👉 You have already successfully verified on Minecraft or that username is in use.')
 			]
 		}
 	}
