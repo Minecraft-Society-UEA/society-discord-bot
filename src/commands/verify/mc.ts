@@ -63,7 +63,7 @@ export default async (
 		if (!data_hub) {
 			console.log(`hub is down`)
 			return {
-				embeds: [embed.setColor('Red').setTitle('Hub is Down')]
+				embeds: [embed.setColor('Red').setTitle('🫤 Sorry, I cannot connect to the server. Ask committee for assistance!')]
 			}
 		}
 		// find player in hub
@@ -71,7 +71,7 @@ export default async (
 		if (!player) {
 			console.log(`Player "${username}" is not connected to the Hub`)
 			return {
-				embeds: [embed.setColor('Yellow').setTitle(`Player "${username}" is not connected to the Hub`)]
+				embeds: [embed.setColor('Yellow').setTitle(`🤔 "${username}" has not joined the Minecraft lobby. See #✦・help for more info on how to join`)]
 			}
 		}
 		// generate code + store
@@ -113,7 +113,7 @@ export default async (
 			embeds: [
 				embed
 					.setColor('Yellow')
-					.setTitle('✦ You have already successfully verified on Minecraft or that username is in use.')
+					.setTitle('🤔 You have already successfully verified on Minecraft or that username is in use.')
 			]
 		}
 	}
