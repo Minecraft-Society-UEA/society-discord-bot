@@ -17,7 +17,7 @@ export default async () => {
 	logger.ready('Database Conection and ready')
 
 	client.user?.setActivity({
-		name: `For Players`,
+		name: ``,
 		type: ActivityType.Watching,
 		url: 'https://uncommmon.dev'
 	})
