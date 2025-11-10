@@ -68,7 +68,9 @@ export default async (
 			console.log(`hub is down`)
 			return {
 				content: `${role}`,
-				embeds: [embed.setColor('Red').setTitle('Hub is Down')]
+				embeds: [
+					embed.setColor('Red').setTitle('🫤 Sorry, I cannot connect to the server. Ask committee for assistance!')
+				]
 			}
 		}
 		// find player in hub
@@ -77,7 +79,11 @@ export default async (
 			console.log(`Player "${username}" is not connected to the Hub`)
 			return {
 				content: `${role}`,
-				embeds: [embed.setColor('Yellow').setTitle(`Player "${username}" is not connected to the Hub`)]
+				embeds: [
+					embed
+						.setColor('Yellow')
+						.setTitle(`🤔 "${username}" has not joined the Minecraft lobby. See #✦・help for more info on how to join`)
+				]
 			}
 		}
 		// generate code + store
