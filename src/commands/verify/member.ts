@@ -67,7 +67,7 @@ export default async (
 
 		return {
 			content: `${role}`,
-			embeds: [embed.setTitle(`Member verify is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
+			embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
 		}
 	}
 
@@ -104,7 +104,7 @@ export default async (
 			return {
 				embeds: [
 					embed
-						.setTitle(`✦ You are now a linked member! — you can now join our awsome smp and all our other worlds`)
+						.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
 						.setColor(`Green`)
 				]
 			}
