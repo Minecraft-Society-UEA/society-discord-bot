@@ -41,7 +41,6 @@ export default async (
 	const member0 = await getMemberUserId(interaction.user.id)
 	const role = (await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role
 	const member_roles = interaction.member as GuildMember
-
 	if (member0) {
 		if (
 			interaction.guild.members.me?.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 &&
@@ -49,64 +48,59 @@ export default async (
 		) {
 			await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
 		}
-
-		return {
+		await interaction.reply({
 			embeds: [
 				embed
 					.setTitle(`✦ Are already a linked member! — we have checked your roles add added member if needed`)
 					.setColor(`Green`)
 			]
-		}
-	}
+		})
+	} else {
+		await interaction.deferReply()
+		if (!profile.uea_email) return { content: `You need to link you email with /verify email` }
+		if (!profile.mc_uuid) return { content: `You need to link you mc account with /verify mc` }
+		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
+			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
 
-	if (!profile.uea_email) return { content: `You need to link you email with /verify email`, flags: `Ephemeral` }
-	if (!profile.mc_uuid) return { content: `You need to link you mc account with /verify mc`, flags: `Ephemeral` }
-
-	if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
-		const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
-
-		return {
-			content: `${role}`,
-			embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
-		}
-	}
-
-	await Flashcore.set('lastused', now)
-
-	await validateMembers()
-
-	const member = getMemberUserId(interaction.user.id)
-
-	if (!member) {
-		const html = await fetchTableHtml()
-		const ids = await extractIds(html)
-		await createMembers(ids)
-		log.info(`saved members from html`)
-
-		await validateMembers()
-		const member2 = getMemberUserId(interaction.user.id)
-
-		if (!member2) {
-			return {
-				embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
-				components: [
-					new ActionRowBuilder<ButtonBuilder>().addComponents(
-						button
-							.setLabel(`Become A Member!`)
-							.setURL(`https://www.ueasu.org/communities/societies/group/minecraft/`)
-							.setStyle(ButtonStyle.Link)
-							.setEmoji(`🌟`)
-					)
-				]
-			}
+			await interaction.editReply({
+				content: `${role}`,
+				embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
+			})
 		} else {
-			await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
-			return {
-				embeds: [
-					embed
-						.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
-						.setColor(`Green`)
-				]
+			await Flashcore.set('lastused', now)
+			await validateMembers()
+
+			const member = await getMemberUserId(interaction.user.id)
+			if (!member) {
+				const html = await fetchTableHtml()
+				const ids = await extractIds(html)
+				await createMembers(ids)
+				log.info(`saved members from html`)
+				await validateMembers()
+				const member2 = await getMemberUserId(interaction.user.id)
+				if (!member2) {
+					await interaction.editReply({
+						embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
+						components: [
+							new ActionRowBuilder<ButtonBuilder>().addComponents(
+								button
+									.setLabel(`Become A Member!`)
+									.setURL(`https://www.ueasu.org/communities/societies/group/minecraft/`)
+									.setStyle(ButtonStyle.Link)
+									.setEmoji(`🌟`)
+							)
+						]
+					})
+				} else {
+					await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
+					await interaction.editReply({
+						embeds: [
+							embed
+								.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
+								.setColor(`Green`)
+						]
+					})
+				}
 			}
 		}
 	}
