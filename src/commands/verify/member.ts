@@ -51,7 +51,7 @@ export default async (
 		await interaction.reply({
 			embeds: [
 				embed
-					.setTitle(`✦ Are already a linked member! — we have checked your roles add added member if needed`)
+					.setTitle(`✦ You are already a linked member! — we have checked your roles add added member if needed`)
 					.setColor(`Green`)
 			]
 		})
@@ -101,6 +101,15 @@ export default async (
 						]
 					})
 				}
+			} else {
+				await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
+				await interaction.editReply({
+					embeds: [
+						embed
+							.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
+							.setColor(`Green`)
+					]
+				})
 			}
 		}
 	}
