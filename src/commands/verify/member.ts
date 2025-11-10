@@ -55,10 +55,17 @@ export default async (
 					.setColor(`Green`)
 			]
 		})
-	} else {
+		return
+	} else if (!member0) {
 		await interaction.deferReply()
-		if (!profile.uea_email) return { content: `You need to link you email with /verify email` }
-		if (!profile.mc_uuid) return { content: `You need to link you mc account with /verify mc` }
+		if (!profile.uea_email) {
+			await interaction.editReply({ content: `You need to link you email with /verify email` })
+			return
+		}
+		if (!profile.mc_uuid) {
+			await interaction.editReply({ content: `You need to link you mc account with /verify mc` })
+			return
+		}
 		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
 			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
 
@@ -66,6 +73,7 @@ export default async (
 				content: `${role}`,
 				embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
 			})
+			return
 		} else {
 			await Flashcore.set('lastused', now)
 			await validateMembers()
@@ -91,6 +99,7 @@ export default async (
 							)
 						]
 					})
+					return
 				} else {
 					await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
 					await interaction.editReply({
@@ -100,6 +109,7 @@ export default async (
 								.setColor(`Green`)
 						]
 					})
+					return
 				}
 			} else {
 				await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
@@ -110,6 +120,7 @@ export default async (
 							.setColor(`Green`)
 					]
 				})
+				return
 			}
 		}
 	}
