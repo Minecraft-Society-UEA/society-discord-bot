@@ -2,15 +2,16 @@ import {
 	ActionRowBuilder,
 	EmbedBuilder,
 	ModalBuilder,
+	Role,
 	TextInputBuilder,
 	TextInputStyle,
 	type ChatInputCommandInteraction
 } from 'discord.js'
 import { createCommandConfig, Flashcore, logger } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { connected_players, db_player } from '../../utill/types'
+import type { connected_players, db_player, role_settings } from '../../utill/types'
 import { generateCode, server_token_resolver } from '../../utill/functions'
-import { getProfileByDId, getProfileByMcUsername, getServerByID } from '../../utill/database_functions'
+import { getProfileByDId, getProfileByMcUsername, getServerByID, getSettingByid } from '../../utill/database_functions'
 
 export const config = createCommandConfig({
 	description: 'verify and link your mc to the discord allowing you to join',
@@ -31,9 +32,11 @@ export default async (
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
 	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
-	if (!server) return `db server = null`
+	if (!server || !interaction.guild) return `db server = null or invlid guild`
 	const username = options['mc-username']
 	const embed = new EmbedBuilder()
+	const roles = (await getSettingByid(`roles`)) as role_settings
+	const role = (await interaction.guild.roles.cache.get(roles.setting.committee)) as Role
 
 	// fetch db profiles
 	const already_verified = (await getProfileByMcUsername(username)) as db_player | null
@@ -56,6 +59,7 @@ export default async (
 		} catch (err) {
 			logger.error(`Hub fetch error: ${err}`)
 			return {
+				content: `${role}`,
 				embeds: [embed.setColor('Red').setTitle('Error in fetch request')]
 			}
 		}
@@ -63,6 +67,7 @@ export default async (
 		if (!data_hub) {
 			console.log(`hub is down`)
 			return {
+				content: `${role}`,
 				embeds: [embed.setColor('Red').setTitle('Hub is Down')]
 			}
 		}
@@ -71,6 +76,7 @@ export default async (
 		if (!player) {
 			console.log(`Player "${username}" is not connected to the Hub`)
 			return {
+				content: `${role}`,
 				embeds: [embed.setColor('Yellow').setTitle(`Player "${username}" is not connected to the Hub`)]
 			}
 		}
@@ -110,6 +116,7 @@ export default async (
 		await interaction.showModal(modal)
 	} else if (already_verified?.mc_username || username_inuse) {
 		return {
+			content: `${role}`,
 			embeds: [
 				embed
 					.setColor('Yellow')

@@ -13,7 +13,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 
 	// check the modal being submitted matches the custom id set on the mc verifi one
 	if (interaction.customId === `verifiy-email-code-${interaction.user.id}`) {
-		await interaction.deferReply({ flags: 'Ephemeral' })
+		await interaction.deferReply()
 		// get the original code and the one the player inputed
 		const code = interaction.fields.getTextInputValue('email-code') as string
 		const name_pref = interaction.fields.getTextInputValue('name') as string
@@ -53,7 +53,10 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				embeds: [embed.setTitle(`✦ Successfully Verified UEA Email`).setColor('Green')]
 			})
 		} else {
+			const roles = (await getSettingByid(`roles`)) as role_settings
+			const role = (await interaction.guild.roles.cache.get(roles.setting.committee)) as Role
 			return await interaction.editReply({
+				content: `${role}`,
 				embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)]
 			})
 		}

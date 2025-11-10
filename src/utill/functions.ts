@@ -324,6 +324,16 @@ function loging(msg: string, clour: RGBTuple) {
 	textChannel.send({ embeds: [embed] })
 }
 
+function logingRaw(msg: string) {
+	const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
+	if (!guild) return console.error(`Guild not found`)
+
+	const textChannel = guild.channels.cache.get(process.env.DISCORD_LOGGING_CHANNEL_ID) as TextChannel
+	if (!textChannel?.isTextBased() || !textChannel.isSendable()) return console.error(`Invalid text channel in loging`)
+
+	textChannel.send({ content: msg })
+}
+
 export const log = {
 	error: (message: string) => {
 		console.error(message)
@@ -336,6 +346,10 @@ export const log = {
 	msg: async (message: string) => {
 		console.log(message)
 		loging(message, [128, 128, 128])
+	},
+	msgraw: async (message: string) => {
+		console.log(message)
+		logingRaw(message)
 	},
 	success: async (message: string) => {
 		console.log(message)
@@ -359,10 +373,6 @@ export function extractIds(html: string): string[] {
 }
 
 export async function validateMembers() {
-	type role_settings = {
-		setting: role_storage
-	}
-
 	const members = (await getAllMembers()) as db_member[]
 	for (const member of members) {
 		const profile = (await getProfileByUeaEmail(member.id)) as db_player

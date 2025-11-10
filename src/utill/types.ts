@@ -149,3 +149,7 @@ export type welcome_settings = {
 export type setting_return = {
 	setting: any
 }
+
+export type role_settings = {
+	setting: role_storage
+}

@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js'
 import { createCommandConfig, Flashcore } from 'robo.js'
-import type { ChatInputCommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { db_player } from '../../utill/types'
+import type { db_player, role_settings, role_storage } from '../../utill/types'
 import { generateCode } from '../../utill/functions'
-import { getProfileByDId, getProfileByUeaEmail } from '../../utill/database_functions'
+import { getProfileByDId, getProfileByUeaEmail, getSettingByid } from '../../utill/database_functions'
 import { emailCode } from '../../utill/email_functions'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
@@ -31,6 +31,7 @@ export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
+	if (!interaction.guild) return `invalid guild`
 	// declaring variables we need
 	const email = options['uea-email']
 	const button = new ButtonBuilder()
@@ -38,23 +39,25 @@ export default async (
 	const already_verified = (await getProfileByDId(interaction.user.id)) as db_player
 	const email_inuse = await getProfileByUeaEmail(email)
 	const code = generateCode()
+	const roles = (await getSettingByid(`roles`)) as role_settings
+	const role = (await interaction.guild.roles.cache.get(roles.setting.committee)) as Role
 
 	// checks if there email is a uea email
 	if (!email.match(/^[A-Za-z]{3}[0-9]{2}[A-Za-z]{3}@uea\.ac\.uk/gm))
-		return { embeds: [embed.setTitle(`Please enter a valid UEA email address`).setColor('Red')], ephemeral: true }
+		return { content: `${role}`, embeds: [embed.setTitle(`Please enter a valid UEA email address`).setColor('Red')] }
 
 	// checking if the user already has verified
 	if (!already_verified)
 		return {
-			embeds: [embed.setTitle(`You need to verify on Minecraft first with: /verify mc`).setColor('Red')],
-			ephemeral: true
+			content: `${role}`,
+			embeds: [embed.setTitle(`You need to verify on Minecraft first with: /verify mc`).setColor('Red')]
 		}
-	if (already_verified.uea_email)
-		return { embeds: [embed.setTitle(`Already verified your email!`).setColor('Green')], ephemeral: true }
+	if (already_verified.uea_email) return { embeds: [embed.setTitle(`Already verified your email!`).setColor('Green')] }
 
 	//checking if username is already linked
 	if (email_inuse)
 		return {
+			content: `${role}`,
 			embeds: [
 				embed.setTitle(
 					`This email address has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
@@ -79,7 +82,6 @@ export default async (
 	// sending a message and button to open the model
 	return {
 		embeds: [embed.setTitle(`✦ Press the button to get the pop-up to input your email code`).setColor('Green')],
-		components: [row],
-		ephemeral: true
+		components: [row]
 	}
 }

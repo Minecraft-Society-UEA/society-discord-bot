@@ -15,18 +15,19 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 
 	// check the modal being submitted matches the custom id set on the mc verifi one
 	if (interaction.customId === `mc-code-${interaction.user.id}`) {
-		await interaction.deferReply({ flags: 'Ephemeral' })
+		await interaction.deferReply()
 		// get the original code and the one the player inputed
 		const code = interaction.fields.getTextInputValue('mc-code') as string
 		const user_code = (await Flashcore.get(`verify_code-${interaction.user.id}`)) as string
 		const embed = new EmbedBuilder()
+		const roles = (await getSettingByid(`roles`)) as role_settings
+		const role = (await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role
 		// compare if they match
 		if (code === user_code) {
 			// declaring variables we need
 			const username = (await Flashcore.get(`verify_code-mc_username-${interaction.user.id}`)) as string
 			const uuid = (await Flashcore.get(`verify_code-mc_uuid-${interaction.user.id}`)) as string
 			const member = interaction.member as GuildMember
-			const roles = (await getSettingByid(`roles`)) as role_settings
 
 			// add the players permitions
 			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${uuid} promote player`)
@@ -58,7 +59,10 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
 			}
 		} else {
-			await interaction.editReply({ embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)] })
+			await interaction.editReply({
+				content: `${role}`,
+				embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)]
+			})
 		}
 	}
 }

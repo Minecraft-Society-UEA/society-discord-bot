@@ -31,14 +31,33 @@ export default async (
 	interaction: ChatInputCommandInteraction
 ): Promise<CommandResult> => {
 	// declaring variables we need
-	if (!interaction.guild) return `invalid guild`
+	if (!interaction.guild || !interaction.guild.members.me) return `invalid guild`
 	const lastUsed = (await Flashcore.get('lastused')) as number | null
 	const now = Date.now()
 	const embed = new EmbedBuilder()
 	const button = new ButtonBuilder()
-	const dmember = interaction.member as GuildMember
 	const roles = (await getSettingByid(`roles`)) as role_settings
 	const profile = (await getProfileByDId(interaction.user.id)) as db_player
+	const member0 = await getMemberUserId(interaction.user.id)
+	const role = (await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role
+	const member_roles = interaction.member as GuildMember
+
+	if (member0) {
+		if (
+			interaction.guild.members.me?.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 &&
+			member_roles.id !== interaction.guild.ownerId
+		) {
+			await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
+		}
+
+		return {
+			embeds: [
+				embed
+					.setTitle(`✦ Are already a linked member! — we have checked your roles add added member if needed`)
+					.setColor(`Green`)
+			]
+		}
+	}
 
 	if (!profile.uea_email) return { content: `You need to link you email with /verify email`, flags: `Ephemeral` }
 	if (!profile.mc_uuid) return { content: `You need to link you mc account with /verify mc`, flags: `Ephemeral` }
@@ -47,43 +66,48 @@ export default async (
 		const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
 
 		return {
-			embeds: [embed.setTitle(`Member verify is on cooldown — wait <t:${remaining}:R>`).setColor('Red')],
-			flags: 'Ephemeral' as const
+			content: `${role}`,
+			embeds: [embed.setTitle(`Member verify is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
 		}
 	}
 
 	await Flashcore.set('lastused', now)
-
-	const html = await fetchTableHtml()
-	const ids = await extractIds(html)
-	await createMembers(ids)
-	log.info(`saved members from html`)
 
 	await validateMembers()
 
 	const member = getMemberUserId(interaction.user.id)
 
 	if (!member) {
-		return {
-			embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
-			components: [
-				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					button
-						.setLabel(`Become A Member!`)
-						.setURL(`https://www.ueasu.org/communities/societies/group/minecraft/`)
-						.setStyle(ButtonStyle.Link)
-						.setEmoji(`🌟`)
-				)
-			]
-		}
-	} else {
-		await dmember.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
-		return {
-			embeds: [
-				embed
-					.setTitle(`✦ Are now a linked member! — you can now join our awsome smp and all our other worlds`)
-					.setColor(`Green`)
-			]
+		const html = await fetchTableHtml()
+		const ids = await extractIds(html)
+		await createMembers(ids)
+		log.info(`saved members from html`)
+
+		await validateMembers()
+		const member2 = getMemberUserId(interaction.user.id)
+
+		if (!member2) {
+			return {
+				embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
+				components: [
+					new ActionRowBuilder<ButtonBuilder>().addComponents(
+						button
+							.setLabel(`Become A Member!`)
+							.setURL(`https://www.ueasu.org/communities/societies/group/minecraft/`)
+							.setStyle(ButtonStyle.Link)
+							.setEmoji(`🌟`)
+					)
+				]
+			}
+		} else {
+			await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
+			return {
+				embeds: [
+					embed
+						.setTitle(`✦ You are now a linked member! — you can now join our awsome smp and all our other worlds`)
+						.setColor(`Green`)
+				]
+			}
 		}
 	}
 }
