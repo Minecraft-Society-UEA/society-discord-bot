@@ -17,8 +17,7 @@ import { db_player, role_storage } from '../../utill/types'
 export const config = createCommandConfig({
 	description: 'verify your status as a member of the society',
 	contexts: ['Guild'],
-	integrationTypes: ['GuildInstall'],
-	sage: { ephemeral: true }
+	integrationTypes: ['GuildInstall']
 } as const)
 
 type role_settings = {
@@ -48,32 +47,27 @@ export default async (
 		) {
 			await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
 		}
-		await interaction.reply({
+		return {
 			embeds: [
 				embed
 					.setTitle(`✦ You are already a linked member! — we have checked your roles add added member if needed`)
 					.setColor(`Green`)
 			]
-		})
-		return
+		}
 	} else if (!member0) {
-		await interaction.deferReply()
 		if (!profile.uea_email) {
-			await interaction.editReply({ content: `You need to link you email with /verify email` })
-			return
+			return { content: `You need to link you email with /verify email` }
 		}
 		if (!profile.mc_uuid) {
-			await interaction.editReply({ content: `You need to link you mc account with /verify mc` })
-			return
+			return { content: `You need to link you mc account with /verify mc` }
 		}
 		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
 			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
 
-			await interaction.editReply({
+			return {
 				content: `${role}`,
 				embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
-			})
-			return
+			}
 		} else {
 			await Flashcore.set('lastused', now)
 			await validateMembers()
@@ -87,7 +81,7 @@ export default async (
 				await validateMembers()
 				const member2 = await getMemberUserId(interaction.user.id)
 				if (!member2) {
-					await interaction.editReply({
+					return {
 						embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
 						components: [
 							new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -98,29 +92,26 @@ export default async (
 									.setEmoji(`🌟`)
 							)
 						]
-					})
-					return
+					}
 				} else {
 					await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
-					await interaction.editReply({
+					return {
 						embeds: [
 							embed
 								.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
 								.setColor(`Green`)
 						]
-					})
-					return
+					}
 				}
 			} else {
 				await member_roles.roles.add((await interaction.guild.roles.cache.get(roles.setting.member)) as Role)
-				await interaction.editReply({
+				return {
 					embeds: [
 						embed
 							.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
 							.setColor(`Green`)
 					]
-				})
-				return
+				}
 			}
 		}
 	}
