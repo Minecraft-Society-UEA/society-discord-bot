@@ -44,6 +44,7 @@
 		"typescript": "^5.9.2"
 	},
 	"exports": {
-		"./utill": "./build/utill/index"
+		"./utill": "./build/utill/index.js",
+		"./utill/*": "./build/utill/*"
 	}
 }
