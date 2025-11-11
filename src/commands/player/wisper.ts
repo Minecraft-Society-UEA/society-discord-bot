@@ -2,8 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { message_player } from '../../utill/functions'
-import { getProfileByDId } from '../../utill/database_functions'
+import { getProfileByDId, message_player } from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands

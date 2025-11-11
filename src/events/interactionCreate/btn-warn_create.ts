@@ -11,9 +11,7 @@ import {
 	TextInputStyle
 } from 'discord.js'
 import { getState, setState } from 'robo.js'
-import { db_player, db_warns } from '../../utill/types'
-import { createWarning, getProfileByDId, getWarningsEffectBansByUserId } from '../../utill/database_functions'
-import { BAN } from '../../utill/functions'
+import { db_warns, getProfileByDId, db_player, getWarningsEffectBansByUserId, createWarning, BAN } from '~/utill'
 
 export default async (interaction: ButtonInteraction, client: Client) => {
 	// check if the interaction is a modal submit

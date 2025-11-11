@@ -1,8 +1,14 @@
 import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
-import { mc_command, message_player } from '../../utill/functions'
-import { db_player, role_storage } from '../../utill/types'
-import { createPlayerProfile, getSettingByid, updatePlayerProfile } from '../../utill/database_functions'
+import {
+	role_storage,
+	getSettingByid,
+	mc_command,
+	createPlayerProfile,
+	db_player,
+	updatePlayerProfile,
+	message_player
+} from '~/utill'
 
 type role_settings = {
 	setting: role_storage

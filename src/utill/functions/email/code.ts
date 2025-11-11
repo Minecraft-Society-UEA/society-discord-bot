@@ -1,19 +1,4 @@
-import nodemailer from 'nodemailer'
-
-// the user and pass for the smtp server
-const user = process.env.GMAIL_USER as string
-const pass = process.env.GMAIL_PASS as string
-
-// the transporter nodmalier object to connect to the smtp server
-const transporter = nodemailer.createTransport({
-	host: 'smtp.gmail.com',
-	port: 465,
-	secure: true,
-	auth: {
-		user: user,
-		pass: pass
-	}
-})
+import { transporter } from '~/utill'
 
 export async function emailCode(email: string, code: string, username: string) {
 	// urls and some bits in the html email are verables to make them custom and easier to change
@@ -23,7 +8,7 @@ export async function emailCode(email: string, code: string, username: string) {
 	const NAME = username
 	const VERIFY_URL = `https://discord.com/channels/1403421910557130842/1418026676469633144`
 	const DIRT_IMAGE_URL = `https://media.discordapp.net/attachments/1403422858499198997/1425472251490467861/mc-dirt_block.png?ex=68e7b5fc&is=68e6647c&hm=e46e4d8b00ef551ee7536e110ee523f467f569c7bc3bf8ba60370cfe6bdf8947&=&format=webp&quality=lossless`
-	const SUPPORT_EMAIL = user
+	const SUPPORT_EMAIL = process.env.GMAIL_USER as string
 	const DISCORD_URL = `https://discord.gg/KRBY8WvnJy`
 	const INSTAGRAM_URL = `https://www.instagram.com/ueamcsoc`
 	const DISCORD_IMG_URL = `https://media.discordapp.net/attachments/1403422858499198997/1425472252002042019/discord-logo.png?ex=68e7b5fc&is=68e6647c&hm=40139874797427ca2afd1ce10ef5eef6d4fe8dcc5d7524857edd1ddcd4552413&=&format=webp&quality=lossless&width=748&height=856`
@@ -32,7 +17,7 @@ export async function emailCode(email: string, code: string, username: string) {
 
 	/// sending the email and the emails html code
 	await transporter.sendMail({
-		from: `"${SERVER_NAME}" <${user}>`,
+		from: `"${SERVER_NAME}" <${SUPPORT_EMAIL}>`,
 		to: `${email}`,
 		subject: 'Your verification code for the UEA Minecraft server',
 		html: `

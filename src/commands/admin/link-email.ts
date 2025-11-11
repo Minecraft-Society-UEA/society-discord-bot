@@ -2,8 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { db_player } from '../../utill/types'
-import { getProfileByDId, getProfileByUeaEmail, updatePlayerProfile } from '../../utill/database_functions'
+import { db_player, getProfileByDId, getProfileByUeaEmail, updatePlayerProfile } from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -36,7 +35,7 @@ export default async (
 	// declaring variables we need
 	const user = options.user
 	const email = options.uea_email
-	if (!user || !email) return { content: `The user you selected is invalid or there is an error in the Minecraft name`}
+	if (!user || !email) return { content: `The user you selected is invalid or there is an error in the Minecraft name` }
 	const embed = new EmbedBuilder()
 	const profile = (await getProfileByDId(user.id)) as db_player
 
@@ -52,7 +51,9 @@ export default async (
 		return {
 			embeds: [
 				embed
-					.setTitle(`You need to verify on Minecraft first with: \`/verify mc\` or the admin needs to do \`/admin link-mc\``)
+					.setTitle(
+						`You need to verify on Minecraft first with: \`/verify mc\` or the admin needs to do \`/admin link-mc\``
+					)
 					.setColor('Red')
 			],
 			ephemeral: true

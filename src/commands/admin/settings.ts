@@ -1,18 +1,14 @@
 import {
 	ActionRowBuilder,
-	EmbedBuilder,
 	ModalBuilder,
 	PermissionFlagsBits,
-	PermissionsBitField,
 	TextInputBuilder,
 	TextInputStyle,
 	type ChatInputCommandInteraction
 } from 'discord.js'
-import { createCommandConfig, Flashcore, logger } from 'robo.js'
+import { createCommandConfig } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { connected_players, db_player, setting_return, welcome_settings } from '../../utill/types'
-import { generateCode, server_token_resolver } from '../../utill/functions'
-import { getProfileByDId, getProfileByMcUsername, getServerByID, getSettingByid } from '../../utill/database_functions'
+import { getSettingByid, setting_return } from '~/utill'
 
 export const config = createCommandConfig({
 	description: 'verify and link your mc to the discord allowing you to join',

@@ -1,6 +1,5 @@
 import { ModalSubmitInteraction, Client } from 'discord.js'
-import { createMembers } from '../../utill/database_functions'
-import { extractIds, log } from '../../utill/functions'
+import { extractIds, createMembers, log } from '~/utill'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit

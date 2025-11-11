@@ -8,9 +8,18 @@ import {
 	Role
 } from 'discord.js'
 import { CommandResult, createCommandConfig, Flashcore } from 'robo.js'
-import { extractIds, fetchTableHtml, log, validateMembers } from '../../utill/functions'
-import { createMembers, getMemberUserId, getProfileByDId, getSettingByid } from '../../utill/database_functions'
-import { db_player, role_storage } from '../../utill/types'
+import {
+	role_storage,
+	getSettingByid,
+	getProfileByDId,
+	db_player,
+	getMemberUserId,
+	validateMembers,
+	fetchTableHtml,
+	extractIds,
+	createMembers,
+	log
+} from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands

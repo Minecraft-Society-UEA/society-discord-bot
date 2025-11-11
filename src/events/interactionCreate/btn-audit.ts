@@ -9,8 +9,7 @@ import {
 	ButtonStyle
 } from 'discord.js'
 import { getState, setState } from 'robo.js'
-import { dateAfterMinutes } from '../../utill/functions'
-import { db_warns, db_bans } from '../../utill/types'
+import { db_warns, db_bans, dateAfterMinutes } from '~/utill'
 
 export default async (interaction: ButtonInteraction, client: Client) => {
 	if (!interaction.isButton() || !interaction.guild || !interaction.channel) return

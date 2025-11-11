@@ -1,6 +1,6 @@
 import { ModalSubmitInteraction, Client, EmbedBuilder } from 'discord.js'
 import { getState, setState } from 'robo.js'
-import { db_warns } from '../../utill/types'
+import { db_warns } from '~/utill/types/database/warns_bans'
 
 export default async (interaction: ModalSubmitInteraction, client: Client) => {
 	// check if the interaction is a modal submit

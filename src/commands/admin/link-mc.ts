@@ -2,16 +2,17 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig, logger } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildMember, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { connected_players, db_player, role_storage } from '../../utill/types'
 import {
+	role_storage,
 	getProfileByDId,
+	db_player,
 	getProfileByMcUsername,
 	getServerByID,
 	getSettingByid,
+	server_token_resolver,
+	connected_players,
 	updatePlayerProfile
-} from '../../utill/database_functions'
-import { server_token_resolver } from '../../utill/functions'
-import { Settings } from 'http2'
+} from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands

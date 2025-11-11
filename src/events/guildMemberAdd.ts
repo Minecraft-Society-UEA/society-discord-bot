@@ -11,8 +11,7 @@ import {
 import path from 'path'
 import { Flashcore } from 'robo.js'
 import sharp from 'sharp'
-import { role_storage, welcome_settings } from '../utill/types'
-import { getSettingByid } from '../utill/database_functions'
+import { welcome_settings, role_storage, getSettingByid } from '~/utill'
 
 type setting_type = {
 	setting: welcome_settings

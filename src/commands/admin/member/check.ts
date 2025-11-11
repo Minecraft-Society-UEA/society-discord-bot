@@ -1,7 +1,7 @@
 import { PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { validateMembers } from '../../../utill/functions'
+import { validateMembers } from '~/utill/functions/members'
 
 export const config = createCommandConfig({
 	description: 'verify and link your mc to the discord allowing you to join',

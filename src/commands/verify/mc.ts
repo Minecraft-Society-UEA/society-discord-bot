@@ -9,9 +9,17 @@ import {
 } from 'discord.js'
 import { createCommandConfig, Flashcore, logger } from 'robo.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { connected_players, db_player, role_settings } from '../../utill/types'
-import { generateCode, server_token_resolver } from '../../utill/functions'
-import { getProfileByDId, getProfileByMcUsername, getServerByID, getSettingByid } from '../../utill/database_functions'
+import {
+	getServerByID,
+	getSettingByid,
+	role_settings,
+	getProfileByMcUsername,
+	db_player,
+	getProfileByDId,
+	connected_players,
+	server_token_resolver,
+	generateCode
+} from '~/utill'
 
 export const config = createCommandConfig({
 	description: 'verify and link your mc to the discord allowing you to join',

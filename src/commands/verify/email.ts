@@ -2,10 +2,15 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'disc
 import { createCommandConfig, Flashcore } from 'robo.js'
 import type { ChatInputCommandInteraction, Role } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import type { db_player, role_settings, role_storage } from '../../utill/types'
-import { generateCode } from '../../utill/functions'
-import { getProfileByDId, getProfileByUeaEmail, getSettingByid } from '../../utill/database_functions'
-import { emailCode } from '../../utill/email_functions'
+import {
+	getProfileByDId,
+	db_player,
+	getProfileByUeaEmail,
+	generateCode,
+	getSettingByid,
+	role_settings,
+	emailCode
+} from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands

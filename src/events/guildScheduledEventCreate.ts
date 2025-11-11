@@ -1,5 +1,5 @@
 import { GuildScheduledEvent } from 'discord.js'
-import { log } from './../utill/functions'
+import { log } from '~/utill/functions/logger'
 
 export default async (event: GuildScheduledEvent) => {
 	log.info(`name: ${event.name} | id: ${event.id}`)

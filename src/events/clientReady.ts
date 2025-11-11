@@ -1,8 +1,8 @@
 import { ActivityType } from 'discord.js'
 import { client, logger } from 'robo.js'
 import { AsyncTask, CronJob, ToadScheduler } from 'toad-scheduler'
-import { loadTokens, refreshOnlinePlayers, updatePlayersChannel } from '../utill/functions'
 import mariadb from 'mariadb'
+import { loadTokens, refreshOnlinePlayers, updatePlayersChannel } from '~/utill'
 
 export const pool = mariadb.createPool({
 	host: process.env.DB_HOST,

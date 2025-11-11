@@ -1,8 +1,5 @@
 import { CommandOption } from 'robo.js'
 
-// server key type
-export type ServerKey = 'The Hub' | 'SMP 1' | 'SMP 2' | 'Creative' | 'OLD SMPs' | 'Event HG'
-
 export const servers_req = {
 	name: 'server',
 	description: 'pick the target server',
