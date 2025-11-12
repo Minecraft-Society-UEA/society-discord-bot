@@ -64,12 +64,13 @@ export default async (
 			]
 		}
 	} else if (!member0) {
+		if (!profile) {
+			return { content: `You need to link you mc account with /verify mc` }
+		}
 		if (!profile.uea_email) {
 			return { content: `You need to link you email with /verify email` }
 		}
-		if (!profile.mc_uuid) {
-			return { content: `You need to link you mc account with /verify mc` }
-		}
+
 		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
 			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
 

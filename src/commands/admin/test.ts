@@ -1,5 +1,5 @@
 import { PermissionFlagsBits } from 'discord.js'
-import { createCommandConfig } from 'robo.js'
+import { client, createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
 import { fetchTableHtml, extractIds } from '~/utill'
@@ -20,10 +20,7 @@ export default async (
 	// declaring variables we need
 	const member = interaction.member as GuildMember
 	if (!member) return `no`
-	//await client.emit(`guildMemberAdd`, member)
+	await client.emit(`guildMemberAdd`, member)
 
-	const html = (await fetchTableHtml()) as string
-	const members = await extractIds(html)
-
-	return JSON.stringify(members)
+	return `done`
 }
