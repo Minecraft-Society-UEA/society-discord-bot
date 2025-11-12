@@ -1,5 +1,5 @@
-import { pool } from '~/events/clientReady'
 import { log } from '~/utill'
+import { pool } from './pool'
 
 export async function getSettingByid(id: string) {
 	try {
