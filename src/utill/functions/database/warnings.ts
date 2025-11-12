@@ -1,5 +1,5 @@
-import { pool } from '~/events/clientReady'
 import { db_warns, log } from '~/utill'
+import { pool } from './pool'
 
 export async function createWarning(
 	userId: string,

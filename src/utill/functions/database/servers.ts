@@ -1,5 +1,5 @@
-import { pool } from '~/events/clientReady'
 import { db_server, log } from '~/utill'
+import { pool } from './pool'
 
 export async function getServerByID(id: string) {
 	try {

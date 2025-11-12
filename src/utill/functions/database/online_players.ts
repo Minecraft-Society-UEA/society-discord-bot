@@ -1,6 +1,5 @@
-import { pool } from '~/events/clientReady'
-import { log } from '~/utill'
-import { player, db_online_player } from '~/utill/types'
+import { db_online_player, log, player } from '~/utill'
+import { pool } from './pool'
 
 export async function updateServerPlayers(id: string, players: player[]): Promise<boolean> {
 	let conn

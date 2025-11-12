@@ -1,6 +1,5 @@
-import { pool } from '~/events/clientReady'
-import { log } from '~/utill'
-import { db_member } from '~/utill/types'
+import { db_member, log } from '~/utill'
+import { pool } from './pool'
 
 export async function getAllMembers(): Promise<db_member[]> {
 	try {

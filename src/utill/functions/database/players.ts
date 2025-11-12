@@ -1,6 +1,5 @@
-import { pool } from '~/events/clientReady'
-import { log } from '~/utill'
-import { db_player } from '~/utill/types'
+import { db_player, log } from '~/utill'
+import { pool } from './pool'
 
 export async function getProfileByDId(userId: string) {
 	try {
