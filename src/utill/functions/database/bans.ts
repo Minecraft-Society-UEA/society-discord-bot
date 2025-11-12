@@ -1,6 +1,5 @@
 import { pool } from '~/events/clientReady'
-import { log } from '~/utill'
-import { db_bans } from '~/utill/types'
+import { log, db_bans } from '~/utill'
 
 export async function createBan(userId: string, reason: string, bannedTill: number) {
 	try {
