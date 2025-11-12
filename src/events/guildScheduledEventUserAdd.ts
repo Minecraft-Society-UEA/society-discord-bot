@@ -1,6 +1,6 @@
 import { GuildScheduledEvent, User } from 'discord.js'
 import { client, Flashcore } from 'robo.js'
-import { log } from '~/utill/functions/logger'
+import { log } from '~/utill'
 
 export default async (event: GuildScheduledEvent, user: User) => {
 	if (event.id === `1436429199106773062`) {
