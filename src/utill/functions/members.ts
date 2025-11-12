@@ -1,5 +1,5 @@
-import puppeteer, { Protocol, Browser, Page } from 'puppeteer'
-import { client, Flashcore } from 'robo.js'
+import puppeteer from 'puppeteer'
+import { client } from 'robo.js'
 import {
 	getAllMembers,
 	getProfileByUeaEmail,
@@ -48,22 +48,6 @@ export async function validateMembers() {
 
 			log.info(`profile: ${profile.mc_username} has been made a member`)
 		}
-	}
-}
-
-type PuppeteerCookies = Protocol.Network.CookieParam[]
-
-async function saveCookies(browser: Browser): Promise<void> {
-	const pages = await browser.pages()
-	const cookies = (await pages[0].cookies()) as PuppeteerCookies
-	await Flashcore.set('cookies', cookies)
-}
-
-async function loadCookies(page: Page): Promise<void> {
-	const stored = await Flashcore.get('cookies')
-	if (stored) {
-		const cookies = stored as any
-		for (const c of cookies) await page.setCookie(c)
 	}
 }
 

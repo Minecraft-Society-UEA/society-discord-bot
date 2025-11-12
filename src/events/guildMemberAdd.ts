@@ -11,13 +11,21 @@ import {
 import path from 'path'
 import { Flashcore } from 'robo.js'
 import sharp from 'sharp'
-import { welcome_settings, role_storage, getSettingByid } from '~/utill'
+import { welcome_settings, role_storage, getSettingByid, log } from '~/utill'
 
 type setting_type = {
 	setting: welcome_settings
 }
 
 export default async (member: GuildMember) => {
+	try {
+		member.send(
+			"## Great! You've joined our Discord, what's next?\n➥ **Join our Minecraft server!**\n> __Java Edition__\n> ```Address: play.ueamcsociety.net```\n> __Bedrock Edition__\> ```Address: play-br.ueamcsociety.net\n> Port: 37583```\n### ➥ **Go to https://discord.com/channels/1403421910557130842/1418026676469633144**\n> Run these commands in order **(don't include brackets)**:\n> \n> -# Bedrock players need to add a dot prefix and an underscore for spaces: e.g. `.Steve_Life`\n> -# Type the code sent to you in Minecraft into Discord.\n> ```/verify mc {mc-username}```\n> -# In the format `abc25xyz@uea.ac.uk`. Wait for another code sent via email.\n> ```/verify email {uea-email}```\n> -# Make sure you have a membership else this won't work! [Become a member now!](https://www.ueasu.org/communities/societies/group/minecraft/)\n> ```/verify member```\n> After this, you will gain access to the UEA SMP as well as other servers!\n### Confused? Visit  ➥ https://discord.com/channels/1403421910557130842/1415612281022189578"
+		)
+	} catch (error) {
+		log.warn(`Unable to DM (${member.nickname ?? member.displayName}) due to there DM settings`)
+	}
+
 	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
 	const role = (await member.guild.roles.cache.get(roles.unverified)) as Role
 

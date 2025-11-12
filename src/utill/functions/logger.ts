@@ -57,5 +57,9 @@ export const log = {
 	success: async (message: string) => {
 		console.log(message)
 		logingDebug(message, [0, 255, 0])
+	},
+	warn: async (message: string) => {
+		console.warn(message)
+		loging(message, [255, 255, 0])
 	}
 }
