@@ -51,7 +51,6 @@ export async function updatePlayersChannel() {
 
 	try {
 		const newName = `👥 Online: ${totalOnline}/300`
-		await client.user?.setActivity(newName, { type: ActivityType.Custom })
 		if (voiceChannel.name !== newName) {
 			voiceChannel.setName(newName)
 		}
@@ -97,6 +96,9 @@ export async function refreshOnlinePlayers() {
 			}
 
 			const data = (await res.json()) as connected_players
+
+			const newName = `👥 Online: ${data.online_players.length}/300`
+			await client.user?.setActivity(newName, { type: ActivityType.Custom })
 
 			await updateServerPlayers(server.id, data.online_players)
 		} catch (err) {
