@@ -1,4 +1,4 @@
-import { TextChannel, VoiceBasedChannel, EmbedBuilder } from 'discord.js'
+import { TextChannel, VoiceBasedChannel, EmbedBuilder, ActivityType } from 'discord.js'
 import { Flashcore, client } from 'robo.js'
 import {
 	getAllServers,
@@ -51,6 +51,7 @@ export async function updatePlayersChannel() {
 
 	try {
 		const newName = `👥 Online: ${totalOnline}/300`
+		await client.user?.setActivity(newName, { type: ActivityType.Custom })
 		if (voiceChannel.name !== newName) {
 			voiceChannel.setName(newName)
 		}
