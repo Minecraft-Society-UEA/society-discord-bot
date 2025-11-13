@@ -61,10 +61,10 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 
 				await member.roles.remove((await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role)
 				await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
-				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
+				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully verified your Discord account`).setColor('Green')] })
 			} else {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
-				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })
+				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully verified your Discord account`).setColor('Green')] })
 			}
 		} else {
 			await interaction.editReply({
