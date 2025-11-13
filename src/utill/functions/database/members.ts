@@ -1,5 +1,16 @@
-import { db_member, log } from '~/utill'
+import {
+	db_member,
+	db_player,
+	getProfileByUeaEmail,
+	getSettingByid,
+	log,
+	mc_command,
+	role_settings,
+	updatePlayerProfile
+} from '~/utill'
 import { pool } from './pool'
+import { client } from 'robo.js'
+import { GuildMember, Role } from 'discord.js'
 
 export async function getAllMembers(): Promise<db_member[]> {
 	try {
@@ -67,25 +78,28 @@ export async function createMembers(ids: string[]): Promise<boolean> {
 		conn = await pool.getConnection()
 		await conn.beginTransaction()
 
-		if (ids.length === 0) {
-			await conn.query(`DELETE FROM player_members`)
-			await conn.commit()
-			return true
+		const [rows] = await conn.query(`SELECT id FROM player_members`)
+		const existingIds = (rows as { id: string }[]).map((r) => r.id)
+
+		const toRemove = existingIds.filter((id) => !ids.includes(id))
+
+		for (const id of toRemove) {
+			await membershipRevoked(id)
 		}
 
-		await conn.query(
-			`DELETE FROM player_members
-			 WHERE id NOT IN (${ids.map(() => '?').join(', ')})`,
-			ids
-		)
+		if (toRemove.length > 0) {
+			await conn.query(`DELETE FROM player_members WHERE id IN (${toRemove.map(() => '?').join(', ')})`, toRemove)
+		}
 
-		const placeholders = ids.map(() => '(?)').join(', ')
-		await conn.query(
-			`INSERT INTO player_members (id)
-			 VALUES ${placeholders}
-			 ON DUPLICATE KEY UPDATE id = VALUES(id)`,
-			ids
-		)
+		if (ids.length > 0) {
+			const placeholders = ids.map(() => '(?)').join(', ')
+			await conn.query(
+				`INSERT INTO player_members (id)
+				 VALUES ${placeholders}
+				 ON DUPLICATE KEY UPDATE id = VALUES(id)`,
+				ids
+			)
+		}
 
 		await conn.commit()
 		return true
@@ -95,5 +109,30 @@ export async function createMembers(ids: string[]): Promise<boolean> {
 		return false
 	} finally {
 		if (conn) conn.release()
+	}
+}
+
+async function membershipRevoked(id: string) {
+	const profile = (await getProfileByUeaEmail(id)) as db_player
+	if (!profile) return
+	const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
+	if (!guild || !guild.members.me) return console.error(`Guild not found`)
+
+	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} demote player`)
+
+	profile.mc_rank = `verified`
+
+	await updatePlayerProfile(profile.user_id, profile)
+
+	log.msg(`profile: ${profile.mc_username} has lost there member status`)
+
+	const roles = (await getSettingByid(`roles`)) as role_settings
+	const member_roles = (await guild.members.fetch(profile.user_id)) as GuildMember
+
+	if (
+		guild.members.me.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 &&
+		member_roles.id !== guild.ownerId
+	) {
+		await member_roles.roles.remove((await guild.roles.cache.get(roles.setting.member)) as Role)
 	}
 }

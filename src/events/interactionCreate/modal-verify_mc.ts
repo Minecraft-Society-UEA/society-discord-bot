@@ -56,7 +56,9 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId
 			) {
-				await member.setNickname(`${member.user.displayName} ✧ ${username}`)
+				if (member.nickname) await member.setNickname(`${member.nickname} ✧ ${username}`)
+				else await member.setNickname(`${member.user.displayName} ✧ ${username}`)
+
 				await member.roles.remove((await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role)
 				await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
 				await interaction.editReply({ embeds: [embed.setTitle(`✦ Successfully Verified`).setColor('Green')] })

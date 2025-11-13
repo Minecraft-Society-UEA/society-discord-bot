@@ -61,6 +61,16 @@ export async function createPlayerProfile(userId: string) {
 	}
 }
 
+export async function deletePlayerProfile(userId: string) {
+	try {
+		await pool.query('DELETE FROM players WHERE user_id = ?', [userId])
+		return true
+	} catch (err) {
+		log.error(`Error deleting player profile: ${err}`)
+		return false
+	}
+}
+
 export async function updatePlayerProfile(did: string, new_playerP: db_player) {
 	try {
 		await pool.query(

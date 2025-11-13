@@ -50,7 +50,7 @@ export default async (
 	const already_verified = (await getProfileByMcUsername(username)) as db_player | null
 	const username_inuse = (await getProfileByDId(interaction.user.id)) as db_player | null
 
-	if (!already_verified && !username_inuse) {
+	if (!already_verified && !username_inuse?.mc_username) {
 		// pull hub players
 		let data_hub: connected_players | null = null
 		try {
@@ -128,7 +128,7 @@ export default async (
 		// show modal (first and only response here)
 
 		await interaction.showModal(modal)
-	} else if (already_verified?.mc_username || username_inuse) {
+	} else if (already_verified?.mc_username || username_inuse?.mc_uuid) {
 		return {
 			content: `${role}`,
 			embeds: [
