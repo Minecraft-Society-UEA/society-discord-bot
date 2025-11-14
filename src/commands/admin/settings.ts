@@ -28,6 +28,10 @@ export const config = createCommandConfig({
 				{
 					name: `role storage`,
 					value: `roles`
+				},
+				{
+					name: `mod mail`,
+					value: `modmail`
 				}
 			]
 		}

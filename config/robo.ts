@@ -14,9 +14,10 @@ export default <Config>{
 			'GuildBans',
 			'GuildModeration',
 			'GuildMembers',
-			'GuildScheduledEvents'
+			'GuildScheduledEvents',
+			'GuildMessageReactions'
 		],
-		partials: [Partials.Channel, Partials.Message, Partials.GuildMember]
+		partials: [Partials.Channel, Partials.Message, Partials.GuildMember, Partials.Reaction]
 	},
 	plugins: [],
 	type: 'robo',
