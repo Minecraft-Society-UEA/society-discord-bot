@@ -18,6 +18,6 @@
 		"isolatedModules": true,
 		"incremental": true
 	},
-	"include": ["**/*.ts", "config/robo.mts"],
+	"include": ["**/*.ts", "config/robo.mts", "src/commands/admin/modmail"],
 	"exclude": ["node_modules"]
 }

@@ -1,4 +1,4 @@
-import { TextChannel, VoiceBasedChannel, EmbedBuilder, ActivityType } from 'discord.js'
+import { TextChannel, EmbedBuilder, ActivityType } from 'discord.js'
 import { Flashcore, client } from 'robo.js'
 import {
 	getAllServers,
@@ -15,18 +15,15 @@ export async function updatePlayersChannel() {
 	console.log(`updating players channel`)
 	const guildId = process.env.DISCORD_GUILD_ID
 	const textChannelId = process.env.SERVER_LIST_CHANNEL_ID
-	const voiceChannelId = process.env.ONLINE_CHANNEL_ID
 	const messageId = (await Flashcore.get<string>(`players_msg_id`)) ?? undefined
 
-	if (!guildId || !textChannelId || !voiceChannelId) return console.error(`Missing env vars`)
+	if (!guildId || !textChannelId) return console.error(`Missing env vars`)
 
 	const guild = client.guilds.cache.get(guildId)
 	if (!guild) return console.error(`Guild not found`)
 
 	const textChannel = guild.channels.cache.get(textChannelId) as TextChannel
-	const voiceChannel = guild.channels.cache.get(voiceChannelId) as VoiceBasedChannel
 	if (!textChannel?.isTextBased() || !textChannel.isSendable()) return console.error(`Invalid text channel`)
-	if (!voiceChannel?.isVoiceBased()) return console.error(`Invalid voice channel`)
 
 	const servers = (await getAllServers()) as db_server[]
 	const players = (await getAllPlayers()) as db_online_player[]
@@ -49,15 +46,8 @@ export async function updatePlayersChannel() {
 
 	embed.setDescription(`Online: ${totalOnline}/300`)
 
-	try {
-		const newName = `👥 Online: ${totalOnline}/300`
-		await client.user?.setActivity(newName, { type: ActivityType.Custom })
-		if (voiceChannel.name !== newName) {
-			voiceChannel.setName(newName)
-		}
-	} catch (err) {
-		log.info(`Failed to rename channel "${voiceChannelId}": ${err}`)
-	}
+	const newName = `👥 Online: ${totalOnline}/300`
+	await client.user?.setActivity(newName, { type: ActivityType.Custom })
 
 	try {
 		const newEmbedJSON = JSON.stringify(embed.toJSON())

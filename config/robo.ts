@@ -13,13 +13,14 @@ export default <Config>{
 			'DirectMessages',
 			'GuildBans',
 			'GuildModeration',
-			'GuildMembers'
+			'GuildMembers',
+			'GuildScheduledEvents'
 		],
 		partials: [Partials.Channel, Partials.Message, Partials.GuildMember]
 	},
 	plugins: [],
 	type: 'robo',
-	excludePaths: [`/src/commands/warn`, `/src/commands/admin/tmp`, `src/commands/verify/double-check.ts`],
+	excludePaths: [],
 	flashcore: {
 		keyv: {
 			store: new KeyvMysql({ uri: process.env.DB_URI })
