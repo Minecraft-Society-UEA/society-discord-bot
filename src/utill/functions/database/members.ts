@@ -78,27 +78,26 @@ export async function createMembers(ids: string[]): Promise<boolean> {
 		conn = await pool.getConnection()
 		await conn.beginTransaction()
 
-		const [rows] = await conn.query(`SELECT id FROM player_members`)
-		const existingIds = (rows as { id: string }[]).map((r) => r.id)
+		// Force rows to always be treated as an array
+		const rawRows = await conn.query(`SELECT id FROM player_members;`)
+		const rows = Array.isArray(rawRows) ? rawRows : [rawRows]
+		const existingIds = rows.map((r: any) => r.id)
 
 		const toRemove = existingIds.filter((id) => !ids.includes(id))
+		const toAdd = ids.filter((id) => !existingIds.includes(id))
 
 		for (const id of toRemove) {
 			await membershipRevoked(id)
 		}
 
 		if (toRemove.length > 0) {
-			await conn.query(`DELETE FROM player_members WHERE id IN (${toRemove.map(() => '?').join(', ')})`, toRemove)
+			const placeholders = toRemove.map(() => '?').join(', ')
+			await conn.query(`DELETE FROM player_members WHERE id IN (${placeholders})`, toRemove)
 		}
 
-		if (ids.length > 0) {
-			const placeholders = ids.map(() => '(?)').join(', ')
-			await conn.query(
-				`INSERT INTO player_members (id)
-				 VALUES ${placeholders}
-				 ON DUPLICATE KEY UPDATE id = VALUES(id)`,
-				ids
-			)
+		if (toAdd.length > 0) {
+			const placeholders = toAdd.map(() => '(?)').join(', ')
+			await conn.query(`INSERT INTO player_members (id) VALUES ${placeholders}`, toAdd)
 		}
 
 		await conn.commit()
