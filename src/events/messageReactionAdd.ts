@@ -26,8 +26,9 @@ export default async (messageReaction: MessageReaction, user: User) => {
 				name: member.nickname ?? member.displayName,
 				iconURL: await msg.author.displayAvatarURL()
 			})
-			.setTitle(msg.content ?? ``)
 			.setTimestamp()
+
+		if (msg.content) embed.setTitle(msg.content)
 
 		const attachment = msg.attachments.first()
 
