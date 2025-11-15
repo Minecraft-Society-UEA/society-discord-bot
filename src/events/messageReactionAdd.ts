@@ -12,6 +12,10 @@ export default async (messageReaction: MessageReaction, user: User) => {
 		if (!Guild) return `invalid guild`
 		const embed = new EmbedBuilder()
 		const msg = (await messageReaction.message) as Message
+		const alr = ((await Flashcore.get(msg.id)) as boolean) ?? false
+
+		if (alr) return
+
 		const member = (await Guild.members.fetch(msg.author.id)) as GuildMember
 		const member_save = (await Guild.members.fetch(user.id)) as GuildMember
 		const textChannel = (await Guild.channels.cache.get(process.env.QUOTE_WALL_CHANNEL_ID)) as TextChannel
@@ -22,7 +26,7 @@ export default async (messageReaction: MessageReaction, user: User) => {
 				name: member.nickname ?? member.displayName,
 				iconURL: await msg.author.displayAvatarURL()
 			})
-			.setTitle(msg.content)
+			.setTitle(msg.content ?? ``)
 			.setTimestamp()
 
 		const attachment = msg.attachments.first()
@@ -37,5 +41,6 @@ export default async (messageReaction: MessageReaction, user: User) => {
 		})
 
 		await Flashcore.set(`${msg.id}-${user.id}`, msgid.id)
+		await Flashcore.set(msg.id, true)
 	}
 }

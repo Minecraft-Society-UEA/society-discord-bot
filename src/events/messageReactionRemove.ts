@@ -22,5 +22,6 @@ export default async (messageReaction: MessageReaction, user: User) => {
 		}
 
 		await message.delete()
+		await Flashcore.delete(msg.id)
 	}
 }
