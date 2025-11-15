@@ -70,7 +70,7 @@ export default async () => {
 		}
 	})
 
-	const job_load_tokens = new CronJob({ cronExpression: '0 */12 * * *' }, task_load_tokens, { preventOverrun: true })
+	const job_load_tokens = new CronJob({ cronExpression: '0 */6 * * *' }, task_load_tokens, { preventOverrun: true })
 	const job_update_players = new CronJob({ cronExpression: '*/1 * * * *' }, task_update_players, {
 		preventOverrun: true
 	})
