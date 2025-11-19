@@ -74,13 +74,13 @@ export async function fetchTableHtml(): Promise<string | false> {
 		const tableHtml = await page.$eval('table.msl_table', (el) => el.outerHTML)
 
 		log.info(`[html graber] grabbed HTML`)
-
 		return tableHtml
 	} catch (err) {
+		const date = new Date()
 		log.info(`CURRENT URL: ${page.url()}`)
 		log.info(`PAGE TITLE: ${await page.title()}`)
 		log.error(` error: \n${err}`)
-		await page.screenshot({ path: 'debug/debug.png', fullPage: true })
+		await page.screenshot({ path: `debug/${date}.png`, fullPage: true })
 		return false
 	} finally {
 		await browser.close()
