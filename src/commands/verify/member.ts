@@ -72,7 +72,7 @@ export default async (
 		}
 
 		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
-			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000) // unix timestamp (s)
+			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000)
 
 			return {
 				content: `${role}`,
@@ -85,6 +85,13 @@ export default async (
 			const member = await getMemberUserId(interaction.user.id)
 			if (!member) {
 				const html = await fetchTableHtml()
+				if (!html) {
+					await Flashcore.delete('lastused')
+					return {
+						content: `${role}`,
+						embeds: [embed.setTitle(`gettiong members failed`).setColor('Red')]
+					}
+				}
 				const ids = await extractIds(html)
 				await createMembers(ids)
 				log.info(`saved members from html`)

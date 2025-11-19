@@ -51,28 +51,38 @@ export async function validateMembers() {
 	}
 }
 
-export async function fetchTableHtml(): Promise<string> {
+export async function fetchTableHtml(): Promise<string | false> {
 	const { SU_LOGIN_PAGE, SU_MEMBER_PAGE, SU_USER, SU_PASS } = process.env
 	if (!SU_LOGIN_PAGE || !SU_MEMBER_PAGE || !SU_USER || !SU_PASS) throw new Error('Missing environment variables')
 
 	const browser = await puppeteer.launch({ headless: true })
 	const page = await browser.newPage()
 
-	await page.goto(SU_MEMBER_PAGE, { waitUntil: 'networkidle2' })
+	try {
+		await page.goto(SU_MEMBER_PAGE, { waitUntil: 'networkidle2' })
 
-	if (page.url().includes('login')) {
-		log.info('[html graber] Logging in...')
-		await page.type('#ctl00_logincontrol_UserName', SU_USER)
-		await page.type('#ctl00_logincontrol_Password', SU_PASS)
-		await page.click('#ctl00_logincontrol_btnLogin')
-		await page.waitForNavigation({ waitUntil: 'networkidle2' })
+		if (page.url().includes('login')) {
+			log.info('[html graber] Logging in...')
+			await page.type('#ctl00_logincontrol_UserName', SU_USER)
+			await page.type('#ctl00_logincontrol_Password', SU_PASS)
+			await page.click('#ctl00_logincontrol_btnLogin')
+			await page.waitForNavigation({ waitUntil: 'networkidle2' })
+		}
+
+		await page.goto(SU_MEMBER_PAGE, { waitUntil: 'networkidle2' })
+		await page.waitForSelector('table.msl_table')
+		const tableHtml = await page.$eval('table.msl_table', (el) => el.outerHTML)
+
+		log.info(`[html graber] grabbed HTML`)
+
+		return tableHtml
+	} catch (err) {
+		log.info(`CURRENT URL: ${page.url()}`)
+		log.info(`PAGE TITLE: ${await page.title()}`)
+		log.error(` error: \n${err}`)
+		await page.screenshot({ path: 'debug/debug.png', fullPage: true })
+		return false
+	} finally {
+		await browser.close()
 	}
-
-	await page.goto(SU_MEMBER_PAGE, { waitUntil: 'networkidle2' })
-	await page.waitForSelector('table.msl_table')
-
-	const tableHtml = await page.$eval('table.msl_table', (el) => el.outerHTML)
-	log.info(`[html graber] grabbed HTML`)
-	await browser.close()
-	return tableHtml
 }
