@@ -2,7 +2,7 @@ import { PermissionFlagsBits } from 'discord.js'
 import { client, createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { fetchTableHtml } from '~/utill'
+import { extractIds, fetchTableHtml } from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
@@ -21,7 +21,9 @@ export default async (
 	const member = interaction.member as GuildMember
 	if (!member) return `no`
 	//await client.emit(`guildMemberAdd`, member)
-	await fetchTableHtml()
+	const html = await fetchTableHtml()
+	if (!html) return `failed`
+	const parsed = await extractIds(html)
 
-	return `done`
+	return `amount: ${parsed.length}\nMembers: ${parsed.join(`, `)}`
 }
