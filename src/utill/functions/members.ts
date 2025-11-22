@@ -72,24 +72,18 @@ export async function fetchTableHtml(): Promise<string | false> {
 
 			await page.type('#ctl00_logincontrol_UserName', SU_USER)
 			await page.type('#ctl00_logincontrol_Password', SU_PASS)
-			console.log(1)
 			await Promise.allSettled([
 				page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 0 }),
 				page.click('#ctl00_logincontrol_btnLogin')
 			])
 		}
-		console.log(2)
 		await Promise.allSettled([
 			page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 0 }),
 			page.goto(SU_MEMBER_PAGE)
 		])
-		console.log(3)
 		const selector = 'table[id^="ctl00_ctl00_Main_AdminPageContent_rptGroups_"][id$="_gvMemberships"]'
-		console.log(4)
 		await page.waitForSelector(selector)
-		console.log(5)
 		const tableHtml = await page.$eval(selector, (el) => el.outerHTML)
-		console.log(6)
 		log.info('[html grabber] grabbed HTML')
 		return tableHtml
 	} catch (err) {
