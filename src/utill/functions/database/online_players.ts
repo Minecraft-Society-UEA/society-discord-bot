@@ -50,9 +50,9 @@ export async function updateServerPlayers(id: string, players: player[]): Promis
 	}
 }
 
-export async function getPlayersByServer(id: string) {
+export async function getPlayersByServer(serverId: string) {
 	try {
-		const rows = await pool.query<db_online_player[]>('SELECT * FROM online_players WHERE server = ?', [id])
+		const rows = await pool.query<db_online_player[]>('SELECT * FROM online_players WHERE server = ?', [serverId])
 		return rows.length > 0 ? rows : null
 	} catch (err) {
 		log.error(`Error fetching servers by id: ${err}`)

@@ -10,7 +10,7 @@ export type player = {
 // the type the /players endpoint returns
 export type connected_players = {
 	max_players: number
-	online_players: player[]
+	online_players?: player[]
 }
 
 // all player list from every server
