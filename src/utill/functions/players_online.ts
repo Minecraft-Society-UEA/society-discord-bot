@@ -88,8 +88,9 @@ export async function refreshOnlinePlayers() {
 
 			const data = (await res.json()) as connected_players
 
-			if (data.online_players && data.online_players.length < 0)
+			if (data.online_players && data.online_players.length > 0)
 				await updateServerPlayers(server.id, data.online_players)
+			else await updateServerPlayers(server.id, [])
 		} catch (err) {
 			log.error(`Failed to fetch ${server.name} players: ${err}`)
 			return
