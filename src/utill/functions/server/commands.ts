@@ -6,7 +6,7 @@ export async function mc_command(id: string, command: string) {
 		command: command
 	}
 
-	const res = await fetch(`${details.host}:${details.port}/api/server/command`, {
+	const res = await fetch(`${details.host}/api/server/command`, {
 		method: 'post',
 		headers: {
 			Authorization: `Bearer ${server_token_resolver(details.id)}`
@@ -38,7 +38,7 @@ export async function message_player(mc_username: string, msg: string) {
 
 	if (!server) return false
 
-	const response = await fetch(`${server.host}:${server.port}/api/player/message`, {
+	const response = await fetch(`${server.host}/api/player/message`, {
 		method: 'post',
 		headers: {
 			Authorization: `Bearer ${server_token_resolver(server.id)}`

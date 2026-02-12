@@ -17,7 +17,7 @@ export async function mc_ban_player(mc_username: string, msg: string, mins: stri
 		command: `ban ${mc_username} ${mins} ${msg}`
 	}
 
-	const response = await fetch(`${server.host}:${server.port}/api/server/command`, {
+	const response = await fetch(`${server.host}/api/server/command`, {
 		method: 'post',
 		headers: {
 			Authorization: `Bearer ${server_token_resolver(server.id)}`

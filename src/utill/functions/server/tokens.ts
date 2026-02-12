@@ -13,7 +13,7 @@ export async function loadTokens() {
 	for (const server of servers) {
 		try {
 			const body = { username: server.user, password: server.pass }
-			const res = await fetch(`${server.host}:${server.port}/api/auth/login`, {
+			const res = await fetch(`${server.host}/api/auth/login`, {
 				method: 'POST',
 				body: JSON.stringify(body)
 			})
@@ -26,7 +26,7 @@ export async function loadTokens() {
 			const data = (await res.json()) as token
 			await setState(`${server.id}_token`, data.token)
 		} catch (err) {
-			log.error(`Error loading token for ${server}: \n${err}`)
+			log.error(`Error loading token for ${server.name}: \n${err}`)
 		}
 	}
 

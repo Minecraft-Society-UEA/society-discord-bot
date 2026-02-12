@@ -77,7 +77,7 @@ export async function refreshOnlinePlayers() {
 	const servers = (await getAllServers()) as db_server[]
 	for (const server of servers) {
 		try {
-			const res = await fetch(`${server.host}:${server.port}/api/players`, {
+			const res = await fetch(`${server.host}/api/players`, {
 				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
 			})
 
