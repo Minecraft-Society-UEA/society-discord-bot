@@ -54,7 +54,7 @@ export default async (
 		// pull hub players
 		let data_hub: connected_players | null = null
 		try {
-			const response_hub = await fetch(`${server.host}:${server.port}/api/players`, {
+			const response_hub = await fetch(`${server.host}/api/players`, {
 				method: 'GET',
 				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
 			})
@@ -102,7 +102,7 @@ export default async (
 
 		// send code in-game
 		const body = { player: player.name, message: `UEAMCSOC VERIFY ✦ Code: ${code}` }
-		const response = await fetch(`${server.host}:${server.port}/api/player/message`, {
+		const response = await fetch(`${server.host}/api/player/message`, {
 			method: 'POST',
 			headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` },
 			body: JSON.stringify(body)
