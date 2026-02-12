@@ -15,7 +15,7 @@ import {
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'verify and link your uea email allowing us to verify your member status',
+	description: 'CLICK HERE to link your UEA email address.',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
