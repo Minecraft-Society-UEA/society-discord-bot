@@ -72,7 +72,7 @@ export default async (
 			}
 		}
 
-		if (!data_hub) {
+		if (!data_hub || !data_hub.online_players) {
 			console.log(`hub is down`)
 			return {
 				content: `${role}`,
