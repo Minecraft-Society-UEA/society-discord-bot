@@ -24,7 +24,7 @@ import {
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'verify your status as a member of the society',
+	description: 'CLICK HERE to confirm that you are a society member.',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall']
 } as const)
