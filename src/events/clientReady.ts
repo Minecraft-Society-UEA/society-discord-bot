@@ -55,7 +55,6 @@ export default async () => {
 	const task_2h = new AsyncTask('misc tasks 2h', async () => {
 		try {
 			const messageId = await Flashcore.get<string>(`players_msg_id`)
-			await Flashcore.delete(`players_msg_id`)
 
 			const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
 			if (!guild) return console.error(`Guild not found`)
@@ -63,8 +62,11 @@ export default async () => {
 			const textChannel = guild.channels.cache.get(process.env.SERVER_LIST_CHANNEL_ID) as TextChannel
 			if (!textChannel?.isTextBased() || !textChannel.isSendable()) return console.error(`Invalid text channel`)
 
-			const msg = await textChannel.messages.fetch(messageId)
-			await msg.delete()
+			if (messageId) {
+				const msg = await textChannel.messages.fetch(messageId)
+				await msg.delete()
+				await Flashcore.delete(`players_msg_id`)
+			}
 		} catch (error) {
 			logger.error(`Error in task execution:\n${error}`)
 		}
