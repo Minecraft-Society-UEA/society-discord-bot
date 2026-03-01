@@ -49,7 +49,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			}
 
 			return await interaction.editReply({
-				embeds: [embed.setTitle(`✦ Successfully Verified UEA Email`).setColor('Green')]
+				embeds: [embed.setTitle(`✦ Successfully linked UEA email\nFinally, do /verify member`).setColor('Green')]
 			})
 		} else {
 			const roles = (await getSettingByid(`roles`)) as role_settings

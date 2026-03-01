@@ -22,7 +22,7 @@ import {
 } from '~/utill'
 
 export const config = createCommandConfig({
-	description: 'verify and link your mc to the discord allowing you to join',
+	description: 'CLICK HERE to link your Minecraft account to our Discord',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
@@ -90,7 +90,7 @@ export default async (
 				embeds: [
 					embed
 						.setColor('Yellow')
-						.setTitle(`🤔 "${username}" has not joined the Minecraft lobby. See #✦・help for more info on how to join`)
+						.setTitle(`🤔 "${username}" has not joined the Minecraft lobby. See #help for more info on how to join`)
 				]
 			}
 		}
