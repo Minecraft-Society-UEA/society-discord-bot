@@ -24,20 +24,15 @@ export async function emailCode(email: string, code: string, username: string) {
 	<div style="max-width:450px; margin:50px auto; padding:20px 35px 20px 35px; background:#fff; border:1px solid #dddddd; border-radius:12px; box-shadow:0 2px 20px rgba(0,0,0,0.05); position:relative;">
 
 		<div style="display:flex; align-items:center; gap:5px; color:#c4c4c4;">
-			<div style="font-size:30px; padding-bottom:0px;">✉</div>
 			<div style="font-size:14px; font-weight:600; font-family:sans-serif; letter-spacing:-0.5px;">${SERVER_NAME}</div>
 		</div>
-
-		<h2 style="margin:20px 0 0; font-size:2.5rem; font-weight:500; color:#171615; font-family:sans-serif;">
-			Verify your email address
-		</h2>
 
 		<h3 style="margin:30px 0 10px; font-size:1.5rem; font-weight:500; color:#171615;">
 			Hey ${NAME},
 		</h3>
 
 		<p style="margin:0 0 10px 0; font-size:14px; font-weight:500;">
-			Use the code below to verify your email on our Discord server.
+			Here is your code:
 		</p>
 
 		<div style="text-align:center;">
@@ -46,23 +41,7 @@ export async function emailCode(email: string, code: string, username: string) {
 			</div>
 		</div>
 
-		<p style="font-size:12px; color:#989898; text-align:center; margin:0 0 10px 0;">
-			To protect your account, do not share this code.
-		</p>
-
-		<h3 style="margin:30px 0 10px; font-size:1.5rem; font-weight:500; color:#171615;">
-			Next Steps
-		</h3>
-
-		<p style="margin:0 0 10px 0; font-size:14px; font-weight:500;">
-			Once you have obtained a society membership, choose this command in the verification channel:
-		</p>
-
-		<div style="display:inline-block; text-align:center; background:#f1f1f1; border-radius:6px; padding:5px 10px; margin-top:0; margin-left:0; margin-bottom:10px; font-size:14px; font-weight:400; color:#171615; letter-spacing:normal; font-family:sans-serif;">
-			/verify member
-		</div>
-
-		<p style="margin:0 0 10px 0; font-size:14px; font-weight:500;">
+		<p style="margin:10px 0 10px 0; font-size:14px; font-weight:500;">
 			Hope to see you on the server soon!
 		</p>
 
