@@ -31,10 +31,6 @@ export async function emailCode(email: string, code: string, username: string) {
 			Hey ${NAME},
 		</h3>
 
-		<p style="margin:0 0 10px 0; font-size:14px; font-weight:500;">
-			Here is your code:
-		</p>
-
 		<div style="text-align:center;">
 			<div style="display:inline-block; text-align:center; background:#f1f1f1; border-radius:12px; padding:15px 20px; margin:10px; font-size:40px; font-weight:400; color:#171615; letter-spacing:2px; font-family:sans-serif;">
 				${VERIFICATION_CODE}
