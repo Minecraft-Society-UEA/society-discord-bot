@@ -31,7 +31,7 @@ export default async (
 	//await client.emit(`guildMemberAdd`, member)
 	const dbmem = (await getProfileByDId(member.id)) as db_player
 	if (!dbmem.uea_email || !dbmem.mc_username) return `user does not have email or Minecraft username linked`
-	emailCode(dbmem.uea_email, `testing`, dbmem.mc_username)
+	emailCode(`${dbmem.uea_email}@uea.ac.uk`, `testing`, dbmem.mc_username)
 
 	return `email sent`
 }
