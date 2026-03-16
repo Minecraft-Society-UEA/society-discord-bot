@@ -12,20 +12,16 @@ export async function emailCode(email: string, code: string, username: string) {
 	await transporter.sendMail({
 		from: `"${SERVER_NAME}" <${SUPPORT_EMAIL}>`,
 		to: `${email}`,
-		subject: 'Your verification code for the UEA Minecraft server',
+		subject: 'UEA Minecraft Society',
 		html: `
 <html lang="en">
 
 <head>
 </head>
 
-<body style="margin:0; padding:0 20px 20px 20px; font-family:sans-serif; color:#333; background-color:#f0f0ec;">
+<body style="margin:0; padding:20px 20px 20px 20px; font-family:sans-serif; color:#333;">
 
 	<div style="max-width:450px; margin:50px auto; padding:20px 35px 20px 35px; background:#fff; border:1px solid #dddddd; border-radius:12px; box-shadow:0 2px 20px rgba(0,0,0,0.05); position:relative;">
-
-		<div style="display:flex; align-items:center; gap:5px; color:#c4c4c4;">
-			<div style="font-size:14px; font-weight:600; font-family:sans-serif; letter-spacing:-0.5px;">${SERVER_NAME}</div>
-		</div>
 
 		<h3 style="margin:30px 0 10px; font-size:1.5rem; font-weight:500; color:#171615;">
 			Hey ${NAME},
