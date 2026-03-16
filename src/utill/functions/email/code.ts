@@ -37,7 +37,7 @@ export async function emailCode(email: string, code: string, username: string) {
 			</div>
 		</div>
 
-		<p style="margin:10px 0 10px 0; font-size:14px; font-weight:500;">
+		<p style="margin:0 0 10px 0; font-size:14px; font-weight:500;">
 			Hope to see you on the server soon!
 		</p>
 
