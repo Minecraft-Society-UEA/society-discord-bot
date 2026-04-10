@@ -8,7 +8,7 @@ Thanks for helping out with the UEA Minecraft Society bot! Here's what you need 
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (check `.nvmrc` or `package.json` for the version)
+- [Node.js](https://nodejs.org/) (check `package.json` for the version)
 - A MariaDB database instance
 - A Discord bot token and application
 
