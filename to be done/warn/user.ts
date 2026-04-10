@@ -36,7 +36,7 @@ export default async (
 	const warn = {} as db_warns
 
 	// @todo - add reason logic(?)
-	let reason;
+	let reason
 
 	if (!user) return { content: `Invalid user` }
 
@@ -45,7 +45,13 @@ export default async (
 
 	// check if the admin has already started a warning
 	if (alr)
-		return { embeds: [embed.setColor(`Red`).setDescription(`You may only have one warning creator open at once. Why don't you finish up there first?`)] }
+		return {
+			embeds: [
+				embed
+					.setColor(`Red`)
+					.setDescription(`You may only have one warning creator open at once. Why don't you finish up there first?`)
+			]
+		}
 
 	setState<boolean>(`warn_session_inprog-${interaction.user.id}`, true)
 	setState<db_warns>(`warn_create_${interaction.user.id}`, warn)

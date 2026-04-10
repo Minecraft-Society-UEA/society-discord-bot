@@ -60,7 +60,7 @@ export default async (
 	const ids = getState(`warn_msg-${interaction.user.id}`)?.split(`-`)
 
 	if (!warn || !ids) return { content: `Error getting stored warning/message; bot may require restart` }
-	if (!alr) return { embeds: [embed.setColor(`Red`).setTitle("You must have opened the warning in order to use this")] }
+	if (!alr) return { embeds: [embed.setColor(`Red`).setTitle('You must have opened the warning in order to use this')] }
 
 	imgs.push(img1.url)
 	if (img2) imgs.push(img2.url)
