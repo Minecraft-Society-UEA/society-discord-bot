@@ -1,4 +1,4 @@
-import { player } from '~/utill/types'
+import { player } from '../api'
 
 // type for servers in the db
 export type db_server = {
@@ -12,4 +12,5 @@ export type db_server = {
 	pass: string
 	currently_online: number
 	players: player[]
+	type: 'paper' | 'fabric'
 }

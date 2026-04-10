@@ -7,8 +7,11 @@ import {
 	updateServerPlayers,
 	log,
 	db_online_player,
+	db_server,
 	connected_players,
-	db_server
+	fabric_player,
+	fabric_players,
+	player
 } from '~/utill'
 
 export async function updatePlayersChannel() {
@@ -76,24 +79,59 @@ export async function updatePlayersChannel() {
 export async function refreshOnlinePlayers() {
 	const servers = (await getAllServers()) as db_server[]
 	for (const server of servers) {
-		try {
-			const res = await fetch(`${server.host}/api/players`, {
-				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
-			})
+		switch (server.type) {
+			case 'paper':
+				try {
+					const res = await fetch(`${server.host}/api/players`, {
+						headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
+					})
 
-			if (!res.ok) {
-				log.error(`Error getting ${server.name} players.`)
-				return
-			}
+					if (!res.ok) {
+						log.error(`Error getting ${server.name} players.`)
+						return
+					}
 
-			const data = (await res.json()) as connected_players
+					const data = (await res.json()) as connected_players
 
-			if (data.online_players && data.online_players.length > 0)
-				await updateServerPlayers(server.id, data.online_players)
-			else await updateServerPlayers(server.id, [])
-		} catch (err) {
-			log.error(`Failed to fetch ${server.name} players: ${err}`)
-			return
+					if (data.online_players && data.online_players.length > 0)
+						await updateServerPlayers(server.id, data.online_players)
+					else await updateServerPlayers(server.id, [])
+				} catch (err) {
+					log.error(`Failed to fetch ${server.name} players: ${err}`)
+					return
+				}
+				break
+			case 'fabric':
+				try {
+					const res = await fetch(`${server.host}/api/players`, {
+						headers: { Authorization: `Bearer ${server.pass}` }
+					})
+
+					if (!res.ok) {
+						log.error(`Error getting ${server.name} players.`)
+						return
+					}
+
+					const data = (await res.json()) as fabric_players
+
+					if (data.players && data.players.length > 0)
+						await updateServerPlayers(server.id, fabricPlayersToPlayers(data.players))
+					else await updateServerPlayers(server.id, [])
+				} catch (err) {
+					log.error(`Failed to fetch ${server.name} players: ${err}`)
+					return
+				}
+				break
 		}
 	}
+}
+
+export function fabricPlayersToPlayers(fabricPlayers: fabric_player[]): player[] {
+	return fabricPlayers.map((p) => ({
+		name: p.name,
+		uuid: p.uuid,
+		health: p.health,
+		gamemode: p.game_mode,
+		level: 0
+	}))
 }
