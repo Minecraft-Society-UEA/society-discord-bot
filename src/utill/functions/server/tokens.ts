@@ -1,6 +1,5 @@
 import { getState, setState } from 'robo.js'
-import { getAllServers, log } from '~/utill'
-import { db_server, token } from '~/utill/types'
+import { db_server, getAllServers, log, token } from '~/utill'
 
 // resolve the token for a server
 export function server_token_resolver(id: string): string | null {
@@ -12,19 +11,21 @@ export async function loadTokens() {
 	const servers = (await getAllServers()) as db_server[]
 	for (const server of servers) {
 		try {
-			const body = { username: server.user, password: server.pass }
-			const res = await fetch(`${server.host}/api/auth/login`, {
-				method: 'POST',
-				body: JSON.stringify(body)
-			})
+			if (server.type === 'paper') {
+				const body = { username: server.user, password: server.pass }
+				const res = await fetch(`${server.host}/api/auth/login`, {
+					method: 'POST',
+					body: JSON.stringify(body)
+				})
 
-			if (!res.ok) {
-				log.error(`Error logging in to ${server.name}.`)
-				continue
+				if (!res.ok) {
+					log.error(`Error logging in to ${server.name}.`)
+					continue
+				}
+
+				const data = (await res.json()) as token
+				await setState(`${server.id}_token`, data.token)
 			}
-
-			const data = (await res.json()) as token
-			await setState(`${server.id}_token`, data.token)
 		} catch (err) {
 			log.error(`Error loading token for ${server.name}: \n${err}`)
 		}
