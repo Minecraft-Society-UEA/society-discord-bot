@@ -1,5 +1,13 @@
 import { EventSource } from 'eventsource'
-import { event, faction_chat, faction_member_join, faction_member_leave, getServerByID, global_chat } from '~/utill'
+import {
+	claim,
+	event,
+	faction_chat,
+	faction_member_join,
+	faction_member_leave,
+	getServerByID,
+	global_chat
+} from '~/utill'
 import { eventTimestampCheck } from '~/utill/functions/event_stream'
 
 export default async () => {
@@ -48,6 +56,14 @@ export default async () => {
 	eventSource.addEventListener('claim.added', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
-		const content = JSON.parse(data.content)
+		console.log(data)
+		const content = JSON.parse(data.content) as claim
+	})
+
+	eventSource.addEventListener('claim.removed', (event) => {
+		const data = JSON.parse(event.data) as event
+		if (!eventTimestampCheck(data)) return
+		console.log(data)
+		const content = JSON.parse(data.content) as claim
 	})
 }
