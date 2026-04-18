@@ -61,3 +61,12 @@ CREATE TABLE player_members (
     user_id BIGINT UNSIGNED,
     FOREIGN KEY (user_id) REFERENCES players(user_id)
 );
+
+CREATE TABLE factions (
+    id VARCHAR(40) PRIMARY KEY ,
+    faction_name VARCHAR(50),
+    channel_id BIGINT,
+    thread_id BIGINT,
+    thread_name VARCHAR(50),
+    
+)

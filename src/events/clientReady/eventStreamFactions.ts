@@ -8,7 +8,7 @@ import {
 	getServerByID,
 	global_chat
 } from '~/utill'
-import { eventTimestampCheck } from '~/utill/functions/event_stream'
+import { eventTimestampCheck } from '~/utill/functions/event_stream/timestamp_check'
 
 export default async () => {
 	const server = await getServerByID('bd04a936-7b51-43c2-a6b6-6274c2a55224')
