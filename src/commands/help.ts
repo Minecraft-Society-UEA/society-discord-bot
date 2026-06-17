@@ -61,10 +61,7 @@ export default async (interaction: ChatInputCommandInteraction, options: Command
 			},
 			{
 				name: '🎉 Social',
-				value: [
-					'`/intro` — Post an introduction',
-					'`/event-signup-list` — View HG event signups'
-				].join('\n'),
+				value: ['`/intro` — Post an introduction'].join('\n'),
 				inline: false
 			},
 			{

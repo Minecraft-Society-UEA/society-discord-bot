@@ -22,6 +22,9 @@ export default <Config>{
 	plugins: [],
 	type: 'robo',
 	excludePaths: [],
+	defaults: {
+		help: false
+	},
 	flashcore: {
 		keyv: {
 			store: new KeyvMysql({ uri: process.env.DB_URI })
