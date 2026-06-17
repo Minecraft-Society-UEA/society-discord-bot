@@ -11,6 +11,16 @@ export async function getServerByID(id: string) {
 	}
 }
 
+export async function getServersByType(type: db_server['type']) {
+	try {
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE type = ?', [type])
+		return rows.length > 0 ? rows : null
+	} catch (err) {
+		log.error(`Error fetching servers by type: ${err}`)
+		return null
+	}
+}
+
 export async function getAllServers() {
 	try {
 		const rows = await pool.query<db_server[]>('SELECT * FROM servers WHERE online = true')

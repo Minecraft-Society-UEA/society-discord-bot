@@ -1,29 +1,23 @@
 import { EventSource } from 'eventsource'
 import {
 	claim,
+	db_server,
 	event,
 	eventTimestampCheck,
 	faction_chat,
 	faction_member_join,
 	faction_member_leave,
-	getServerByID,
+	getServersByType,
 	global_chat,
 	log
 } from '~/utill'
 
-export default async () => {
-	const server = await getServerByID('bd04a936-7b51-43c2-a6b6-6274c2a55224')
-
-	if (!server) {
-		log.error('Factions server not found in DB — skipping faction event stream connection')
-		return
-	}
-
+function connectFactionEventStream(server: db_server) {
 	const source = `${server.host}/api/events/stream?_auth=${server.pass}`
 	const eventSource = new EventSource(source)
 
-	eventSource.onopen = () => console.log('[EventSource] Connection opened:', source.slice(0, 25) + '...')
-	eventSource.onerror = (err) => console.error('[EventSource] Error:', err)
+	eventSource.onopen = () => console.log(`[EventSource] Connection opened for ${server.name}:`, source.slice(0, 25) + '...')
+	eventSource.onerror = (err) => console.error(`[EventSource] Error on ${server.name}:`, err)
 
 	// TODO: relay global chat to a Discord channel
 	eventSource.addEventListener('global.chat', (event) => {
@@ -80,4 +74,17 @@ export default async () => {
 		console.log(data)
 		const content = JSON.parse(data.content) as claim
 	})
+}
+
+export default async () => {
+	const servers = await getServersByType('fabric')
+
+	if (!servers) {
+		log.error('No fabric servers found in DB — skipping faction event stream connection')
+		return
+	}
+
+	for (const server of servers) {
+		connectFactionEventStream(server)
+	}
 }
