@@ -7,13 +7,19 @@ import {
 	faction_member_join,
 	faction_member_leave,
 	getServerByID,
-	global_chat
+	global_chat,
+	log
 } from '~/utill'
 
 export default async () => {
 	const server = await getServerByID('bd04a936-7b51-43c2-a6b6-6274c2a55224')
-	const source = (await ((await process.env.FACTIONS_TESTING) +
-		'/api/events/stream?_auth=mcsapi_ca08abbabce0598425c9950255ff932d65e0054438263b85')) as string
+
+	if (!server) {
+		log.error('Factions server not found in DB — skipping faction event stream connection')
+		return
+	}
+
+	const source = `${server.host}/api/events/stream?_auth=${server.pass}`
 	const eventSource = new EventSource(source)
 
 	eventSource.onopen = () => console.log('[EventSource] Connection opened:', source.slice(0, 25) + '...')

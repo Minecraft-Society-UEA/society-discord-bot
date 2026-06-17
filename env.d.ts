@@ -25,8 +25,6 @@ declare global {
 			SU_LOGIN_PAGE: string
 			SU_USER: string
 			SU_PASS: string
-			FACTIONS_TESTING: string
-			FACTIONS_PASS
 		}
 	}
 }
