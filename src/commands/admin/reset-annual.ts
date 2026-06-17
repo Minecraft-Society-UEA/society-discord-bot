@@ -2,8 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
-import { log } from '~/utill'
-import { annualMembershipReset } from '~/events/clientReady/annualResetJob'
+import { log, annualMembershipReset } from '~/utill'
 
 export const config = createCommandConfig({
 	description: 'Manually trigger the annual membership reset',
