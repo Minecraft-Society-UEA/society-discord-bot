@@ -1,4 +1,5 @@
 export * from './bans'
+export * from './event_stream'
 export * from './logger'
 export * from './members'
 export * from './misc'
