@@ -10,7 +10,8 @@ import {
 	mc_command,
 	role_settings,
 	updateMember,
-	updatePlayerProfile
+	updatePlayerProfile,
+	HUB_SERVER_ID
 } from '~/utill'
 
 export const config = createCommandConfig({
@@ -35,10 +36,11 @@ export default async (
 	if (member_stat) await updateMember(profile.uea_email, ``)
 
 	if (profile.mc_rank === `member`) {
-		await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} parent set verified`)
+		await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} parent set verified`)
 		profile.mc_rank = `verified`
 	}
 
+	const unlinked_email = profile.uea_email
 	profile.uea_email = ``
 
 	await updatePlayerProfile(profile.user_id, profile)
@@ -46,7 +48,7 @@ export default async (
 	const roles = (await getSettingByid(`roles`)) as role_settings
 	const member_roles = (await guild.members.fetch(profile.user_id)) as GuildMember
 
-	log.msg(`${member_roles.nickname} has unlinked there email account: ${profile.uea_email}`)
+	log.msg(`${member_roles.nickname} has unlinked there email account: ${unlinked_email}`)
 
 	if (
 		guild.members.me.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 &&

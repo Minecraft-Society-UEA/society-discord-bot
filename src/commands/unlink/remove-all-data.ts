@@ -9,7 +9,8 @@ import {
 	log,
 	mc_command,
 	role_settings,
-	updateMember
+	updateMember,
+	HUB_SERVER_ID
 } from '~/utill'
 
 export const config = createCommandConfig({
@@ -27,7 +28,7 @@ export default async (
 	const guild = interaction.guild
 	if (!guild || !guild.members.me) return `Guild not found`
 
-	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} parent set default`)
+	await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} parent set default`)
 	await deletePlayerProfile(profile.user_id)
 	if (profile.uea_email) await updateMember(profile.uea_email, ``)
 

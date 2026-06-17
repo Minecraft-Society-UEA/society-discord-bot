@@ -8,7 +8,8 @@ import {
 	log,
 	mc_command,
 	role_settings,
-	updatePlayerProfile
+	updatePlayerProfile,
+	HUB_SERVER_ID
 } from '~/utill'
 
 export const config = createCommandConfig({
@@ -26,8 +27,9 @@ export default async (
 	const guild = interaction.guild
 	if (!guild || !guild.members.me) return `Guild not found`
 
-	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} parent set default`)
+	await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} parent set default`)
 
+	const unlinked_username = profile.mc_username
 	profile.mc_rank = `unverified`
 	profile.mc_username = ``
 	profile.mc_uuid = ``
@@ -37,7 +39,7 @@ export default async (
 	const roles = (await getSettingByid(`roles`)) as role_settings
 	const member_roles = (await guild.members.fetch(profile.user_id)) as GuildMember
 
-	log.msg(`${member_roles.nickname} has unlinked the mc account: ${profile.mc_username}`)
+	log.msg(`${member_roles.nickname} has unlinked the mc account: ${unlinked_username}`)
 
 	if (
 		guild.members.me.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 &&

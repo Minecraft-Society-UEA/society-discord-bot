@@ -9,7 +9,6 @@ import {
 	Role
 } from 'discord.js'
 import path from 'path'
-import { Flashcore } from 'robo.js'
 import sharp from 'sharp'
 import { welcome_settings, role_storage, getSettingByid, log } from '~/utill'
 
@@ -20,14 +19,14 @@ type setting_type = {
 export default async (member: GuildMember) => {
 	try {
 		member.send(
-			"## Great! You've joined our Discord, what's next?\n➥ **Join our Minecraft server!**\n> __Java Edition__\n> ```Address: play.ueamcsociety.net```\n> __Bedrock Edition__\> ```Address: play-br.ueamcsociety.net\n> Port: 37583```\n### ➥ **Go to https://discord.com/channels/1403421910557130842/1418026676469633144**\n> Run these commands in order **(don't include brackets)**:\n> \n> -# Bedrock players need to add a dot prefix and an underscore for spaces: e.g. `.Steve_Life`\n> -# Type the code sent to you in Minecraft into Discord.\n> ```/verify mc {mc-username}```\n> -# In the format `abc25xyz@uea.ac.uk`. Wait for another code sent via email.\n> ```/verify email {uea-email}```\n> -# Make sure you have a membership else this won't work! [Become a member now!](https://www.ueasu.org/communities/societies/group/minecraft/)\n> ```/verify member```\n> After this, you will gain access to the UEA SMP as well as other servers!\n### Confused? Visit  ➥ https://discord.com/channels/1403421910557130842/1415612281022189578\n\n### Want to speak to a committee member for help?\n## DM the Bot your Questions!"
+			"## Great! You've joined our Discord, what's next?\n➥ **Join our Minecraft server!**\n> __Java Edition__\n> ```Address: play.ueamcsociety.net```\n> __Bedrock Edition__\n> ```Address: play-br.ueamcsociety.net\n> Port: 37583```\n### ➥ **Go to https://discord.com/channels/1403421910557130842/1418026676469633144**\n> Run these commands in order **(don't include brackets)**:\n> \n> -# Bedrock players need to add a dot prefix and an underscore for spaces: e.g. `.Steve_Life`\n> -# Type the code sent to you in Minecraft into Discord.\n> ```/verify mc {mc-username}```\n> -# In the format `abc25xyz@uea.ac.uk`. Wait for another code sent via email.\n> ```/verify email {uea-email}```\n> -# Make sure you have a membership else this won't work! [Become a member now!](https://www.ueasu.org/communities/societies/group/minecraft/)\n> ```/verify member```\n> After this, you will gain access to the UEA SMP as well as other servers!\n### Confused? Visit  ➥ https://discord.com/channels/1403421910557130842/1415612281022189578\n\n### Want to speak to a committee member for help?\n## DM the Bot your Questions!"
 		)
 	} catch (error) {
 		log.warn(`Unable to DM (${member.nickname ?? member.displayName}) due to there DM settings`)
 	}
 
-	const roles = (await Flashcore.get(`mc_role_id`)) as role_storage
-	const role = (await member.guild.roles.cache.get(roles.unverified)) as Role
+	const roles = (await getSettingByid(`roles`)) as { setting: role_storage }
+	const role = (await member.guild.roles.cache.get(roles.setting.unverified)) as Role
 
 	await member.roles.add(role)
 
@@ -36,11 +35,11 @@ export default async (member: GuildMember) => {
 	const button = new ButtonBuilder()
 	const guild = member.guild
 	const channel = guild?.channels.cache.get(`${settings.setting.channelid}`)
-	const path = convertPath(settings.setting.path)
+	const imagePath = convertPath(settings.setting.path)
 	const file = (await image_process(
 		settings.setting.colourhex,
 		member.user.displayAvatarURL(),
-		path,
+		imagePath,
 		member.user.id
 	)) as AttachmentBuilder
 

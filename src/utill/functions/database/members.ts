@@ -6,7 +6,8 @@ import {
 	log,
 	mc_command,
 	role_settings,
-	updatePlayerProfile
+	updatePlayerProfile,
+	HUB_SERVER_ID
 } from '~/utill'
 import { pool } from './pool'
 import { client } from 'robo.js'
@@ -22,6 +23,26 @@ export async function getAllMembers(): Promise<db_member[]> {
 	} catch (err) {
 		log.error(`Error fetching players: ${err}`)
 		return []
+	}
+}
+
+export async function getAllLinkedMembers(): Promise<db_member[]> {
+	try {
+		const rows = await pool.query<db_member[]>('SELECT * FROM player_members WHERE user_id IS NOT NULL;')
+		return Array.isArray(rows) ? rows : [rows]
+	} catch (err) {
+		log.error(`Error fetching linked members: ${err}`)
+		return []
+	}
+}
+
+export async function clearAllMembers(): Promise<boolean> {
+	try {
+		await pool.query('DELETE FROM player_members')
+		return true
+	} catch (err) {
+		log.error(`Error clearing player_members table: ${err}`)
+		return false
 	}
 }
 
@@ -117,7 +138,7 @@ async function membershipRevoked(id: string) {
 	const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
 	if (!guild || !guild.members.me) return console.error(`Guild not found`)
 
-	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} demote player`)
+	await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} demote player`)
 
 	profile.mc_rank = `verified`
 

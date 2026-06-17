@@ -63,10 +63,9 @@ CREATE TABLE player_members (
 );
 
 CREATE TABLE factions (
-    id VARCHAR(40) PRIMARY KEY ,
+    id VARCHAR(40) PRIMARY KEY,
     faction_name VARCHAR(50),
     channel_id BIGINT,
     thread_id BIGINT,
-    thread_name VARCHAR(50),
-    
+    thread_name VARCHAR(50)
 )

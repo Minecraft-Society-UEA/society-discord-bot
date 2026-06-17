@@ -7,7 +7,8 @@ import {
 	createPlayerProfile,
 	db_player,
 	updatePlayerProfile,
-	message_player
+	message_player,
+	HUB_SERVER_ID
 } from '~/utill'
 
 type role_settings = {
@@ -36,7 +37,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const member = interaction.member as GuildMember
 
 			// add the players permitions
-			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${uuid} promote player`)
+			await mc_command(HUB_SERVER_ID, `lp user ${uuid} promote player`)
 			// create a player profile in the database
 			const playerProfile = (await createPlayerProfile(interaction.user.id)) as db_player
 

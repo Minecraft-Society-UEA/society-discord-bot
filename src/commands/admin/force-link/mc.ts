@@ -9,9 +9,9 @@ import {
 	getProfileByMcUsername,
 	getServerByID,
 	getSettingByid,
-	server_token_resolver,
-	connected_players,
-	updatePlayerProfile
+	fetchServerPlayers,
+	updatePlayerProfile,
+	HUB_SERVER_ID
 } from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
@@ -53,19 +53,17 @@ export default async (
 		return { content: `The user you selected is invalid or there is an error in the Minecraft name` }
 	const embed = new EmbedBuilder()
 	const profile = (await getProfileByDId(user.id)) as db_player
-	const already_verified = await getProfileByDId(user.id)
 	const username_inuse = await getProfileByMcUsername(mc_name)
-	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
+	const server = await getServerByID(HUB_SERVER_ID)
 	const member = interaction.member as GuildMember
 	const roles = (await getSettingByid(`roles`)) as role_settings
 	if (!server) return `db server = null`
-	let data_hub
 
-	// checking if the user already has verifide
-	if (!already_verified) return { embeds: [embed.setTitle(`Already verified on minecraft`)] }
+	// checking if user already has MC linked
+	if (profile?.mc_username) return { embeds: [embed.setTitle(`Already verified on minecraft`)] }
 
-	//checking if username is already linked
-	if (!username_inuse)
+	// checking if username is already linked to another account
+	if (username_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
@@ -75,18 +73,7 @@ export default async (
 		}
 
 	// pulls the player list from the Hub server
-	const response_hub = await fetch(`${server.host}:${server.port}/api/players`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${server_token_resolver(server.id)}`
-		}
-	})
-	// checks if the response is ok and if it is sets the player list to data_hub
-	if (!response_hub.ok) {
-		logger.error('Error getting hub players.')
-	} else {
-		data_hub = (await response_hub.json()) as connected_players
-	}
+	const data_hub = await fetchServerPlayers(server)
 
 	// checks if data is valid
 	if (!data_hub) {
@@ -94,15 +81,15 @@ export default async (
 	}
 
 	//  checks if player is online in the hub server
-	const player = data_hub.online_players.find((p) => p.name === mc_name)
+	const player = data_hub.find((p) => p.name === mc_name)
 
 	// if the username isnt found in the player list tells them
 	if (!player)
 		return { embeds: [embed.setColor('Red').setTitle(`No player with username: ${mc_name} connected to Hub`)] }
 
-	profile.mc_username === player.name
-	profile.mc_uuid === player.uuid
-	profile.mc_rank === `verified`
+	profile.mc_username = player.name
+	profile.mc_uuid = player.uuid
+	profile.mc_rank = `verified`
 
 	await updatePlayerProfile(user.id, profile)
 

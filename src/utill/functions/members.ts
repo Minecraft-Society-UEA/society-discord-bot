@@ -8,7 +8,8 @@ import {
 	updatePlayerProfile,
 	db_member,
 	db_player,
-	log
+	log,
+	HUB_SERVER_ID
 } from '~/utill'
 import * as cheerio from 'cheerio'
 
@@ -40,7 +41,7 @@ export async function validateMembers() {
 				continue
 			}
 
-			await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_uuid} promote player`)
+			await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} promote player`)
 
 			profile.mc_rank = `member`
 
@@ -58,7 +59,7 @@ export async function fetchTableHtml(): Promise<string | false> {
 		return false
 	}
 
-	const browser = await puppeteer.launch({ headless: true })
+	const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
 	const page = await browser.newPage()
 
 	page.setDefaultNavigationTimeout(0)

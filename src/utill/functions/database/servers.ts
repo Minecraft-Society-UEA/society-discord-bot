@@ -21,6 +21,16 @@ export async function getAllServers() {
 	}
 }
 
+export async function getAllServersAll() {
+	try {
+		const rows = await pool.query<db_server[]>('SELECT * FROM servers')
+		return rows.length > 0 ? rows : null
+	} catch (err) {
+		log.error(`Error fetching all servers: ${err}`)
+		return null
+	}
+}
+
 export async function getAllServerNames() {
 	try {
 		const rows = await pool.query<{ name: string }[]>('SELECT id, name FROM servers')

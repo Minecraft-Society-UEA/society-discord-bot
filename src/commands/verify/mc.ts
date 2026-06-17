@@ -16,9 +16,10 @@ import {
 	getProfileByMcUsername,
 	db_player,
 	getProfileByDId,
-	connected_players,
-	server_token_resolver,
-	generateCode
+	fetchServerPlayers,
+	sendPlayerMessage,
+	generateCode,
+	HUB_SERVER_ID
 } from '~/utill'
 
 export const config = createCommandConfig({
@@ -39,7 +40,7 @@ export default async (
 	interaction: ChatInputCommandInteraction,
 	options: CommandOptions<typeof config>
 ): Promise<CommandResult> => {
-	const server = await getServerByID(`a406fbb6-418d-4160-8611-1c180d33da14`)
+	const server = await getServerByID(HUB_SERVER_ID)
 	if (!server || !interaction.guild) return `db server = null or invlid guild`
 	const username = options['mc-username']
 	const embed = new EmbedBuilder()
@@ -52,27 +53,9 @@ export default async (
 
 	if (!already_verified && !username_inuse?.mc_username) {
 		// pull hub players
-		let data_hub: connected_players | null = null
-		try {
-			const response_hub = await fetch(`${server.host}/api/players`, {
-				method: 'GET',
-				headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
-			})
+		const data_hub = await fetchServerPlayers(server)
 
-			if (response_hub.ok) {
-				data_hub = (await response_hub.json()) as connected_players
-			} else {
-				logger.error('Error getting hub players.')
-			}
-		} catch (err) {
-			logger.error(`Hub fetch error: ${err}`)
-			return {
-				content: `${role}`,
-				embeds: [embed.setColor('Red').setTitle('Error in fetch request')]
-			}
-		}
-
-		if (!data_hub || !data_hub.online_players) {
+		if (!data_hub) {
 			console.log(`hub is down`)
 			return {
 				content: `${role}`,
@@ -82,7 +65,7 @@ export default async (
 			}
 		}
 		// find player in hub
-		const player = data_hub.online_players.find((p) => p.name === username)
+		const player = data_hub.find((p) => p.name === username)
 		if (!player) {
 			console.log(`Player "${username}" is not connected to the Hub`)
 			return {
@@ -101,14 +84,9 @@ export default async (
 		await Flashcore.set(`verify_code-mc_uuid-${interaction.user.id}`, player.uuid)
 
 		// send code in-game
-		const body = { player: player.name, message: `UEAMCSOC VERIFY ✦ Code: ${code}` }
-		const response = await fetch(`${server.host}/api/player/message`, {
-			method: 'POST',
-			headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` },
-			body: JSON.stringify(body)
-		})
+		const sent = await sendPlayerMessage(server, player.name, `UEAMCSOC VERIFY ✦ Code: ${code}`)
 
-		if (response.status !== 200) {
+		if (!sent) {
 			logger.error('Error sending player the code.')
 		}
 

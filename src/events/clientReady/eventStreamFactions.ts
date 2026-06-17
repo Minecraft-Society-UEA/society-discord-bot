@@ -19,40 +19,47 @@ export default async () => {
 	eventSource.onopen = () => console.log('[EventSource] Connection opened:', source.slice(0, 25) + '...')
 	eventSource.onerror = (err) => console.error('[EventSource] Error:', err)
 
+	// TODO: relay global chat to a Discord channel
 	eventSource.addEventListener('global.chat', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
 		const content = JSON.parse(data.content) as global_chat
 	})
 
+	// TODO: relay faction chat to the faction's Discord thread (see factions table)
 	eventSource.addEventListener('faction.chat', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
 		const content = JSON.parse(data.content) as faction_chat
 	})
 
+	// TODO: announce member joins in the faction's Discord thread
 	eventSource.addEventListener('faction.member_join', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
 		const content = JSON.parse(data.content) as faction_member_join
 	})
 
+	// TODO: announce member leaves in the faction's Discord thread
 	eventSource.addEventListener('faction.member_leave', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
 		const content = JSON.parse(data.content) as faction_member_leave
 	})
 
+	// TODO: update online player count / status
 	eventSource.addEventListener('join', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
 	})
 
+	// TODO: update online player count / status
 	eventSource.addEventListener('leave', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
 	})
 
+	// TODO: post claim changes to faction thread
 	eventSource.addEventListener('claim.added', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return
@@ -60,6 +67,7 @@ export default async () => {
 		const content = JSON.parse(data.content) as claim
 	})
 
+	// TODO: post claim changes to faction thread
 	eventSource.addEventListener('claim.removed', (event) => {
 		const data = JSON.parse(event.data) as event
 		if (!eventTimestampCheck(data)) return

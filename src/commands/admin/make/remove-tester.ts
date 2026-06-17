@@ -9,7 +9,8 @@ import {
 	mc_command,
 	message_player,
 	getSettingByid,
-	updatePlayerProfile
+	updatePlayerProfile,
+	HUB_SERVER_ID
 } from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
@@ -46,7 +47,7 @@ export default async (
 	const embed = new EmbedBuilder()
 	if (!profile || !profile.mc_username) return `Could not fetch data for Minecraft user or no Minecraft username`
 
-	await mc_command(`a406fbb6-418d-4160-8611-1c180d33da14`, `lp user ${profile.mc_username} parent set verified`)
+	await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_username} parent set verified`)
 	await message_player(profile.mc_username, `[MC-UEA VERIFY] Successfully removed Tester :tada:`)
 
 	const roles = (await getSettingByid(`roles`)) as role_settings

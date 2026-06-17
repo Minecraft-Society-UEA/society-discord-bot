@@ -39,7 +39,7 @@ export default async (
 	const embed = new EmbedBuilder()
 	const profile = (await getProfileByDId(user.id)) as db_player
 
-	const already_verified = (await getProfileByDId(interaction.user.id)) as db_player
+	const already_verified = (await getProfileByDId(user.id)) as db_player
 	const email_inuse = await getProfileByUeaEmail(email)
 
 	// checks if there email is a uea email
@@ -62,7 +62,7 @@ export default async (
 		return { embeds: [embed.setTitle(`Email already verified`).setColor('Green')], ephemeral: true }
 
 	//checking if username is already linked
-	if (!email_inuse)
+	if (email_inuse)
 		return {
 			embeds: [
 				embed.setTitle(
@@ -71,7 +71,7 @@ export default async (
 			]
 		}
 
-	profile.uea_email === email
+	profile.uea_email = email
 	await updatePlayerProfile(user.id, profile)
 
 	// create embed

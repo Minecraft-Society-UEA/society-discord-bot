@@ -18,7 +18,8 @@ import {
 	fetchTableHtml,
 	extractIds,
 	createMembers,
-	log
+	log,
+	isMembershipPaused
 } from '~/utill'
 
 // the command config pretty simple json there are more option avlible check robo.js docs
@@ -40,6 +41,20 @@ export default async (
 ): Promise<CommandResult> => {
 	// declaring variables we need
 	if (!interaction.guild || !interaction.guild.members.me) return `invalid guild`
+
+	if (isMembershipPaused()) {
+		const embed = new EmbedBuilder()
+		return {
+			embeds: [
+				embed
+					.setTitle(`🔒 Membership verification is paused for the annual renewal period`)
+					.setDescription(`Society memberships reset on 31st July. New memberships can be verified from 20th August onwards.\n\nIn the meantime, [renew your membership here](https://www.ueasu.org/communities/societies/group/minecraft/).`)
+					.setColor('Orange')
+			],
+			flags: [`Ephemeral`]
+		}
+	}
+
 	const lastUsed = (await Flashcore.get('lastused')) as number | null
 	const now = Date.now()
 	const embed = new EmbedBuilder()

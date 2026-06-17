@@ -3,7 +3,7 @@ import { Flashcore, client } from 'robo.js'
 import {
 	getAllServers,
 	getAllPlayers,
-	server_token_resolver,
+	server_auth_header,
 	updateServerPlayers,
 	log,
 	db_online_player,
@@ -76,53 +76,39 @@ export async function updatePlayersChannel() {
 	}
 }
 
+// fetches the online player list for a server, normalizing paper/fabric response shapes
+// returns null if the server is unreachable or returns a non-ok response
+export async function fetchServerPlayers(server: db_server, opts?: { signal?: AbortSignal }): Promise<player[] | null> {
+	try {
+		const res = await fetch(`${server.host}/api/players`, {
+			headers: { Authorization: `Bearer ${server_auth_header(server)}` },
+			signal: opts?.signal
+		})
+
+		if (!res.ok) {
+			log.error(`Error getting ${server.name} players.`)
+			return null
+		}
+
+		if (server.type === 'fabric') {
+			const data = (await res.json()) as fabric_players
+			return fabricPlayersToPlayers(data.players ?? [])
+		}
+
+		const data = (await res.json()) as connected_players
+		return data.online_players ?? []
+	} catch (err) {
+		log.error(`Failed to fetch ${server.name} players: ${err}`)
+		return null
+	}
+}
+
 export async function refreshOnlinePlayers() {
 	const servers = (await getAllServers()) as db_server[]
 	for (const server of servers) {
-		switch (server.type) {
-			case 'paper':
-				try {
-					const res = await fetch(`${server.host}/api/players`, {
-						headers: { Authorization: `Bearer ${server_token_resolver(server.id)}` }
-					})
-
-					if (!res.ok) {
-						log.error(`Error getting ${server.name} players.`)
-						return
-					}
-
-					const data = (await res.json()) as connected_players
-
-					if (data.online_players && data.online_players.length > 0)
-						await updateServerPlayers(server.id, data.online_players)
-					else await updateServerPlayers(server.id, [])
-				} catch (err) {
-					log.error(`Failed to fetch ${server.name} players: ${err}`)
-					return
-				}
-				break
-			case 'fabric':
-				try {
-					const res = await fetch(`${server.host}/api/players`, {
-						headers: { Authorization: `Bearer ${server.pass}` }
-					})
-
-					if (!res.ok) {
-						log.error(`Error getting ${server.name} players.`)
-						return
-					}
-
-					const data = (await res.json()) as fabric_players
-
-					if (data.players && data.players.length > 0)
-						await updateServerPlayers(server.id, fabricPlayersToPlayers(data.players))
-					else await updateServerPlayers(server.id, [])
-				} catch (err) {
-					log.error(`Failed to fetch ${server.name} players: ${err}`)
-					return
-				}
-				break
-		}
+		const players = await fetchServerPlayers(server)
+		if (players === null) continue
+		await updateServerPlayers(server.id, players)
 	}
 }
 

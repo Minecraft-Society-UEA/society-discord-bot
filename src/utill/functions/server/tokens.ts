@@ -6,6 +6,12 @@ export function server_token_resolver(id: string): string | null {
 	return getState<string>(`${id}_token`)
 }
 
+// resolve the bearer value to use for a server's API calls
+// paper uses a token issued by /api/auth/login, fabric uses its api key (stored in pass) directly
+export function server_auth_header(server: db_server): string | null {
+	return server.type === 'fabric' ? server.pass : server_token_resolver(server.id)
+}
+
 //function to get and save all tokens for each server
 export async function loadTokens() {
 	const servers = (await getAllServers()) as db_server[]
@@ -30,6 +36,4 @@ export async function loadTokens() {
 			log.error(`Error loading token for ${server.name}: \n${err}`)
 		}
 	}
-
-	log.info(`Logged in to all servers and stored tokens`)
 }

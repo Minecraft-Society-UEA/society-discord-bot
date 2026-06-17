@@ -17,4 +17,6 @@ export default async () => {
 	updatePlayersChannel()
 
 	await new Promise((resolve) => setTimeout(resolve, 2000))
+
+	logger.ready('All startup jobs started and servers logged in')
 }

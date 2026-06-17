@@ -1,30 +1,34 @@
 import { RGBTuple, EmbedBuilder, TextChannel } from 'discord.js'
 import { client } from 'robo.js'
 
+function buildEmbed(msg: string, clour: RGBTuple) {
+	const embed = new EmbedBuilder().setColor(clour)
+	if (msg.length <= 256) {
+		embed.setTitle(msg)
+	} else {
+		embed.setTitle(msg.slice(0, 253) + '...').setDescription(`\`\`\`${msg.slice(253, 3900)}\`\`\``)
+	}
+	return embed
+}
+
 function logingDebug(msg: string, clour: RGBTuple) {
 	const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
-	const embed = new EmbedBuilder()
 	if (!guild) return console.error(`Guild not found`)
 
 	const textChannel = guild.channels.cache.get(process.env.DISCORD_DEBUG_CHANNEL_ID) as TextChannel
 	if (!textChannel?.isTextBased() || !textChannel.isSendable()) return console.error(`Invalid text channel in loging`)
 
-	embed.setColor(clour).setTitle(msg)
-
-	textChannel.send({ embeds: [embed] })
+	textChannel.send({ embeds: [buildEmbed(msg, clour)] })
 }
 
 function loging(msg: string, clour: RGBTuple) {
 	const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
-	const embed = new EmbedBuilder()
 	if (!guild) return console.error(`Guild not found`)
 
 	const textChannel = guild.channels.cache.get(process.env.DISCORD_LOGGING_CHANNEL_ID) as TextChannel
 	if (!textChannel?.isTextBased() || !textChannel.isSendable()) return console.error(`Invalid text channel in loging`)
 
-	embed.setColor(clour).setTitle(msg)
-
-	textChannel.send({ embeds: [embed] })
+	textChannel.send({ embeds: [buildEmbed(msg, clour)] })
 }
 
 function logingRaw(msg: string) {

@@ -7,15 +7,11 @@ export const servers_req = {
 	choices: [
 		{
 			name: `Hub`,
-			value: `a406fbb6-418d-4160-8611-1c180d33da14`
+			value: `31b0d944`
 		},
 		{
-			name: `SMP1`,
-			value: `ca3cf618-b941-478c-b056-fedd9ba9f1f0`
-		},
-		{
-			name: `SMP2`,
-			value: `c72abfc4-c6bd-4148-a7aa-213e32aaa578`
+			name: `SMP`,
+			value: `a814b3bd`
 		},
 		{
 			name: `Creative`,
@@ -43,12 +39,8 @@ export const servers_non_req = {
 			value: `a406fbb6-418d-4160-8611-1c180d33da14`
 		},
 		{
-			name: `SMP1`,
+			name: `SMP`,
 			value: `ca3cf618-b941-478c-b056-fedd9ba9f1f0`
-		},
-		{
-			name: `SMP2`,
-			value: `c72abfc4-c6bd-4148-a7aa-213e32aaa578`
 		},
 		{
 			name: `Creative`,

@@ -1,4 +1,5 @@
 export * from './bans'
+export * from './factions'
 export * from './members'
 export * from './online_players'
 export * from './players'

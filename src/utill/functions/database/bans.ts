@@ -24,6 +24,16 @@ export async function getBansByUserId(userId: string) {
 	}
 }
 
+export async function deleteBanByUserId(userId: string): Promise<boolean> {
+	try {
+		await pool.query('DELETE FROM bans WHERE user_id = ?', [userId])
+		return true
+	} catch (err) {
+		log.error(`Error deleting ban for user ${userId}: ${err}`)
+		return false
+	}
+}
+
 export async function getBansExpiringToday() {
 	try {
 		const [rows] = await pool.query<db_bans[]>(

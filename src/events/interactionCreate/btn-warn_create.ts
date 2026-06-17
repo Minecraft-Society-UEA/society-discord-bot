@@ -70,7 +70,7 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 				embeds: [embed]
 			})
 
-			await interaction.reply({
+			await interaction.followUp({
 				content: `use the '/warn effected' and select the members who are effected (up to 3 if more add the main 3 then mention the rest in the the reason)`
 			})
 			return
@@ -89,7 +89,7 @@ export default async (interaction: ButtonInteraction, client: Client) => {
 				embeds: [embed]
 			})
 
-			await interaction.reply({ content: `use the '/warn image' and upload image/screen shots (up to 4)` })
+			await interaction.followUp({ content: `use the '/warn image' and upload image/screen shots (up to 4)` })
 			return
 		}
 
