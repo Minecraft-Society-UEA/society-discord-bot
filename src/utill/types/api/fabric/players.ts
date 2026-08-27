@@ -1,6 +1,5 @@
 // the type the /players endpoint returns a array of for the fabric servsers
 export type fabric_players = {
-	count: number
 	players: fabric_player[]
 }
 
@@ -8,14 +7,6 @@ export type fabric_players = {
 export type fabric_player = {
 	name: string
 	uuid: string
-	health: number
-	food_level: number
-	position: pos
-	dimension: string
-	ping_ms: number
-	game_mode: string
-	is_op: boolean
-	skin_head_url: string
 }
 
 // the type the postion of the player is stored as

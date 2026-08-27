@@ -2,9 +2,9 @@
 export type player = {
 	level: number
 	name: string
-	health: number
+	health: number | null	
 	uuid: string
-	gamemode: string
+	gamemode: string | null
 }
 
 // the type the /players endpoint returns

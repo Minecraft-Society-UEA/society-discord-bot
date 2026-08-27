@@ -10,20 +10,28 @@ export const servers_req = {
 			value: `31b0d944`
 		},
 		{
-			name: `SMP`,
-			value: `a814b3bd`
+			name: `SMP 2026`,
+			value: `626a9019`
 		},
 		{
 			name: `Creative`,
-			value: `8dbb710c-c181-4cb4-a236-f2dec3bd08e6`
+			value: `8dbb710c`
 		},
 		{
 			name: `OLD SMPs`,
-			value: `094a4a23-d454-4d3e-9c14-7432e12089cb`
+			value: `094a4a23`
 		},
 		{
 			name: `Event HG`,
-			value: `6d75e064-dec0-4213-951a-bf265be15854`
+			value: `6d75e064`
+		},
+		{
+			name: `Event HG`,
+			value: `bcfd9927`
+		},
+		{
+			name: `Event Spleef`,
+			value: `c77745c3`
 		}
 	],
 	required: true

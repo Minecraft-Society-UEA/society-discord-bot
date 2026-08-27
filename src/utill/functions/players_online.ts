@@ -11,7 +11,9 @@ import {
 	connected_players,
 	fabric_player,
 	fabric_players,
-	player
+	player,
+	addPlaytime,
+	getProfileByMcUuid
 } from '~/utill'
 
 export async function updatePlayersChannel() {
@@ -109,6 +111,13 @@ export async function refreshOnlinePlayers() {
 		const players = await fetchServerPlayers(server)
 		if (players === null) continue
 		await updateServerPlayers(server.id, players)
+
+		for (const player of players) {
+			const profile = await getProfileByMcUuid(player.uuid)
+			if (profile?.user_id) {
+				await addPlaytime(profile.user_id, 30)
+			}
+		}
 	}
 }
 
@@ -116,8 +125,8 @@ export function fabricPlayersToPlayers(fabricPlayers: fabric_player[]): player[]
 	return fabricPlayers.map((p) => ({
 		name: p.name,
 		uuid: p.uuid,
-		health: p.health,
-		gamemode: p.game_mode,
+		health: null,
+		gamemode: null,
 		level: 0
 	}))
 }

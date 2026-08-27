@@ -1,5 +1,5 @@
 // mc rank type or what ranks a player can be
-export type mc_rank_type = 'unverified' | 'verified' | 'member' | 'tester' | 'admin'
+export type mc_rank_type = 'unverified' | 'verified' | 'member' | 'tester' | 'admin' | 'committee' | 'plus1'
 
 //the type of the player profiles stored in the Databaseastari
 export type db_player = {

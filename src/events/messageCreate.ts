@@ -1,12 +1,15 @@
 import { ChannelType, EmbedBuilder, GuildMember, Message, ThreadChannel } from 'discord.js'
 import { Flashcore, client } from 'robo.js'
-import { getSettingByid, modmailSettings, ModMailUserData } from '~/utill'
+import { getSettingByid, modmailSettings, ModMailUserData, incrementMessageCount } from '~/utill'
 
 export default async (message: Message) => {
+	if (message.author.bot) return
+
+	if (message.guild) {
+		await incrementMessageCount(message.author.id)
+	}
+
 	if (message.channel.type === ChannelType.PublicThread || message.channel.type === ChannelType.PrivateThread) {
-		if (message.author.bot) {
-			return
-		}
 		const threadUserData = await retrieveModmailDataFromFlashcore(message.channelId, '')
 		const guild = await client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
 		if (!guild) return console.error(`Guild not found`)
@@ -32,7 +35,7 @@ export default async (message: Message) => {
 		}
 		return
 	}
-	if (message.channel.type === ChannelType.DM && !message.author.bot) {
+	if (message.channel.type === ChannelType.DM) {
 		const modmailChannel = await Flashcore.get<string>('modmail_forum')
 
 		if (!modmailChannel) {

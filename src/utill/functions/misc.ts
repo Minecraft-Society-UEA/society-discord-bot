@@ -15,3 +15,12 @@ export function generateCode(length = 5) {
 	}
 	return code
 }
+
+// Format playtime seconds to human-readable format (Xd Yh Zm)
+export function formatPlaytime(seconds: number | bigint): string {
+	const totalSeconds = typeof seconds === 'bigint' ? Number(seconds) : seconds
+	const days = Math.floor(totalSeconds / 86400)
+	const hours = Math.floor((totalSeconds % 86400) / 3600)
+	const mins = Math.floor((totalSeconds % 3600) / 60)
+	return `${days}d ${hours}h ${mins}m`
+}
