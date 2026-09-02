@@ -54,14 +54,6 @@ export default async (interaction: ChatInputCommandInteraction, options: Command
 				inline: false
 			},
 			{
-				name: '⚔️ Factions',
-				value: [
-					'`/faction` — Find your faction thread',
-					'`/factions` — List all active factions'
-				].join('\n'),
-				inline: false
-			},
-			{
 				name: '🎉 Social',
 				value: [
 					'`/intro` — Post an introduction',
