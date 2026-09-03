@@ -1,12 +1,15 @@
 import { ChannelType, EmbedBuilder, GuildMember, Message, ThreadChannel } from 'discord.js'
 import { Flashcore, client } from 'robo.js'
-import { getSettingByid, modmailSettings, ModMailUserData, incrementMessageCount } from '~/utill'
+import { getSettingByid, modmailSettings, ModMailUserData, incrementMessageCount, getProfileByDId } from '~/utill'
 
 export default async (message: Message) => {
 	if (message.author.bot) return
 
 	if (message.guild) {
-		await incrementMessageCount(message.author.id)
+		const profile = await getProfileByDId(message.author.id)
+		if (profile) {
+			await incrementMessageCount(message.author.id)
+		}
 	}
 
 	if (message.channel.type === ChannelType.PublicThread || message.channel.type === ChannelType.PrivateThread) {
