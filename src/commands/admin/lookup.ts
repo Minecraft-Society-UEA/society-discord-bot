@@ -1,6 +1,6 @@
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 import { createCommandConfig } from 'robo.js'
-import type { ChatInputCommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import type { CommandOptions, CommandResult } from 'robo.js'
 import {
 	getProfileByDId,
@@ -60,21 +60,21 @@ export default async (interaction: ChatInputCommandInteraction, options: Command
 		return { content: '❌ Database error during lookup.', flags: ['Ephemeral'] }
 	}
 
-	if (!profile) {
+	if (!profile || !profile.user_id) {
 		return {
 			embeds: [new EmbedBuilder().setColor('Red').setTitle('❌ No player found').setDescription('No profile matched the provided query.')],
 			flags: ['Ephemeral']
 		}
 	}
-
+console.log(profile?.user_id)
 	const member = await getMemberUserId(profile.user_id)
-	const discordMember = await interaction.guild?.members.fetch(profile.user_id).catch(() => null)
-
+	const discordMember = await interaction.guild?.members.fetch(String(profile.user_id)).catch(() => null) as GuildMember | null
 	const embed = new EmbedBuilder()
 		.setTitle(`🔍 Player Lookup`)
 		.setColor('Blue')
+		.setThumbnail(discordMember?.user?.displayAvatarURL() ?? null)
 		.addFields(
-			{ name: 'Discord', value: discordMember ? `${discordMember} (${discordMember.displayName})` : `<@${profile.user_id}>`, inline: false },
+			{ name: 'Discord', value: discordMember?.user ? `${discordMember.user.globalName ?? discordMember.user.username} (${discordMember.nickname})` : `<@${profile.user_id}>`, inline: false },
 			{ name: 'MC Username', value: profile.mc_username ?? 'Not linked', inline: true },
 			{ name: 'MC UUID', value: profile.mc_uuid ? `\`${profile.mc_uuid}\`` : 'Not linked', inline: true },
 			{ name: 'UEA Email', value: profile.uea_email ? `\`${profile.uea_email}@uea.ac.uk\`` : 'Not linked', inline: true },

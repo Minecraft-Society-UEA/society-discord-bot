@@ -60,7 +60,8 @@ export default async (interaction: ChatInputCommandInteraction, options: Command
 		: '0'
 
 	embed
-		.setTitle(`✦ ${user.displayName}'s Profile`)
+		.setThumbnail(user.displayAvatarURL() ?? null)
+		.setTitle(`✦ ${user.nickname}'s Profile`)
 		.addFields(
 			{ name: 'MC Username', value: profile.mc_username ?? 'Not linked', inline: true },
 			{ name: 'MC UUID', value: profile.mc_uuid ? `\`${profile.mc_uuid}\`` : 'Not linked', inline: true },
