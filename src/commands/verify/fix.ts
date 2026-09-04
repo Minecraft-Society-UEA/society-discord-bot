@@ -69,14 +69,27 @@ export default async (
 	}
 
 	try {
-		await mc_command(server.id, `lp user ${profile.mc_username} parent set ${profile.mc_rank}`)
-		await Flashcore.set(`fix_used-${interaction.user.id}`, true)
+		if (profile.mc_rank === "verified") {
+			await mc_command(server.id, `lp user ${profile.mc_username} parent set verified`)
+			await Flashcore.set(`fix_used-${interaction.user.id}`, true)
 
 		return {
 			embeds: [
 				embed.setColor('Green').setTitle(`✦ Your rank has been synced and fixed!`).setDescription(`Your rank is now set to: **${profile.mc_rank}**`)
 			]
 		}
+		} else if (profile.mc_rank === "member") {
+			await mc_command(server.id, `lp user ${profile.mc_username} parent set soc-member`)
+			await Flashcore.set(`fix_used-${interaction.user.id}`, true)
+
+		return {
+			embeds: [
+				embed.setColor('Green').setTitle(`✦ Your rank has been synced and fixed!`).setDescription(`Your rank is now set to: **${profile.mc_rank}**`)
+			]
+		}
+		}
+		await Flashcore.set(`fix_used-${interaction.user.id}`, true)
+
 	} catch (err) {
 		log.error(`Error executing LuckPerms command: ${err}`)
 		return {
