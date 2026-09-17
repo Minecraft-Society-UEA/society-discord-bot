@@ -1,6 +1,6 @@
 import { ModalSubmitInteraction, Client, EmbedBuilder, GuildMember, Role } from 'discord.js'
 import { Flashcore, logger } from 'robo.js'
-import { role_storage, getProfileByDId, db_player, updatePlayerProfile, getSettingByid } from '~/utill'
+import { role_storage, getProfileByDId, db_player, updatePlayerProfile, getSettingByid, log } from '~/utill'
 
 type role_settings = {
 	setting: role_storage
@@ -42,7 +42,10 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId
 			) {
-				await member.setNickname(`${name_pref} ✧ ${playerProfile.mc_username}`)
+				const nick = `${name_pref} ✧ ${playerProfile.mc_username}`
+				if (nick.length <= 32) {
+					await member.setNickname(nick)
+				} else log.error(`can not set nickname "${nick}" is to long`)
 				await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.email_verified)) as Role)
 			} else {
 				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)

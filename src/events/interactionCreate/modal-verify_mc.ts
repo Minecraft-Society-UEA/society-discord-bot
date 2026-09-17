@@ -8,7 +8,8 @@ import {
 	db_player,
 	updatePlayerProfile,
 	message_player,
-	HUB_SERVER_ID
+	HUB_SERVER_ID,
+	log
 } from '~/utill'
 
 type role_settings = {
@@ -52,13 +53,17 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			// send the player a sucsess message
 			await message_player(username, `UEAMCSOC VERIFY ✦ Successfully Verified`)
 
+			// settig nickname to check length
+			let nick:string = ``
+			if (member.nickname) nick = `${member.nickname} ✧ ${username}`
+				else `${member.user.displayName} ✧ ${username}`
+
 			// set player nickname and roles in disocrds
 			if (
 				interaction.guild.members.me?.roles.highest.comparePositionTo(member.roles.highest) > 0 &&
 				member.id !== interaction.guild.ownerId
 			) {
-				if (member.nickname) await member.setNickname(`${member.nickname} ✧ ${username}`)
-				else await member.setNickname(`${member.user.displayName} ✧ ${username}`)
+				if (nick.length <= 32) await member.setNickname(nick)
 
 				await member.roles.remove((await interaction.guild.roles.cache.get(roles.setting.unverified)) as Role)
 				await member.roles.add((await interaction.guild.roles.cache.get(roles.setting.mc_verified)) as Role)
@@ -70,7 +75,7 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 					]
 				})
 			} else {
-				logger.warn(`Cannot change nickname of ${member.user.tag}: insufficient role hierarchy or member is owner`)
+				log.error(`Cannot change nickname of ${member.user.displayName}: insufficient role hierarchy or member is owner or nickname is longer then 32 chars`)
 				await interaction.editReply({
 					embeds: [
 						embed
