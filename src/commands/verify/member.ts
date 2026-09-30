@@ -80,10 +80,10 @@ export default async (
 		}
 	} else if (!member0) {
 		if (!profile) {
-			return { content: `You still need to link you mc account with */verify mc*` }
+			return { content: `You still need to link you mc account with: */verify mc*` }
 		}
 		if (!profile.uea_email) {
-			return { content: `You still need to link you email with */verify email*` }
+			return { content: `You still need to link you email with: */verify email*` }
 		}
 
 		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
