@@ -23,13 +23,13 @@ import {
 } from '~/utill'
 
 export const config = createCommandConfig({
-	description: 'CLICK HERE to link your Minecraft account to our Discord',
+	description: 'Step 1: Link your Minecraft account to Discord',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
 		{
-			name: 'mc-username',
-			description: 'mc username exactly how it is in the player list',
+			name: 'Nametag',
+			description: 'Enter your exact in-game name (Bedrock players: add a . first).',
 			type: 'string',
 			required: true
 		}
@@ -56,24 +56,24 @@ export default async (
 		const data_hub = await fetchServerPlayers(server)
 
 		if (!data_hub) {
-			console.log(`hub is down`)
+			console.log(`LOG:	Server hub is offline`)
 			return {
 				content: `${role}`,
 				embeds: [
-					embed.setColor('Red').setTitle('🫤 Sorry, I cannot connect to the server. Ask committee for assistance!')
+					embed.setColor('Red').setTitle(`😪 Sorry, I can't connect right now. The server might be offline.`)
 				]
 			}
 		}
 		// find player in hub
 		const player = data_hub.find((p) => p.name === username)
 		if (!player) {
-			console.log(`Player "${username}" is not connected to the Hub`)
+			console.log(`LOG:	Could not find "${username}" in the server hub`)
 			return {
 				content: `${role}`,
 				embeds: [
 					embed
 						.setColor('Yellow')
-						.setTitle(`🤔 "${username}" has not joined the Minecraft lobby. See #help for more info on how to join`)
+						.setTitle(`🤔 "${username}" needs to join the server first. Did you spell your nametag correctly? Read #tutorial-guides for help!`)
 				]
 			}
 		}
@@ -112,7 +112,7 @@ export default async (
 			embeds: [
 				embed
 					.setColor('Yellow')
-					.setTitle('👉 You have already successfully verified on Minecraft or that username is in use.')
+					.setTitle(`👉 You're already verified, or that username is taken.`)
 			]
 		}
 	}
