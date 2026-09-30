@@ -15,7 +15,7 @@ import {
 } from '~/utill'
 
 export const config = createCommandConfig({
-	description: 'unlink you email this will lose your member status',
+	description: 'Unlinking your email will remove your member status.',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall']
 } as const)
@@ -29,7 +29,7 @@ export default async (
 	const guild = interaction.guild
 	if (!guild || !guild.members.me) return `Guild not found`
 
-	if (!profile.uea_email) return `you dont have a linked email`
+	if (!profile.uea_email) return `No email is currently linked to your account.`
 
 	const member_stat = await getMemberId(profile.uea_email)
 
@@ -57,5 +57,5 @@ export default async (
 		await member_roles.roles.remove((await guild.roles.cache.get(roles.setting.email_verified)) as Role)
 		await member_roles.roles.remove((await guild.roles.cache.get(roles.setting.member)) as Role)
 	}
-	return `Removed email from account you can relink as anytime`
+	return `Email removed! You can relink it anytime.`
 }
