@@ -13,7 +13,7 @@ import {
 } from '~/utill'
 
 export const config = createCommandConfig({
-	description: 'unlink your minecraft account this will remove you ability to join the smp',
+	description: 'Unlinking your Minecraft account will remove your access to the SMP.',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall']
 } as const)
@@ -50,5 +50,5 @@ export default async (
 		await member_roles.roles.remove((await guild.roles.cache.get(roles.setting.mc_verified)) as Role)
 		await member_roles.roles.add((await guild.roles.cache.get(roles.setting.unverified)) as Role)
 	}
-	return `unlinked your mc account you can relink ta any time`
+	return `Account unlinked! You can relink it anytime.`
 }
