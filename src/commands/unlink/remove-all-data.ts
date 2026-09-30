@@ -14,7 +14,7 @@ import {
 } from '~/utill'
 
 export const config = createCommandConfig({
-	description: 'removes all data involing your chareter including email, member status and mc account',
+	description: 'Delete all your data (including email, member status, and Minecraft account).',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall']
 } as const)
@@ -51,5 +51,5 @@ export default async (
 		])
 		await member_roles.roles.add((await guild.roles.cache.get(roles.setting.unverified)) as Role)
 	}
-	return `removed all data associated with your account you can relink anytime`
+	return `All your account data has been removed. You can relink anytime.`
 }
