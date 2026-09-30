@@ -25,7 +25,7 @@ import {
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'CLICK HERE to confirm that you are a society member.',
+	description: 'Step 3: Buy a membership, then run this command',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall']
 } as const)
@@ -74,16 +74,16 @@ export default async (
 		return {
 			embeds: [
 				embed
-					.setTitle(`✦ You are already a linked member! — we have checked your roles add added member if needed`)
+					.setTitle(`✦ You are already a linked member! We've synced your roles.`)
 					.setColor(`Green`)
 			]
 		}
 	} else if (!member0) {
 		if (!profile) {
-			return { content: `You need to link you mc account with /verify mc` }
+			return { content: `You still need to link you mc account with */verify mc*` }
 		}
 		if (!profile.uea_email) {
-			return { content: `You need to link you email with /verify email` }
+			return { content: `You still need to link you email with */verify email*` }
 		}
 
 		if (lastUsed && now - lastUsed < 5 * 60 * 1000) {
@@ -104,7 +104,7 @@ export default async (
 					await Flashcore.delete('lastused')
 					return {
 						content: `${role}`,
-						embeds: [embed.setTitle(`gettiong members failed`).setColor('Red')]
+						embeds: [embed.setTitle(`ERROR:	Failed to get members!`).setColor('Red')]
 					}
 				}
 				const ids = await extractIds(html)
@@ -114,7 +114,7 @@ export default async (
 				const member2 = await getMemberUserId(interaction.user.id)
 				if (!member2) {
 					return {
-						embeds: [embed.setTitle(`✦ Not a member yet — get a membership below`).setColor(`Orange`)],
+						embeds: [embed.setTitle(`✦ Not a member yet! Get your membership below 👇`).setColor(`Orange`)],
 						components: [
 							new ActionRowBuilder<ButtonBuilder>().addComponents(
 								button
@@ -130,7 +130,7 @@ export default async (
 					return {
 						embeds: [
 							embed
-								.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
+								.setTitle(`🎉 You're all set! You now have access to our Minecraft servers.`)
 								.setColor(`Green`)
 						]
 					}
@@ -140,7 +140,7 @@ export default async (
 				return {
 					embeds: [
 						embed
-							.setTitle(`🤩 Nice! Your member status has been linked to Minecraft, you can now access our servers!`)
+							.setTitle(`🎉 You're all set! You now have access to our Minecraft servers.`)
 							.setColor(`Green`)
 					]
 				}
