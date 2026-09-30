@@ -8,13 +8,13 @@ const CONNECTION_INFO = `# **How to join our community Minecraft server!**
 ## <:grass:1424050944194383892>  __Java Connection:__
 Enter this address after clicking the \`Add Server\` button under the **Multiplayer** tab.
 **Server Address:**
-> \`\`\`play.ueamcsociety.net\`\`\`
-We recommend that you join on \`1.21.10\` for the best experience as of \`29-12-2025\`
+> \`\`\`play.ueamc.net\`\`\`
+We recommend that you join on \`26.2\` for the best experience as of \`September 2026\`
 -# You must be in any version above 1.13 to join.
 ## <:bedrock:1485314220495998977>  __Bedrock Connection (Mobile/PC/XBOX):__
 Connect by going to the **Servers** tab and clicking →  \`Add Server\` then fill in the details below
 **Server Address:**
-> \`\`\`play-br.ueamcsociety.net\`\`\`
+> \`\`\`play-br.ueamc.net\`\`\`
 > **Port:** \`35504\`
 ## <:sony_playstation:1404261256575189072>  __PS4/5 Bedrock Connection__
 > ### **__STEP 1__**
