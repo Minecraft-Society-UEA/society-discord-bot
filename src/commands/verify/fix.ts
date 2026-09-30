@@ -43,7 +43,7 @@ export default async (
 		return {
 			content: `${role}`,
 			embeds: [
-				embed.setColor('Red').setTitle('Database error - server not found')
+				embed.setColor('Red').setTitle('ERROR:	Database error - server not found')
 			]
 		}
 	}
