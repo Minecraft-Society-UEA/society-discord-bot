@@ -15,13 +15,13 @@ import {
 // the command config pretty simple json there are more option avlible check robo.js docs
 // command name is the file name and if in any folders in the command folders are treated as sub commands
 export const config = createCommandConfig({
-	description: 'CLICK HERE to link your UEA email address.',
+	description: 'Step 2: Link your UEA Email Address',
 	contexts: ['Guild'],
 	integrationTypes: ['GuildInstall'],
 	options: [
 		{
-			name: 'uea-email',
-			description: 'your uea email address',
+			name: 'UEA Email',
+			description: 'Enter your email address in the format abc00xyz@uea.ac.uk',
 			type: 'string',
 			required: true
 		}
@@ -65,7 +65,7 @@ export default async (
 			content: `${role}`,
 			embeds: [
 				embed.setTitle(
-					`This email address has already been linked to an account.\nIf you believe that this is in error, please do not hesitate to reach out to the committee staff`
+					`This email address has already been linked to an account.\nIf you believe that this is in error, please contact the committee!`
 				)
 			]
 		}
