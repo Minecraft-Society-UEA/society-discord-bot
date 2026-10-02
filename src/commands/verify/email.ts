@@ -20,7 +20,7 @@ export const config = createCommandConfig({
 	integrationTypes: ['GuildInstall'],
 	options: [
 		{
-			name: 'UEA Email',
+			name: 'uea-email',
 			description: 'Enter your email address in the format abc00xyz@uea.ac.uk',
 			type: 'string',
 			required: true
