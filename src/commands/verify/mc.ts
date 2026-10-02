@@ -28,7 +28,7 @@ export const config = createCommandConfig({
 	integrationTypes: ['GuildInstall'],
 	options: [
 		{
-			name: 'Nametag',
+			name: 'mc-username',
 			description: 'Enter your exact in-game name (Bedrock players: add a . first).',
 			type: 'string',
 			required: true
