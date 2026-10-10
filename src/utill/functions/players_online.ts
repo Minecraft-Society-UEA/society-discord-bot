@@ -51,7 +51,7 @@ export async function updatePlayersChannel() {
 
 	embed.setDescription(`Online: ${totalOnline}`)
 
-	const newName = `👥 Online: ${totalOnline}`
+	const newName = `Players Online: ${totalOnline}`
 	await client.user?.setActivity(newName, { type: ActivityType.Custom })
 
 	try {
