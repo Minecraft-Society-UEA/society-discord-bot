@@ -133,26 +133,33 @@ export async function createMembers(ids: string[]): Promise<boolean> {
 }
 
 async function membershipRevoked(id: string) {
-	const profile = (await getProfileByUeaEmail(id)) as db_player
-	if (!profile) return
-	const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
-	if (!guild || !guild.members.me) return console.error(`Guild not found`)
+	try {
+		const profile = (await getProfileByUeaEmail(id)) as db_player
+		if (!profile) return
+		const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID)
+		if (!guild || !guild.members.me) {
+			log.error(`Guild not found for membershipRevoked(${id})`)
+			return
+		}
 
-	await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} demote player`)
+		await mc_command(HUB_SERVER_ID, `lp user ${profile.mc_uuid} demote player`)
 
-	profile.mc_rank = `verified`
+		profile.mc_rank = `verified`
 
-	await updatePlayerProfile(profile.user_id, profile)
+		await updatePlayerProfile(profile.user_id, profile)
 
-	log.msg(`profile: ${profile.mc_username} has lost there member status`)
+		log.msg(`profile: ${profile.mc_username} has lost there member status`)
 
-	const roles = (await getSettingByid(`roles`)) as role_settings
-	const member_roles = (await guild.members.fetch(profile.user_id)) as GuildMember
+		const roles = (await getSettingByid(`roles`)) as role_settings
+		const member_roles = (await guild.members.fetch(profile.user_id).catch((err) => {
+			log.error(`Failed to fetch member ${profile.user_id}: ${err}`)
+			return null
+		})) as GuildMember | null
 
-	if (
-		guild.members.me.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 &&
-		member_roles.id !== guild.ownerId
-	) {
-		await member_roles.roles.remove((await guild.roles.cache.get(roles.setting.member)) as Role)
+		if (member_roles && guild.members.me.roles.highest.comparePositionTo(member_roles.roles.highest) > 0 && member_roles.id !== guild.ownerId) {
+			await member_roles.roles.remove(guild.roles.cache.get(roles.setting.member) as Role)
+		}
+	} catch (err) {
+		log.error(`membershipRevoked(${id}) failed: ${err}`)
 	}
 }
