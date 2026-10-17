@@ -82,7 +82,7 @@ export async function updatePlayersChannel() {
 // returns null if the server is unreachable or returns a non-ok response
 export async function fetchServerPlayers(server: db_server, opts?: { signal?: AbortSignal }): Promise<player[] | null> {
 	try {
-		const res = await fetch(`${server.host}/api/players`, {
+		const res = await fetch(`${server.host}:${server.port}/api/players`, {
 			headers: { Authorization: `Bearer ${server_auth_header(server)}` },
 			signal: opts?.signal
 		})

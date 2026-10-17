@@ -19,7 +19,7 @@ export async function loadTokens() {
 		try {
 			if (server.type === 'paper') {
 				const body = { username: server.user, password: server.pass }
-				const res = await fetch(`${server.host}/api/auth/login`, {
+				const res = await fetch(`${server.host}:${server.port}/api/auth/login`, {
 					method: 'POST',
 					body: JSON.stringify(body)
 				})

@@ -7,7 +7,7 @@ export async function mc_command(id: string, command: string) {
 		command: command
 	}
 
-	const endpoint = details.type === 'fabric' ? `${details.host}/api/command` : `${details.host}/api/server/command`
+	const endpoint = details.type === 'fabric' ? `${details.host}:${details.port}/api/command` : `${details.host}:${details.port}/api/server/command`
 
 	const res = await fetch(endpoint, {
 		method: 'post',
@@ -38,7 +38,7 @@ export async function sendPlayerMessage(server: db_server, mc_username: string, 
 		return true
 	}
 
-	const response = await fetch(`${server.host}/api/player/message`, {
+	const response = await fetch(`${server.host}:${server.port}/api/player/message`, {
 		method: 'post',
 		headers: {
 			Authorization: `Bearer ${server_auth_header(server)}`
