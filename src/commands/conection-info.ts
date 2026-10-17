@@ -14,8 +14,8 @@ We recommend that you join on \`26.2\` for the best experience as of \`September
 ## <:bedrock:1485314220495998977>  __Bedrock Connection (Mobile/PC/XBOX):__
 Connect by going to the **Servers** tab and clicking →  \`Add Server\` then fill in the details below
 **Server Address:**
-> \`\`\`play-br.ueamc.net\`\`\`
-> **Port:** \`35504\`
+> \`\`\`br.play.ueamc.net\`\`\`
+> **Port:** \`63163\`
 ## <:sony_playstation:1404261256575189072>  __PS4/5 Bedrock Connection__
 > ### **__STEP 1__**
 > Download one of these apps →
