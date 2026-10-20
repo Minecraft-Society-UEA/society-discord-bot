@@ -21,7 +21,6 @@ export default async (
 	const profile = await getProfileByDId(interaction.user.id)
 	if (!profile?.mc_username) {
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setColor('Red').setTitle('You need to verify on Minecraft first with: /verify mc')
 			]
@@ -31,7 +30,6 @@ export default async (
 	const alreadyUsed = await Flashcore.get(`fix_used-${interaction.user.id}`)
 	if (alreadyUsed) {
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setColor('Yellow').setTitle('You have already synced your rank once!')
 			]
@@ -41,7 +39,6 @@ export default async (
 	const server = await getServerByID(HUB_SERVER_ID)
 	if (!server) {
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setColor('Red').setTitle('ERROR:	Database error - server not found')
 			]
@@ -51,7 +48,6 @@ export default async (
 	const hubPlayers = await fetchServerPlayers(server)
 	if (!hubPlayers) {
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setColor('Red').setTitle('🫤 The hub server is currently offline. Try again later!')
 			]
@@ -61,7 +57,6 @@ export default async (
 	const playerOnHub = hubPlayers.find((p) => p.name === profile.mc_username)
 	if (!playerOnHub) {
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setColor('Yellow').setTitle(`${profile.mc_username} is not currently connected to the Hub server`)
 			]
@@ -93,7 +88,6 @@ export default async (
 	} catch (err) {
 		log.error(`Error executing LuckPerms command: ${err}`)
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setColor('Red').setTitle('An error occurred while syncing your rank. Please ask committee for assistance!')
 			]

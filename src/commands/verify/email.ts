@@ -49,12 +49,11 @@ export default async (
 
 	// checks if there email is a uea email
 	if (!email.match(/^[A-Za-z]{3}[0-9]{2}[A-Za-z]{3}@uea\.ac\.uk/gm))
-		return { content: `${role}`, embeds: [embed.setTitle(`Please enter a valid UEA email address`).setColor('Red')] }
+		return { embeds: [embed.setTitle(`Please enter a valid UEA email address`).setColor('Red')] }
 
 	// checking if the user already has verified
 	if (!already_verified)
 		return {
-			content: `${role}`,
 			embeds: [embed.setTitle(`You need to verify on Minecraft first with: /verify mc`).setColor('Red')]
 		}
 	if (already_verified.uea_email) return { embeds: [embed.setTitle(`Already verified your email!`).setColor('Green')] }
@@ -62,7 +61,6 @@ export default async (
 	//checking if username is already linked
 	if (email_inuse)
 		return {
-			content: `${role}`,
 			embeds: [
 				embed.setTitle(
 					`This email address has already been linked to an account.\nIf you believe that this is in error, please contact the committee!`

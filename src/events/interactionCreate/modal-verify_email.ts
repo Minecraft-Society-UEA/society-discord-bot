@@ -58,7 +58,6 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			const roles = (await getSettingByid(`roles`)) as role_settings
 			const role = (await interaction.guild.roles.cache.get(roles.setting.committee)) as Role
 			return await interaction.editReply({
-				content: `${role}`,
 				embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)]
 			})
 		}

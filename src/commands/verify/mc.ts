@@ -58,7 +58,6 @@ export default async (
 		if (!data_hub) {
 			console.log(`LOG:	Server hub is offline`)
 			return {
-				content: `${role}`,
 				embeds: [
 					embed.setColor('Red').setTitle(`😪 Sorry, I can't connect right now. The server might be offline.`)
 				]
@@ -69,7 +68,6 @@ export default async (
 		if (!player) {
 			console.log(`LOG:	Could not find "${username}" in the server hub`)
 			return {
-				content: `${role}`,
 				embeds: [
 					embed
 						.setColor('Yellow')
@@ -108,7 +106,6 @@ export default async (
 		await interaction.showModal(modal)
 	} else if (already_verified?.mc_username || username_inuse?.mc_uuid) {
 		return {
-			content: `${role}`,
 			embeds: [
 				embed
 					.setColor('Yellow')

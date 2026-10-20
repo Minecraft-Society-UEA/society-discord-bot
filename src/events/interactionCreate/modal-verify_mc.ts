@@ -86,7 +86,6 @@ export default async (interaction: ModalSubmitInteraction, client: Client) => {
 			}
 		} else {
 			await interaction.editReply({
-				content: `${role}`,
 				embeds: [embed.setTitle(`Code does not match, please try again`).setColor(`Red`)]
 			})
 		}

@@ -90,7 +90,6 @@ export default async (
 			const remaining = Math.floor((lastUsed + 5 * 60 * 1000) / 1000)
 
 			return {
-				content: `${role}`,
 				embeds: [embed.setTitle(`😴 Command is on cooldown — wait <t:${remaining}:R>`).setColor('Red')]
 			}
 		} else {
@@ -103,7 +102,6 @@ export default async (
 				if (!html) {
 					await Flashcore.delete('lastused')
 					return {
-						content: `${role}`,
 						embeds: [embed.setTitle(`ERROR:	Failed to get members!`).setColor('Red')]
 					}
 				}
